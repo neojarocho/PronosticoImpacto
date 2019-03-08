@@ -1,0 +1,357 @@
+@font-face {
+    font-family: 'RobotoLight'; /*a name to be used later*/
+    src: url('font/Roboto-Light.ttf'); /*URL to font*/
+}
+@font-face {
+    font-family: 'BebasBold'; /*a name to be used later*/
+    src: url('font/BebasNeue Bold.ttf'); /*URL to font*/
+}
+@font-face {
+    font-family: 'BebasLight'; /*a name to be used later*/
+    src: url('font/BebasNeue Light.ttf'); /*URL to font*/
+}
+@font-face {
+    font-family: 'BebasBook'; /*a name to be used later*/
+    src: url('font/BebasNeue Book.ttf'); /*URL to font*/
+}
+
+#map {
+         background: #fff;
+         height: 100%;
+         width: 100%;
+         margin: 0;
+         padding: 0 !important;
+}
+h3 {
+         margin: 0 0 5px 0;
+         border-bottom: 1px solid #444;
+		 font-size: medium;
+}
+.shadow {
+         box-shadow: 0 0 5px #888;
+}
+#map {
+         margin: 0;
+         padding: 0;
+}
+#feedback {
+    background-color: rgba(255,255,255,1) !important;
+	// color: #444;
+	position: absolute;
+	font-family: arial;
+	width: 200px;
+	height: 300px;
+	margin-left: 55px;
+	margin-top: 35px;
+	padding: 10px;
+	z-index: 40;
+}
+#leyenda {
+    background-color: rgba(255,255,255,0) !important;
+	color: #fff;
+	position: absolute;
+	font-family: RobotoLight;
+	font-size: 14px;	 
+	padding: 0px;
+	margin-left: 5px;
+	margin-top: 5px;
+	z-index: 40;		 
+}
+A:link {
+    text-decoration: none;
+    // color: #ee9900;
+    color: #ffffff;
+}
+A:visited {
+    text-decoration: none;
+    // color: #ee9900;
+    color: #ffffff;
+}  
+	  
+#note,
+#hint {
+         font-size: 80%;
+}
+#note {
+         font-weight: 700;
+         padding: 0 0 10px 0;
+}
+	  
+#layerList {
+         width: 125px;
+}
+.dojoDndItemOver {
+         background: #ccc;
+}
+	  
+.demographicInfoContent {
+      padding-top: 10px;
+}
+	
+html, body {
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	background: #42413C;
+}
+
+.mapa_marco {
+	width: 100%; 
+	height: 518px;
+	margin: 0px;
+    // border: 2px solid rgba(0,0,0,0);
+	border-radius: 10px 10px 10px 10px;
+	overflow: hidden;
+}
+	
+.dojoDndItem {
+		padding: 0px;
+}	
+  
+
+table {
+	font-weight: small;
+	font-size: small;
+}
+
+.my_content {
+		border-collapse:separate !important; 
+		border-spacing:2px !important; 
+		background-color:#d3d3d3 !important;
+		text-align:center;
+		// margin-top:5px;
+		// margin-bottom:5px;
+		// margin-left: 5px;
+		// margin-right:5px
+}
+
+#layerList{
+	font-size: 12px;
+}
+
+.right-element {
+	width:355px;
+    display: inline-block;
+    position: relative;
+    right: -30px;
+}	
+.left-element {
+	width:355px;
+    display: inline-block;
+    position: relative;
+    left: -30px;
+}
+#symbology {	  
+         color: #FFFF !important;
+         position: absolute;
+         font-family: arial;		 
+         margin: 2px;
+         padding: 0px;
+         top: 370px;
+         left: 25px;		 
+         z-index: 40;	
+		 width: 147px; 
+		 height: 130px;
+		 margin: 0;		 
+}	
+#compass {
+         color: #444;
+         position: absolute;
+         font-family: arial;
+		 font-size: small;			 
+         left: 180px;		 
+         margin: 2px;
+         padding: 0px;
+         top: 425px;
+         z-index: 40;	
+		 width: 150px; 
+		 height: auto; 
+		 margin: 0;		 
+}
+.mapa {
+	margin: auto;
+    width: 1047px;
+    height: 500px;
+	// background-color: rgba(51,160,179,1);
+	// border: 2px solid rgba(0,0,0,0.2);
+	border-radius: 10px 10px 10px 10px;		
+    padding: 0px;
+	overflow: hidden;
+}
+.condiciones {
+	margin: auto;
+    width: 1047px;
+    height: 390px;
+	// background-color: rgba(51,160,179,1);
+	// border: 2px solid rgba(0,0,0,0.2);
+	border-radius: 10px 10px 10px 10px;		
+    padding: 0px;
+}
+iframe {
+    margin-left: 0px;
+    margin-top: 0px;
+    padding: none;
+    border: none;
+}
+
+html, body {
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	background: #42413C;
+}
+
+.center {
+    margin: auto;
+    width: 1047px;
+    // border: 3px solid green;
+    padding: 0px;
+}
+.navbar {
+    margin-bottom: 0px;
+    background-color: rgba(57,168,185,1) !important;
+    border-color: rgba(51,160,179,1) !important;
+}
+
+.headerblock {
+	z-index:1;
+	height: 60px;
+	width: auto;
+	margin-top:0px;
+	margin-bottom:0px;
+	position:relative;
+	background-color: rgba(51,160,179,1);
+    box-shadow: 1px 1px 4px rgba(0,0,0,0);
+    // border: 2px solid rgba(0,0,0,0);
+	// border-radius: 10px 10px 10px 10px;	
+	text-align:center;
+	font-family: 'Work Sans', sans-serif;
+	font-size: 35px;
+	color: #ffffff;
+}
+// .container {
+	// z-index:999;
+// }
+
+.weekblock  {
+	width:100%;
+    display:inline-block;	
+	position:relative;	
+	display:inline-block;	
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	z-Index:15;		
+}
+#over img {
+	margin-top:5px;
+	margin-bottom:5px;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+.shortdaystyle {
+	text-align:center;
+	font-family: 'Dekko', cursive;
+	font-size: 20px;
+	color: #ffffff;
+}
+.windstyle {
+	width:45%;
+	z-index:999;
+	font-family: RobotoLight;
+	font-size: 15px;
+	color: #ffffff;
+	align-items: center;
+	vertical-align: middle;
+	display:inline-block;	
+	position:relative;	
+	z-Index:15;	
+}
+.weekstyle{
+	height: auto;
+	width: 225px;
+	margin-top:0px;
+	// background: rgba(57,168,185,0.9);
+    // box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+    // border: 2px solid rgba(0,0,0,0.2);
+	// border-radius: 10px 10px 10px 10px;	
+	padding: 5px;
+	overflow: hidden;
+}
+
+.nocolor {
+	background: rgba(0,0,0,0) !important;
+}
+
+.color {
+background: rgba(57,168,185,0.9);
+}
+
+.textstyle {
+	font-size: 12px;
+	background: rgba(0,0,0,0) !important;
+}
+.esriPopup .titlePane, .dj_ie7 .esriPopup .titlePane .title {
+	color: #ffffff !important;
+	background-color:rgba(57,168,185,0.9) !important;
+	font-family: 'Fondamento', cursive !important;
+	font-size: 14px !important;
+}
+
+.esriPopup .titlePane {
+	border-bottom:1px solid rgba(0,0,0,0.2);
+	// border: 2px solid rgba(0,0,0,0.2);
+	// border-radius: 10px 10px 10px 10px;	
+}
+
+.esriPopup a {
+  color: rgba(0,0,0,0.5) !important;
+}
+
+// .esriPopup
+// .titleButton, .esriPopup .pointer, .esriPopup .esriViewPopup .gallery
+// .mediaHandle, .esriPopup .esriViewPopup .gallery .mediaIcon {
+  // background-image:url(img/popup.png);
+// }
+
+.esriPopup .contentPane,
+.esriPopup .actionsPane {
+	background-color: rgba(87,188,196,.9) !important;
+	color:#FFFFFF !important;
+	border-color:0px solid rgba(18,19,16,1) !important;
+	// font-family: 'Fondamento', cursive;
+}
+
+.esriPopup .pointer, .esriPopup .outerPointer {
+    background: rgba(87,188,196,.9) !important;
+}
+
+.esriPopupMaximized {
+	left: 25px !important;
+	margin-top: 25px !important;
+}
+.contentPane {
+	font-family: RobotoLight;
+	font-size: 14px;
+	max-height: 300px !important;
+}
+
+
+footer {
+	z-index:999;
+	font-family: RobotoLight;
+	font-size: 15px;
+    // border: 2px solid rgba(0,0,0,0);
+	border-radius: 10px 10px 10px 10px;
+	color: #FFF;
+}
+#disclaimer {
+    margin: 0px;
+    padding: 0px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    color: #FFF;
+	text-shadow: 6px -5px 5px rgb(0, 0, 0);
+    font-size: 10px;
+    text-align: center;
+}

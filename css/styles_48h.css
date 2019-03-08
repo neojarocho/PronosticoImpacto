@@ -1,0 +1,59 @@
+/* body {border-top:5px solid #08c;padding-top:50px} */
+body {border-top:0px solid #08c;padding-top:0px}
+#wrapper {margin:0 auto;float:none}
+#navbar {z-index:1000}
+#navbar.affix {top:0}
+h1 {
+	color: #08c;
+	font-family: 'FuturaExtraBold';
+	font-size: 55px;
+	font-weight: bolder;
+	letter-spacing: 4px;
+	margin-bottom: 20px;
+	text-shadow: 2px 1px #2870F0;
+	text-align:center
+}
+
+h2 {margin-top:50px}
+
+header p {
+	text-align:center
+}
+
+form label {display:block}
+
+footer {
+	text-align:center;
+	background:#08c;
+	border-top:1px dashed #fff;
+	padding:15px 0;
+	margin-top:20px;
+	color:#fff;
+}
+
+footer a {
+	color:#fff;
+	padding:3px 5px;
+	text-decoration:underline;
+	-webkit-transition:all .5s;
+	-moz-transition:all .5s;
+	-o-transition:all .5s;
+	-ms-transition:all .5s;
+	transition:all .5s;
+}
+footer a:hover {
+	background:#fff;
+	color:#08c;
+	text-decoration:none;
+	transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+}
+
+#easyPaginate {width:1065px;}
+#easyPaginate {height:650px;}
+/* #easyPaginate img {display:block;margin-bottom:10px;} */
+.easyPaginateNav a {padding:5px;}
+.easyPaginateNav a.current {font-weight:bold;text-decoration:underline;}

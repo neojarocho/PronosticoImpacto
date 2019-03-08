@@ -1,0 +1,123 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 02-09-2015, 03:01:19 PM
+    Author     : jrivas
+*/
+
+.boton-new {
+    border-style: none !important;
+    font-size: 12px !important;
+    background: url(../Images/16_nuevo_azul.png) no-repeat left !important;
+    width: 90px !important;
+    font-weight: normal !important;
+    color: rgb(134, 110, 64) !important;
+    margin-left: 10px !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+
+.boton-preview {
+    border-style: none !important;
+    background: url(../Images/inspecciones_azul.png) no-repeat 0 center !important;
+    width: 110px !important;
+    color: rgb(134, 110, 64);
+    font-size: 12px !important;
+    padding-right: 0px;
+}
+
+    .boton-preview:hover {
+        background: url(../Images/inspecciones_rojo.png) no-repeat 0 center !important;
+        color: rgb(255,109,17);
+    }
+
+.boton-detail {
+    border-style: none !important;
+    background: url(../Images/guias_azul_16.png) no-repeat 0 center !important;
+    width: 85px !important;
+    color: rgb(134, 110, 64);
+    font-size: 12px !important;
+    padding-right: 0px;
+}
+
+    .boton-detail:hover {
+        background: url(../Images/guias_rojo_16.png) no-repeat 0 center !important;
+        color: rgb(255,109,17);
+    }
+.boton-config {
+    border-style: none !important;
+    background: url(../Images/guias_azul_16.png) no-repeat 0 center !important;
+    width: 100px !important;
+    color: rgb(134, 110, 64);
+    font-size: 12px !important;
+    padding-right: 0px;
+}
+
+    .boton-config:hover {
+        background: url(../Images/guias_rojo_16.png) no-repeat 0 center !important;
+        color: rgb(255,109,17);
+    }
+.boton-edit, .boton-edit-criterio {
+    border-style: none !important;
+    background: url(../Images/editar_azul_20.png) no-repeat 0 center !important;
+    width: 85px !important;
+    color: rgb(134, 110, 64);
+    font-size: 12px !important;
+    padding-right: 0px;
+}
+
+    .boton-edit:hover, .boton-edit-criterio:hover{
+        background: url(../Images/editar_rojo_20.png) no-repeat 0 center !important;
+        color: rgb(255,109,17);
+    }
+    
+    .boton-delete, .boton-delete-criterio {
+    border-style: none !important;
+    background: url(../Images/borrar_azul_20.png) no-repeat 0 center !important;
+    width: 95px !important;
+    color: rgb(134, 110, 64);
+    font-size: 12px !important;
+    padding-right: 0px;
+}
+
+    .boton-delete:hover, .boton-delete-criterio:hover {
+        background: url(../Images/borrar_rojo_20.png) no-repeat 0 center !important;
+        color: rgb(255,109,17);
+    }
+    
+   .centrar { text-align: center;}
+   
+   
+/*style path-container */
+.path-container a {
+    font-size: 12pt;
+    color: #000000;
+    color: rgba(0,0,0,.6);
+    text-decoration: none;
+}
+
+    .path-container a:hover {
+        font-size: 12pt;
+        color: rgb(255,109,17);
+        text-decoration: none;
+    }
+
+.path-container {
+    font-size: 12pt;
+    color: rgb(134,110,64);
+    margin-bottom: 0px;
+    line-height: 32px;
+}
+/*path-container*/
+
+.label-form { padding-top: 10px; }
+
+select {
+      width: 200px;
+      padding:0.2em;
+    }
