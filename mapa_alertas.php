@@ -25,24 +25,39 @@ if(strlen (@$buscar)>0){$buscar = @$_GET['id'];} else {$buscar = 2;}
 // echo "********************************".$buscar."********************************";
 
 $dbconn = my_dbconn("PronosticoImpacto");
-$query="SELECT id_impacto_diario_detalle, id_impacto_diario, cod_municipio, municipio, id_impacto, id_probabilidad, id_color, id_categoria, especial_atencion, descripcion, fecha_ingreso, id_usuario_ingreso
-	FROM public.impacto_diario_detalle where id_impacto_diario = '$buscar' ORDER BY cod_municipio";
+$query="SELECT i.id_impacto_diario_detalle, i.id_impacto_diario, i.cod_municipio, i.municipio, im.impacto, CONCAT(pr.probabilidad,' - ',pr.valor_probabilidad) as probabilidad, de.departamento,
+pr.id_probabilidad, i.id_color, co.color, i.id_categoria, i.des_categoria as categoria, i.especial_atencion, i.descripcion, i.fecha_ingreso, i.id_usuario_ingreso,
+(SELECT fe.fenomeno FROM impacto_diario im INNER JOIN fenomeno fe ON fe.id_fenomeno = im.id_fenomeno WHERE im.id_impacto_diario = i.id_impacto_diario) as fenomeno,
+(SELECT array_to_string(array(select h.horario from impacto_diario_horario ho INNER JOIN horario h ON h.id_horario = ho.id_horario where ho.id_impacto_diario_detalle = i.id_impacto_diario_detalle), ', ')) as horarios,
+(SELECT array_to_string(array(select c.consecuencia from impacto_diario_consecuencias co INNER JOIN consecuencia c ON c.id_consecuencia = co.id_consecuencia where co.id_impacto_diario_detalle = i.id_impacto_diario_detalle), '<br> ')) as consecuencias
+FROM  impacto_diario_detalle i 
+INNER JOIN departamento de ON de.cod_departamento = LEFT(i.cod_municipio, 2) 
+INNER JOIN impacto im ON im.id_impacto = i.id_impacto 
+INNER JOIN probabilidad pr ON pr.id_probabilidad = i.id_probabilidad 
+INNER JOIN color co ON co.id_color = i.id_color
+WHERE i.id_impacto_diario = '$buscar' AND municipio IS NOT NULL ORDER BY i.cod_municipio;";
 $result=pg_query($dbconn, $query);
 while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 	$sh[] = $row;
 } pg_free_result($result);
 pg_close($dbconn);
 
-echo "<pre>";
-print_r($sh);
-echo "</pre>";
+if (count(@$sh)==0){
+echo "<div style='text-align:center;'>NO HAY MUNICIPIOS INGRESADOS TODAVIA</div>";
+exit();
+}
+
+// echo "<pre>";
+// print_r($sh);
+// echo "</pre>";
 
 
 $dbconn = my_dbconn("PronosticoImpacto");
-$query="SELECT d.id_impacto_diario, d.id_area, a.area, d.id_fenomeno, d.fecha, d.correlativo, d.titulo, d.descripcion, 
+$query="SELECT d.id_impacto_diario, d.id_area, a.area, d.id_fenomeno, fe.fenomeno, d.fecha, d.correlativo, d.titulo, d.descripcion, 
 		d.id_periodo, d.id_estado_impacto, d.id_impacto_fenomeno, d.id_usuario, d.fecha_ini, d.fecha_fin
 		FROM public.impacto_diario d
 		INNER JOIN area a ON a.id_area = d.id_area
+		INNER JOIN fenomeno fe ON fe.id_fenomeno = d.id_fenomeno
 		WHERE d.id_impacto_diario = '$buscar'";
 $result=pg_query($dbconn, $query);
 while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
@@ -51,9 +66,9 @@ while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 pg_close($dbconn);
 // $ti = $ti[0];
 
-echo "<pre>";
-print_r($ti);
-echo "</pre>";
+// echo "<pre>";
+// print_r($ti);
+// echo "</pre>";
 // var_dump($sh);
 
 # Colores 
@@ -83,7 +98,7 @@ $muni = "'".implode("','", $mu)."'";
 ?>
     
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-<title>MARN | Alertas MARN</title>
+<title>MARN | Mapa de pronóstico de Impacto</title>
 <link rel="stylesheet" href="https://js.arcgis.com/3.20/dijit/themes/tundra/tundra.css">
 <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
 
@@ -431,8 +446,8 @@ a {
 
          map = new Map("map", {
             basemap: "topo",
-            center: [-88.90,13.80],
-            zoom: 8,
+            center: [-90.35,14.00],
+            zoom: 9,
 			sliderStyle: "large", // large/small
 			infoWindow: popup
          });
@@ -442,7 +457,7 @@ a {
 	var va	= <?php echo json_encode($arr); ?>;		
 	var mu  = <?php echo json_encode($muni); ?>;
 	// console.log(va[0]['id_impacto_diario_detalle_his']);
-	// console.log(va);
+	console.log(va);
 	
 	// var mval 	 = "'"+value.join("','")+"'";
 	var mval	= <?php echo json_encode($muni); ?>;
@@ -618,7 +633,7 @@ a {
 					+"<tr>																								"
 					+"	<td style='vertical-align: top;' width='50%'>													"
 					+"		<div class='ficha'><b>Municipio</b>: 	"+va[at.cod_ofi]['municipio']+" </div>				"
-					+"		<div class='ficha'><b>Departamento</b>:	<?php echo 'San Salvador'?> </div>					"
+					+"		<div class='ficha'><b>Departamento</b>:	"+va[at.cod_ofi]['departamento']+" </div>					"
 					+"		<div class='ficha'><b>Probabilidad</b>:	"+va[at.cod_ofi]['probabilidad']+" </div>			"
 					+"		<div class='ficha'><b>Impacto</b>:		"+va[at.cod_ofi]['impacto']+" </div>				"
 					+"																									"
@@ -626,8 +641,8 @@ a {
 					+"		<div class='ficha'><b>Consecuencias</b>:"+va[at.cod_ofi]['consecuencias']+" </div>			"
 					+"	</td>																							"
 					+"	<td style='vertical-align: top;' width='50%'>													"
-					+"		<div class='ficha'><b>Color</b>:		"+va[at.cod_ofi]['color']+" </div>					"					
-					+"		<div class='ficha'><b>Categoria</b>:		"+va[at.cod_ofi]['categoria']+" </div>			"					
+					+"		<div class='ficha'><b>Color</b>:			"+va[at.cod_ofi]['color']+" </div>				"					
+					+"		<div class='ficha'><b>Mensaje</b>:			"+va[at.cod_ofi]['categoria']+" </div>			"					
 					+"		<div class='ficha'><b>Especial Atencion</b>:"+va[at.cod_ofi]['especial_atencion']+" </div>	"
 					+"		<div class='ficha'><b>Descripción</b>:		"+va[at.cod_ofi]['descripcion']+" </div>		"
 					+"	</td>																							"
@@ -774,7 +789,7 @@ function toggle_visibility(id) {
 <div class="container" style="background: #fff;">
 
 <div class="center">
-<div class="headerblock">- Alertas MARN -</div>
+<!--<div class="headerblock">- Mapa de pronóstico de Impacto -</div>-->
 	<div class='row' style='text-align:center;'>
 	<table style='width:100%' border=1>																		
 	<tr>
@@ -791,16 +806,16 @@ function toggle_visibility(id) {
 		</tr>																				
 	<tr>																								
 		<td style='vertical-align: top;' width='50%'>																
-			<div class='ficha'><b>Area</b>:					<?php echo $ti[0]['area']; ?>			</div>				
-			<div class='ficha'><b>Titulo Pronostico</b>:	<?php echo $ti[0]['titulo']; ?>			</div>				
-			<div class='ficha'><b>Descripción</b>:			<?php echo $ti[0]['descripcion']; ?>	</div>					
-			<div class='ficha'><b>Impacto fenomeno</b>:		<?php echo $ti[0]['impacto_fenomeno']; ?></div>					
+			<div class='ficha'><b>Area</b>:					<?php echo @$ti[0]['area']; ?>			</div>				
+			<div class='ficha'><b>Titulo Pronostico</b>:	<?php echo @$ti[0]['titulo']; ?>			</div>				
+			<div class='ficha'><b>Descripción</b>:			<?php echo @$ti[0]['descripcion']; ?>	</div>					
+			<div class='ficha'><b>Impacto fenomeno</b>:		<?php echo @$ti[0]['impacto_fenomeno']; ?></div>					
 		
 		</td>																							
 		<td style='vertical-align: top;' width='50%'>																
-			<div class='ficha'><b>Fenomeno</b>:			<?php echo $ti[0]['fenomeno']; ?>		</div>										
-			<div class='ficha'><b>Correlativo</b>:		<?php echo $ti[0]['correlativo']; ?>	</div>											
-			<div class='ficha'><b>Periodo</b>:			<?php echo $ti[0]['periodo']; ?> 		
+			<div class='ficha'><b>Fenomeno</b>:			<?php echo @$ti[0]['fenomeno']; ?>		</div>										
+			<div class='ficha'><b>Correlativo</b>:		<?php echo @$ti[0]['correlativo']; ?>	</div>											
+			<div class='ficha'><b>Periodo</b>:			<?php echo @$ti[0]['periodo']; ?> 		
 			<b>Fecha inicial</b>: <?php echo format_date($ti[0]['fecha_ini']); ?> 		<b>Fecha fin</b>: <?php echo format_date($ti[0]['fecha_fin']); ?> 
 			</div>											
 		</td>																							
@@ -871,18 +886,18 @@ function toggle_visibility(id) {
 	<!--<tr><th colspan=2></th></tr>-->																			
 	<tr>																								
 		<td style='vertical-align: top;' width='50%'>																
-			<div class='ficha'><b>Municipio</b>: 	<?php echo $sh[0]['municipio']; ?> 		</div>				
-			<div class='ficha'><b>Departamento</b>:	<?php echo 'San Salvador'?>				</div>					
-			<div class='ficha'><b>Probabilidad</b>:	<?php echo $sh[0]['probabilidad']; ?>	</div>			
-			<div class='ficha'><b>Impacto</b>:		<?php echo $sh[0]['impacto']; ?>		</div>				
-			<div class='ficha'><b>Horario</b>:		<?php echo $sh[0]['horarios']; ?>		</div>				
-			<div class='ficha'><b>Consecuencias</b>:<?php echo $sh[0]['consecuencias']; ?>	</div>			
+			<div class='ficha'><b>Municipio</b>: 	<?php echo @$sh[0]['municipio']; ?>	</div>				
+			<div class='ficha'><b>Departamento</b>:	<?php echo @$sh[0]['departamento']; ?>	</div>					
+			<div class='ficha'><b>Probabilidad</b>:	<?php echo @$sh[0]['probabilidad']; ?>	</div>			
+			<div class='ficha'><b>Impacto</b>:		<?php echo @$sh[0]['impacto']; ?>		</div>				
+			<div class='ficha'><b>Horario</b>:		<?php echo @$sh[0]['horarios']; ?>		</div>				
+			<div class='ficha'><b>Consecuencias</b>:<?php echo @$sh[0]['consecuencias']; ?>	</div>			
 		</td>																							
 		<td style='vertical-align: top;' width='50%'>																
-			<div class='ficha'><b>Color</b>:			<?php echo $sh[0]['color']; ?>			</div>										
-			<div class='ficha'><b>Categoria</b>:		<?php echo $sh[0]['categoria']; ?>			</div>										
-			<div class='ficha'><b>Especial Atencion</b>:<?php echo $sh[0]['especial_atencion']; ?> 	</div>
-			<div class='ficha'><b>Descripción</b>:		<?php echo $sh[0]['descripcion']; ?> 		</div>		
+			<div class='ficha'><b>Color</b>:			<?php echo @$sh[0]['color']; ?>			</div>										
+			<div class='ficha'><b>Mensaje</b>:			<?php echo @$sh[0]['categoria']; ?>			</div>										
+			<div class='ficha'><b>Especial Atencion</b>:<?php echo @$sh[0]['especial_atencion']; ?> 	</div>
+			<div class='ficha'><b>Descripción</b>:		<?php echo @$sh[0]['descripcion']; ?> 		</div>		
 		</td>																							
 																										
 	</tr>																								
@@ -891,7 +906,7 @@ function toggle_visibility(id) {
 	<!-- CONTENIDO DATA -->
 </div>
 
-	<!-- CONTENIDO PIE -->
+	<!-- CONTENIDO PIE 
 	<div id="footer" class="row" style="text-align:center;"><br>
 			<p style="text-align:center;margin-left:5px;margin-right:5px;width:auto;">
 				<font size="1" face="Verdana, Arial, Helvetica, sans-serif">
@@ -899,6 +914,7 @@ function toggle_visibility(id) {
 				</font>
 			</p>
 	</div>
+	-->
 	<!-- CONTENIDO PIE -->
 
 </div>

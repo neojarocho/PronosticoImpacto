@@ -150,6 +150,12 @@ if(@$id_impacto_diario==''){
 		<script src="js/kendo.culture.es-SV.min.js" type="text/javascript"></script>
 
 <style type="text/css">
+#mapa_ivan {
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
 .btn-sq {
 	width: 100% !important;
 	height: 100px !important;
@@ -210,6 +216,13 @@ if(@$id_impacto_diario==''){
 .space {
 	margin-top:		2.5px;
 	margin-bottom:	2.5px;
+}
+.col-md-12, .col-md-3 {
+	padding-top: 5px;
+}
+
+iframe {
+  overflow: hidden !important;
 }
 </style>
 <link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
@@ -384,8 +397,8 @@ if(@$id_impacto_diario==''){
 				
 			<div class="row"><p></p>
 				<div class="col-md-12">
-					<input type="text" name="filter" id="filter" value="0000" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
-					<input type="text" name="id_impacto_diario_m" id="id_impacto_diario_m" value="50" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
+					<input type="hidden" name="filter" id="filter" value="0000" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
+					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="50" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
 					<input type="hidden" name="id_categoria" id="id_categoria" class="form-control k-invalid" required="" data-required-msg="id_categoria" aria-invalid="true">
 					<input type="hidden" name="id_color" id="id_color" class="form-control k-invalid" required="" data-required-msg="id_color" aria-invalid="true">
 					<textarea name="categoria" id="categoria" class="form-control" style="font-size: 11pt;font-weight: bold"></textarea>
@@ -419,7 +432,7 @@ if(@$id_impacto_diario==''){
 					</div>
 					<div>
 						<!--<input type="hidden" name="hidden_municipio" id="hidden_municipio" />-->
-						<input type="submit" name="insert" id="action" class="btn btn-info" value="Agregar Municipios" />
+						<input type="submit" name="insert" id="action" class="btn btn-primary" value="Agregar Municipios" />
 					</div>
 				</div>	
 			</div>			
@@ -439,18 +452,16 @@ if(@$id_impacto_diario==''){
 <!-- FIN DE LA FICHA DE INGRESO -->
   
     <div id="menu1" class="tab-pane fade">
-	<h3>Apoyo a pronostico</h3>
-	<div class="row" style="background: #4F7C91;">
-		<div class="col-md-12" style="text-align: center; color:white;" >
-		<h4>Apoyo para diagnostico</h4>
-		</div>
-	</div>  
+		<!--<h3>Apoyo a pronostico</h3>-->
+		<div class="row" style="background: #4F7C91;">
+			<div class="col-md-12" style="text-align: center; color:white;" >
+			<h4>Mapa de pronóstico de Impacto</h4>
+			</div>
+		</div>  
 
-	<div class="row" class="mi_target" style="background: #CFDEE2;">
-		<div class="col-md-12" style="margin-top: 10px; height:100%;">
-		<iframe width="100%" height="622px" src="mapa_alertas.php?id=3"></iframe>
-		</div>
-	</div>  
+		<div class="row" class="mi_target" id= "mi_target" style="background: #FFFFFF;">
+			<!-- CONTENIDO AQUI -->
+		</div>  
     </div>
 
   </div>
@@ -462,6 +473,13 @@ if(@$id_impacto_diario==''){
 /***************************************/
 /* FUNCIONES IVAN */
 /***************************************/
+function mi_contenido(va){
+	// var valor = parseInt($('#id_impacto_diario_m').val());
+	// console.log(valor);
+	var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"'></iframe>";
+	$('#mi_target').html(data);
+}
+
 
 function ShowProgressAnimation() {
 	$("#loading-div-background").show();
@@ -494,6 +512,8 @@ function addContent(va) {
 			$("#verMunicipios").html(msg);
        }
      });	
+	 
+	 mi_contenido(va);
 }
 
 // ------------------------------------------
@@ -587,6 +607,7 @@ window.onbeforeunload = function() {
     return "¿Esta seguro que quiere salir de esta pagina?";
 }
 
+
 /***************************************/
 /* FIN FUNCIONES IVAN */
 /***************************************/
@@ -664,6 +685,7 @@ $("#GuardarGeneral").on("click", function(){
 			var obj = jQuery.parseJSON(con);
 			var id_impacto = obj['currval'];
 			$("#id_impacto_diario_m").val(id_impacto);
+			mi_contenido(id_impacto);
 			// console.log(id_impacto_diario);
 		});
 	} 
@@ -969,8 +991,6 @@ $('.action').change(function(){
 });
 
 </script>
-
-
 <div id="loading-div-background" class="loading-div-background" style="opacity: 0.8; display: none;">
 	<div class="ui-corner-all loading-div" id="loading-div" >
 		<p><br><br></p>
@@ -1046,7 +1066,7 @@ $('.action').change(function(){
 			</div>	
 
 			<div>
-				<input type="button" name="update" id="update" class="btn btn-info" value="Actualizar" onclick="toggle_visibility('loading-div-popup-form')" />
+				<input type="button" name="update" id="update" class="btn btn-primary" value="Actualizar" onclick="toggle_visibility('loading-div-popup-form')" />
 				<div><br></div>
 			</div>
 		</div>
