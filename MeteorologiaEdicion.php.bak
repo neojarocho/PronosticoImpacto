@@ -7,19 +7,19 @@ $id_area_Ini = $_REQUEST['id_area'];
 $area_Ini = $_REQUEST['area'];
 $id_fenomeno_Ini = $_REQUEST['id_fenomeno'];
 $fenomeno_Ini = $_REQUEST['fenomeno'];
-
+$id_impacto_diario = $_REQUEST['id_impacto_diario'];
 
 
 #--------------------------------------------------------------------------------------------------------
 # IVAN MORAN CODE INI
 #--------------------------------------------------------------------------------------------------------
 include("cnn.php");
-function getMuniData($va) {
+// function getMuniData(va) {
 	$dbconn = my_dbconn4("PronosticoImpacto");
 	$sql="
 	SELECT i.id_impacto_diario, i.id_area, i.id_fenomeno, 
 	i.fecha, i.correlativo, i.titulo, i.descripcion, i.id_periodo, p.periodo, 
-	i.id_estado_impacto, es.estado_impacto, m.impacto, i.id_usuario, i.fecha_ini, i.fecha_fin
+	i.id_estado_impacto, es.estado_impacto, i.id_usuario
 	FROM public.impacto_diario i
 	INNER JOIN periodo_impacto p ON p.id_periodo = i.id_periodo
 	INNER JOIN estado_impacto es on es.id_estado_impacto = i.id_estado_impacto
@@ -31,8 +31,8 @@ function getMuniData($va) {
 		$ro[] = $row;
 	} pg_free_result($result);
 	$ro=$ro[0];
-	return $ro;
-}
+	// return $ro;
+// }
 // var_dump($ro);
 
 #--------------------------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ foreach($resultProbabilidad as $row)
 }
 
 /// NUMERO DE INFORME
-$sqlCorrelativo="select coalesce((SELECT correlativo + 1 FROM public.impacto_diario where id_area = $id_area_Ini and id_fenomeno= $id_fenomeno_Ini order by correlativo desc LIMIT 1),1)";
+$sqlCorrelativo="select coalesce((SELECT correlativo FROM public.impacto_diario where id_area = $id_area_Ini and id_fenomeno= $id_fenomeno_Ini order by correlativo desc LIMIT 1),1)";
 $resultCorrelativo = pg_query($sqlCorrelativo) or die('Query failed: '.pg_last_error());
 $correlativo = pg_fetch_all($resultCorrelativo);
 $correlativo = $correlativo[0]['coalesce'];
@@ -259,15 +259,15 @@ iframe {
 <div class="container-fluid">
 	<div class="row" style="background: #485668; color:#ffffff;">
 		<div class="col-md-12" style="text-align: center">
-					<input type="hidden" id="id_area" name="id_area" value="<?php echo $id_area_Ini; ?>"></input> 	
-					<input type="hidden" id="id_fenomeno" name="id_fenomeno" value="<?php echo $id_fenomeno_Ini; ?>"></input> 	
+			<input type="hidden" id="id_area" name="id_area" value="<?php echo $id_area_Ini; ?>"></input> 	
+			<input type="hidden" id="id_fenomeno" name="id_fenomeno" value="<?php echo $id_fenomeno_Ini; ?>"></input> 	
 					
 			<table style="width:100%" border=0>
 			  <tr>	<th></th></tr>
 			  <tr>
 			  <td><h4 style="text-align:left;"		><?php echo $area_Ini; ?></td>
 			  <td><h4 style="text-align:center;"	><?php echo  $fenomeno_Ini; ?></td>
-			  <td><h4 style="text-align:right;"		><?php echo @$id_impacto_diario; ?></h4></td>
+			  <td><h4 style="text-align:right;"		><?php echo  $id_impacto_diario; ?></h4></td>
 			  </tr>
 			</table>	
 			
@@ -282,8 +282,8 @@ iframe {
 <div class="container">
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Informe de Impacto</a></li>
-    <li><a data-toggle="tab" href="#menu1" onclick="mapaRefresh();">Mapa de Pronóstico</a></li>
-	<li id="pnum"><a data-toggle="tab" href="#menu2">Pronóstico Numerico</a></li>
+    <li><a data-toggle="tab" href="#menu1" onclick="mi_mapa(<?php echo $id_impacto_diario; ?>);">Mapa de Pronóstico</a></li>
+    <li id="pnum"><a data-toggle="tab" href="#menu2">Pronóstico Numerico</a></li>
   </ul>
 
 <div class="tab-content">
@@ -299,9 +299,9 @@ iframe {
 			<table style="width:100%" border=0>
 			  <tr>	<th></th></tr>
 			  <tr>
-			  <td><h5 style="margin-left:5px;	text-align:left;font-weight: bold;"	>DATOS GENERALES DEL INFORME			</h5></td>
-			  <td><h5 style="margin-left:-5px;	text-align:center;"					>Informe No. <?php echo $correlativo;?>	</h5></td>
-			  <td><h5 style="margin-right:5px;	text-align:right;"					>Estado:<span id="estado_impacto"><?php echo $estado_impacto;?></span></h5></td>
+			  <td><h5 style="margin-left:5px;	text-align:left;font-weight: bold;"	>DATOS GENERALES DEL INFORME				</h5></td>
+			  <td><h5 style="margin-left:-5px;	text-align:center;"					>Informe No. <?php echo $correlativo;?>		</h5></td>
+			  <td><h5 style="margin-right:5px;	text-align:right;"					>Estado:<?php echo $ro['estado_impacto'];?>	</h5></td>
 			  </tr>
 			</table>				
 
@@ -311,18 +311,18 @@ iframe {
 
 		<div class="col-md-12">
 			<label>Titulo</label>  
-			<input type="text" name="titulo" id="titulo" class="form-control" placeholder="Ingrese un titulo" required data-required-msg="Ingrese un titulo para los datos generales del informe de impacto"/>
+			<input type="text" name="titulo" id="titulo" class="form-control" placeholder="Ingrese un titulo" required data-required-msg="" value="<?php echo $ro['titulo']; ?>"/>
 		</div>
  
 		<div class="col-md-9">
 			<label>Descripción</label>  
-			<textarea name="descripcion" id="descripcion" class="form-control" placeholder="Ingrese descripción" required data-required-msg="Ingrese la descripción del informe de impacto"></textarea>  
+			<textarea name="descripcion" id="descripcion" class="form-control" placeholder="Ingrese descripción" required data-required-msg="" ><?php echo $ro['descripcion']; ?></textarea>  
 		</div>
 		
 		<div class="col-md-3">
 			<label>Periodo</label> 
 			<select name="periodo" id="periodo" class="form-control" placeholder="Ingrese periodo" required data-required-msg="Ingrese el periodo">
-			<option value="" style="font-style: italic; color: #B2BABB;">Seleción</option>
+			<option value="<?php echo $ro['id_periodo']?>" style="font-style: italic; color: #B2BABB;"><?php echo $ro['periodo']?></option>
 			<?php echo $periodo; ?>
 			</select>
 		</div>
@@ -331,14 +331,14 @@ iframe {
 		<div class="col-md-3">
 			<label>Impacto del fenomeno</label> 
 			<select name="ImpactoFenomeno" id="ImpactoFenomeno" class="form-control" placeholder="Ingrese impacto" required data-required-msg="Ingrese el impacto del fenomeno">
-			<option value="" style="font-style: italic; color: #B2BABB;">Seleción</option>
+			<option value="<?php //echo $ro['id_impacto_fenomeno']?>" style="font-style: italic; color: #B2BABB;"><?php //echo $ro['impacto']?></option>
 			<?php //echo $ImpactoFenomeno; ?>
 			</select>
 		</div>
 	
 		<div class="col-md-3">			      			
 			<label>Fecha Inicia</label> 
-			<input type="hidden" id="fecha_ini" name="fecha_ini" class="form-control" required data-required-msg="Ingrese fecha de inicio"> </input> 
+			<input type="date" id="fecha_ini" name="fecha_ini" class="form-control" required data-required-msg="Ingrese fecha de inicio"> </input> 
 		</div> 
 
 		<div class="col-md-3">
@@ -353,7 +353,7 @@ iframe {
 
 		</div> 
 		<div class="col-md-3" align="right">
-			<input type="hidden" name="id_impacto_diario" id="id_impacto_diario"></input> 
+			<input type="hidden" name="id_impacto_diario" id="id_impacto_diario" value="<?php echo $id_impacto_diario; ?>"></input>
 			<input type="hidden" id="registrar" name="registrar" value="registrar"></input> 
 			<input type="button" name="GuardarGeneral" id="GuardarGeneral" value="Guardar Datos Generales" class="btn btn-primary" /> </input> 
 		</div> 
@@ -416,11 +416,11 @@ iframe {
 				
 			<div class="row"><p></p>
 				<div class="col-md-12">
-					<input type="hidden" name="filter" id="filter" value="0000" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
-					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="50" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
-					<input type="hidden" name="id_categoria" id="id_categoria" class="form-control k-invalid" required="" data-required-msg="id_categoria" aria-invalid="true">
-					<input type="hidden" name="id_color" id="id_color" class="form-control k-invalid" required="" data-required-msg="id_color" aria-invalid="true">
-					<input type="hidden" name="id_impacto_probabilidad" id="id_impacto_probabilidad" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >					
+					<input type="hidden" name="filter" id="filter" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
+					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="<?php echo $id_impacto_diario?>" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
+					<input type="hidden" name="id_categoria" id="id_categoria" class="form-control k-invalid" required="" data-required-msg="Seleccione impacto" aria-invalid="true">
+					<input type="hidden" name="id_color" id="id_color" class="form-control k-invalid" required="" data-required-msg="Seleccion probabilidad" aria-invalid="true">
+					<input type="hidden" name="id_impacto_probabilidad" id="id_impacto_probabilidad" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
 					<textarea name="categoria" id="categoria" class="form-control" style="font-size: 11pt;font-weight: bold"></textarea>
 				</div>	
 			</div>	
@@ -507,19 +507,18 @@ iframe {
 /***************************************/
 /* FUNCIONES IVAN MORAN */
 /***************************************/
-/* getnoMuni(<?php echo $id_impacto_diario; ?>);
+getnoMuni(<?php echo $id_impacto_diario; ?>);
 // mi_mapa(<?php echo $id_impacto_diario; ?>);
-// toggle_visibility('infoMunicipios');
-// addContent(<?php echo $id_impacto_diario; ?>);*/
-
+toggle_visibility('infoMunicipios');
+addContent(<?php echo $id_impacto_diario; ?>);
+$('#formGeneral').find('input, textarea, button, select').attr('disabled','disabled');
 
 // Funcion encargada de mostrar el mapa con los municipios seleccionados
 function mi_mapa(va){
-	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
-	if (id_impacto_diario != '') {
-		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"' ></iframe>";
-		$('#mi_target').html(data);
-	}
+	var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"' ></iframe>";
+	$('#mi_target').html(data);
+
+
 }
 
 function mapaRefresh(){
@@ -634,12 +633,12 @@ function delContent(va){
 		method:"POST",
 		data: {id:va, opcion:'deleteContent'},
 		success:function(data){
-			// alert (categoria);	
+			//alert (categoria);	
 			// console.log(JSON.stringify(categoria));
 			// console.log(data);
 			addContent($('#id_impacto_diario_m').val());
 			getnoMuni($('#id_impacto_diario_m').val());
-			document.getElementById("msg_text").innerHTML = "Municipio Borrado Correctamente";
+			// document.getElementById("msg_text").innerHTML = "Municipio Borrado Correctamente";
 			// setTimeout(explode, 500);
 			}
 		});
@@ -736,26 +735,26 @@ $(function() {
 $("#GuardarGeneral").on("click", function(){
 	if (validator.validate()) {
 		// alert(document.forms["formGeneral"].submit();
-		$.ajax({
+		/* $.ajax({
 			url:'MeteorologiaProcesos.php',
 			method:"POST",
 			data:{registrar: 'registrar', id_area:<?php echo $id_area_Ini; ?>, id_fenomeno:<?php echo $id_fenomeno_Ini; ?>, correlativo:<?php echo $correlativo; ?>, titulo:$("#titulo").val(), descripcion:$("#descripcion").val(), periodo:$("#periodo").val(), id_estado_impacto:$("#id_estado_impacto").val(), ImpactoFenomeno:$("#ImpactoFenomeno").val(),fecha_ini:$("#fecha_ini").val(),fecha_fin:$("#fecha_fin").val()},
 			success:function(data){
 				// console.log(data);
+				$("#id_impacto_diario").val(data);
 				document.getElementById("estado_impacto").innerHTML = "En Proceso";
 				document.getElementById("MensajeGuardado").innerHTML = "Los registros fueron guardados correctamente, inicie asignación de municipios pronosticando sus impactos.";
 
 				$('#formGeneral').find('input, textarea, button, select').attr('disabled','disabled');
-				toggle_visibility('infoMunicipios');
+				//toggle_visibility('infoMunicipios');
 			}
 		}).done(function(con){
 			var obj = jQuery.parseJSON(con);
 			var id_impacto = obj['currval'];
 			$("#id_impacto_diario_m").val(id_impacto);
-			$("#id_impacto_diario").val(id_impacto);
 			mi_mapa(id_impacto);
 			// console.log(id_impacto_diario);
-		});
+		}); */
 	} 
 	else {
 		status.text("Los registros a guardar no son validos")
@@ -1007,6 +1006,10 @@ $('.action').change(function(){
 
 	// });
 
+});
+
+$('#filter').change(function(){
+	console.log('CAMBIO');
 });
 
 </script>

@@ -125,8 +125,8 @@ $correlativo = $correlativo[0]['coalesce'];
 
 	
 
-		<script src="jquery.lwMultiSelect.js"></script>
-		<link rel="stylesheet" href="jquery.lwMultiSelect.css" />
+		<script src="js/jquery.lwMultiSelect.js"></script>
+		<link rel="stylesheet" href="js/jquery.lwMultiSelect.css" />
 </head>
 
 

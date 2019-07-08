@@ -25,7 +25,7 @@ $Fenomeno_Info[] = $row;
 $sqlGridImpactoDiario="SELECT id.id_impacto_diario, id.fecha::date,id.fecha::time as hora, id.correlativo, id.titulo, id.descripcion, 
 (SELECT pi.periodo FROM public.periodo_impacto pi where id.id_periodo=pi.id_periodo), 
 (SELECT ei.estado_impacto FROM public.estado_impacto ei where id.id_estado_impacto=ei.id_estado_impacto)
-  FROM public.impacto_diario id;";
+  FROM public.impacto_diario id WHERE id.id_area = ".$id_area_Ini." AND id.id_fenomeno = ".$id_fenomeno_Ini." ;";
 $resultGridImpactoDiario = pg_query($sqlGridImpactoDiario) or die('Query failed: '.pg_last_error());
 
 
@@ -47,14 +47,37 @@ $(function () {
     $("#BotonNuevoInforme").click(function () {
         $("#contenedorprincipal").load("MeteorologiaIngreso.php",
 			{
-			id_area:<?php echo $id_area_Ini; ?>,
-			id_fenomeno:<?php echo $id_fenomeno_Ini; ?>,
-			area:'<?php echo $Area_Info[0]["area"]; ?>',
-			fenomeno:'<?php echo $Fenomeno_Info[0]["fenomeno"]; ?>'
+				id_area:<?php echo $id_area_Ini; ?>,
+				id_fenomeno:<?php echo $id_fenomeno_Ini; ?>,
+				area:'<?php echo $Area_Info[0]["area"]; ?>',
+				fenomeno:'<?php echo $Fenomeno_Info[0]["fenomeno"]; ?>'
 			}
 		);
     });
  });
+
+$("#BotonNuevoInforme").click(function () {
+
+});
+
+function b_edi(id) {
+	console.log("editar:"+id);
+	$("#contenedorprincipal").load("MeteorologiaEdicion.php",
+		{
+			id_area:<?php echo $id_area_Ini; ?>,
+			id_fenomeno:<?php echo $id_fenomeno_Ini; ?>,
+			area:'<?php echo $Area_Info[0]["area"]; ?>',
+			fenomeno:'<?php echo $Fenomeno_Info[0]["fenomeno"]; ?>',
+			id_impacto_diario:id
+		}
+	);
+} 
+ 
+function b_del(id) {
+	console.log("borrar:"+id);
+}
+
+
 </script>
    
 </head>
@@ -62,31 +85,19 @@ $(function () {
 
 
 <div class="container-fluid">
+	<div class="row" style="background: #485668; color:#ffffff;">
+		<div class="col-md-12" style="text-align: center">
 
-	<div class="row" style="background: #5DADE2; color:#ffffff; font: cursive;">
+			<table style="width:100%" border=0>
+			  <tr>	<th></th></tr>
+			  <tr>
+			  <td><h4 style="text-align:left;"		><?php echo $Area_Info[0]["area"]; ?></td>
+			  <td><h4 style="text-align:center;"	><?php echo $Fenomeno_Info[0]["fenomeno"]; ?></td>
+			  <td><h4 style="text-align:right;"		></h4>&nbsp;</td>
+			  </tr>
+			</table>		
 
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-1" style="text-align: right;">
-					<laber><h4 class="glyphicon glyphicon-tint"></h4></laber>
-				</div>
-				<div class="col-md-11">
-					<laber><h4> <?php echo $Area_Info[0]["area"]; ?></h4></laber>
-				</div>
-			</div>
 		</div>
-
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-1" style="text-align: center;">
-					<laber><h4 class="glyphicon glyphicon-flash"></h4></laber>
-				</div>
-				<div class="col-md-11" style="text-align: left;">
-				 <laber><h4><?php echo $Fenomeno_Info[0]["fenomeno"]; ?></h4></laber>
-				</div>
-			</div>
-		</div>
-
 	</div>
 </div>
 
@@ -110,7 +121,7 @@ $(function () {
 				<tr style="background:#EEEEEE;">  
 						<th width="10%">Fecha</th>
 						<th width="10%">Hora</th> 
-						<th width="5%">No.</th> 
+						<th width="5%" >No.</th> 
 						<th width="45%">Título</th>
 						<th width="10%">Período</th>
 						<th width="10%">Estado</th>   
@@ -119,19 +130,22 @@ $(function () {
 				</tr>  
 				<?php  
 				while($row = pg_fetch_array($resultGridImpactoDiario))  
-				{  
+				{ 
 				?>  
-				<tr style="background:#FFFFFF;"> <td><?php echo $row["fecha"]; ?></td>  
+					<tr style="background:#FFFFFF;"> 
+						<td><?php echo $row["fecha"]; ?></td>  
 						<td><?php echo $row["hora"]; ?></td> 
 						<td><?php echo $row["correlativo"]; ?></td> 
 						<td><?php echo $row["titulo"]; ?></td> 
 						<td><?php echo $row["periodo"]; ?></td> 
 						<td><?php echo $row["estado_impacto"]; ?></td> 
 						<td align="center">
-
-						<button type="button" class="btn btn-info glyphicon glyphicon-pencil btn-sm" id="<?php echo $row["id_impacto_diario"]; ?>"></button></td>  
-						<td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" id="<?php echo $row["id_impacto_diario"]; ?>"></button></td>  
-				</tr>  
+							<button type="button" class="btn btn-info glyphicon glyphicon-pencil btn-sm" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
+						</td>  
+						<td align="center">
+							<button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_del($(this).attr('id'))";></button>
+						</td>  
+					</tr>  
 				<?php  
 				}  
 				?>  

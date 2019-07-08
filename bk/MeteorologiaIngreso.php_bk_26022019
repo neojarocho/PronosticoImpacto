@@ -160,8 +160,8 @@ $estado_impacto = 'Nuevo';
         <link href="css/kendo.dataviz.min.css" rel="stylesheet" type="text/css"/> 
 		-->
 
-		<script src="jquery.lwMultiSelect.js"></script>
-		<link rel="stylesheet" href="jquery.lwMultiSelect.css" />
+		<script src="js/jquery.lwMultiSelect.js"></script>
+		<link rel="stylesheet" href="js/jquery.lwMultiSelect.css" />
 
 		<script src="js/kendo.all.min.js" type="text/javascript"></script>
 		<script src="js/kendo.aspnetmvc.min.js" type="text/javascript"></script>
@@ -512,7 +512,7 @@ function updateContent(query) {
 }
 
 
-function deleteContent(va){
+function delContent(va){
 	// data = {id:va, opcion:'deleteContent'};
 	$.ajax({
 		url:'MeteorologiaProcesos.php',

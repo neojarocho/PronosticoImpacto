@@ -25,7 +25,7 @@ if(strlen (@$buscar)>0){$buscar = @$_GET['id'];} else {$buscar = 2;}
 // echo "********************************".$buscar."********************************";
 
 $dbconn = my_dbconn("PronosticoImpacto");
-$query="SELECT i.id_impacto_diario_detalle, i.id_impacto_diario, i.cod_municipio, i.municipio, i.id_impacto_probabilidad, im.impacto, CONCAT(pr.probabilidad,' - ',pr.valor_probabilidad) as probabilidad, de.departamento,
+$query="SELECT i.id_impacto_diario_detalle, i.id_impacto_diario, i.cod_municipio, i.municipio, im.impacto, CONCAT(pr.probabilidad,' - ',pr.valor_probabilidad) as probabilidad, de.departamento,
 pr.id_probabilidad, i.id_color, co.color, i.id_categoria, i.des_categoria as categoria, i.especial_atencion, i.descripcion, i.fecha_ingreso, i.id_usuario_ingreso,
 (SELECT fe.fenomeno FROM impacto_diario im INNER JOIN fenomeno fe ON fe.id_fenomeno = im.id_fenomeno WHERE im.id_impacto_diario = i.id_impacto_diario) as fenomeno,
 (SELECT array_to_string(array(select h.horario from impacto_diario_horario ho INNER JOIN horario h ON h.id_horario = ho.id_horario where ho.id_impacto_diario_detalle = i.id_impacto_diario_detalle), ', ')) as horarios,
@@ -94,49 +94,7 @@ for ($i = 0; $i < count($sh); $i++) {
 @$c3 = implode(",", @$co);
 @$c4 = implode(",", @$cr);
 $muni = "'".implode("','", $mu)."'";
-
-$por = explode(",", $muni);
-$con = count($por);
-
-$vr1=$vr2=$vr3=$vr4=$vr5=$vr6=$vr7=$vr8=$vr9=$vr10=$vr11=array();
-
-for ($i=0;$i<=$con;$i++) {
-	if($i>=0 	&& $i<=24  ){	$vr1[] =  @$por[$i];}
-	if($i>=25 	&& $i<=49  ){	$vr2[] =  @$por[$i];}
-	if($i>=50 	&& $i<=74  ){	$vr3[] =  @$por[$i];}
-	if($i>=75 	&& $i<=99  ){	$vr4[] =  @$por[$i];}
-	if($i>=100 	&& $i<=124 ){	$vr5[] =  @$por[$i];}
-	if($i>=125 	&& $i<=149 ){	$vr6[] =  @$por[$i];}
-	if($i>=150 	&& $i<=174 ){	$vr7[] =  @$por[$i];}
-	if($i>=175 	&& $i<=199 ){	$vr8[] =  @$por[$i];}
-	if($i>=200 	&& $i<=224 ){	$vr9[] =  @$por[$i];}
-	if($i>=225 	&& $i<=249 ){	$vr10[]=  @$por[$i];}
-	if($i>=250 	&& $i<=262 ){	$vr11[]=  @$por[$i];}
-}
-                          
-$m01 = implode(',',@$vr1);
-$m02 = implode(',',@$vr2);
-$m03 = implode(',',@$vr3);
-$m04 = implode(',',@$vr4);
-$m05 = implode(',',@$vr5);
-$m06 = implode(',',@$vr6);
-$m07 = implode(',',@$vr7);
-$m08 = implode(',',@$vr8);
-$m09 = implode(',',@$vr9);
-$m10 = implode(',',@$vr10);
-$m11 = implode(',',@$vr11);
-
-$m01 = rtrim($m01,',');
-$m02 = rtrim($m02,',');
-$m03 = rtrim($m03,',');
-$m04 = rtrim($m04,',');
-$m05 = rtrim($m05,',');
-$m06 = rtrim($m06,',');
-$m07 = rtrim($m07,',');
-$m08 = rtrim($m08,',');
-$m09 = rtrim($m09,',');
-$m10 = rtrim($m10,',');
-$m11 = rtrim($m11,',');
+// var_dump($c2);
 
 ?>
     
@@ -166,8 +124,8 @@ $m11 = rtrim($m11,',');
 
 #map {
 		background: #fff;
-		height: 100% !important;
-		width: 100%	!important;
+		height: 100%;
+		width: 100%;
 		margin: 0;
 		padding: 0 !important;
 		border-style: solid;
@@ -204,16 +162,8 @@ h3 {
 	font-size: 100%;		 
 	margin-left: 5px;
 	margin-top: 5px;
-	border: 1px solid #bfbfbf;
+	padding:0px;
 	z-index: 40;
-	text-align:center;
-	padding:3px 4px;
-	width:79.219px;
-	height:22px;
-
-
-
-
 }	
 #leyenda a {
     color: rgb(0, 0, 0);
@@ -256,7 +206,7 @@ body {
 .container {
 	padding:0px;
 	margin: auto;
-	width:100% !important;
+	width:auto;
 }
 
 .mapa_marco {
@@ -322,7 +272,7 @@ body {
 	z-index:1;
 	position:relative;
 	// height: 60px;
-	width:100% !important;
+	width:auto !important;
 	margin-top:0px;
 	margin-bottom:0px;
 	// margin-left:-14px;
@@ -360,7 +310,7 @@ body {
 	
 .center {
     margin: auto;
-    width: 100% !important;
+    width: 100%;
     padding: 0px;
 }
 a {
@@ -405,23 +355,11 @@ a {
 	left: 25px !important;
 	margin-top: 25px !important;
 }
-.esriSimpleSlider {
-	z-index: 30;
-	top: 35px !important;
-}
 #HomeButton {
-	position: absolute;
-	// top: 200px;
-	// left: 20px;
-	margin-left: 20px;
-	margin-top: -475px;
-	z-index: 50;
-}
-div.esriPopupWrapper .zoomTo {
-  display: none;
-}
-.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev {
-  display: none;
+  position: absolute;
+  top: 325px;
+  left: 20px;
+  z-index: 50;
 }
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
@@ -529,7 +467,7 @@ div.esriPopupWrapper .zoomTo {
 
 		map = new Map("map", {
 			basemap: "gray-vector",
-			sliderStyle: "small", // large/small
+			sliderStyle: "large", // large/small
 			infoWindow: popup,
 			extent: bbox,
 			center: [ -89.05,13.75 ],
@@ -551,14 +489,13 @@ div.esriPopupWrapper .zoomTo {
 
 	/* TEMPLATES */
 	var _blockGroupInfoTemplate = new InfoTemplate();
-	_blockGroupInfoTemplate.setTitle("<b>${munic}</b>");	
+	_blockGroupInfoTemplate.setTitle("<b>(${cod_ofi}) ${munic}</b>");	
 	
 	var _blockGroupInfoContent =
-	"<div class='weekstyle'>" 		+
-		"Municipio: ${munic}<br>" 	+
-		"Departamento: ${dpto}<br>" +
+	"<div class=\"GroupInfoContent\">" +
+	"Municipio: ${munic}<br>" +
+	"Departamento: ${dpto}<br>" +
 	"</div>";
-	
 	
 	// /* DEFINE TEMPLATE */
 	_blockGroupInfoTemplate.setContent(_blockGroupInfoContent); 
@@ -615,7 +552,7 @@ div.esriPopupWrapper .zoomTo {
 		/* ----------------------------------------------------------------------------- */
 		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
-		"opacity": 0.75
+		"opacity": 0
 		});
 		alm.setInfoTemplates({
 		2: { infoTemplate: _blockGroupInfoTemplate }
@@ -646,15 +583,19 @@ div.esriPopupWrapper .zoomTo {
             });
             infos.total = dynamicLayerInfos.length;
             e.target.setDynamicLayerInfos(dynamicLayerInfos, true);
+			
+			/* my function call to draw selected area */
+			console.log(mval);
+			my_custom_style(mval);
+			
          });
 		 
 
-		// only create the layer list the first time update-end fires
-		on.once(MyLayers, "update-end", buildLayerList);
-		// hide the loading icon when the dynamic layer finishes updating
-		MyLayers.on("update-end", hideLoading);
-		map.addLayer(MyLayers);
-         
+         // only create the layer list the first time update-end fires
+         on.once(MyLayers, "update-end", buildLayerList);
+         // hide the loading icon when the dynamic layer finishes updating
+         MyLayers.on("update-end", hideLoading);
+         map.addLayer(MyLayers);
 		
 
         //close the dialog when the mouse leaves the highlight graphic
@@ -662,35 +603,6 @@ div.esriPopupWrapper .zoomTo {
           map.graphics.enableMouseEvents();
           map.graphics.on("mouse-out", closeDialog);
 		  map.disableScrollWheelZoom();
-		  
-			/* my function call to draw selected area */
-			// console.log(mval);
-			// console.log(mval_02.length);
-			var mval_01	= <?php echo json_encode($m01); ?>;
-			var mval_02	= <?php echo json_encode($m02); ?>;
-			var mval_03	= <?php echo json_encode($m03); ?>;
-			var mval_04	= <?php echo json_encode($m04); ?>;
-			var mval_05	= <?php echo json_encode($m05); ?>;
-			var mval_06	= <?php echo json_encode($m06); ?>;
-			var mval_07	= <?php echo json_encode($m07); ?>;
-			var mval_08	= <?php echo json_encode($m08); ?>;
-			var mval_09	= <?php echo json_encode($m09); ?>;
-			var mval_10	= <?php echo json_encode($m10); ?>;
-			var mval_11	= <?php echo json_encode($m11); ?>;
-		  
-			// my_custom_style('0000');
-			if (mval_01.length > 0)		{	my_custom_style(mval_01)};
-			if (mval_02.length > 0)		{	my_custom_style(mval_02)};
-			if (mval_03.length > 0)		{	my_custom_style(mval_03)};
-			if (mval_04.length > 0)		{	my_custom_style(mval_04)};
-			if (mval_05.length > 0)		{	my_custom_style(mval_05)};
-			if (mval_06.length > 0)		{	my_custom_style(mval_06)};
-			if (mval_07.length > 0)		{	my_custom_style(mval_07)};
-			if (mval_08.length > 0)		{	my_custom_style(mval_08)};
-			if (mval_09.length > 0)		{	my_custom_style(mval_09)};
-			if (mval_10.length > 0)		{	my_custom_style(mval_10)};
-			if (mval_11.length > 0)		{	my_custom_style(mval_11)};
-		  
         });
 		
         map.infoWindow.resize(245,125);
@@ -718,7 +630,7 @@ div.esriPopupWrapper .zoomTo {
 		});
 		query1.where = "cod_ofi IN ("+mval+")";
 		query1.returnGeometry = true;
-		query1.outFields = ["*"];
+		query1.outFields = ["cod_ofi"];
 		queryTask1.execute(query1, showResults1);		
 		});
 	}
@@ -738,13 +650,13 @@ div.esriPopupWrapper .zoomTo {
 					+"</tr>															"
 					+"</table>														";
 				
-	infoTemplate = new InfoTemplate("${munic} &nbsp;","<div class='weekstyle'>" +template1 +"</div>");
+	infoTemplate = new InfoTemplate("(${cod_ofi}) ${munic}","<div class='weekstyle'>" +template1 +"</div>");
 	
 	// symbol  = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([255,255,255,0.50]), 1 ), new Color([147,208,78,1]) );
-	symbol1 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([147,208,78	,0.80]) );
-	symbol2 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,255,0	,0.80]) );
-	symbol3 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,192,0	,0.80]) );
-	symbol4 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,0,0	,0.80]) );
+	symbol1 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([147,208,78,1]) );
+	symbol2 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,255,0,1]) );
+	symbol3 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,192,0,1]) );
+	symbol4 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,0,0,1]) );
 	
 	var resultFeatures = featureSet.features;
 	
@@ -973,9 +885,15 @@ function toggle_visibility(id) {
 		<div class="mapa_marco">
 			<div id="map">
 				<!-- Muestra/Oculta Leyenda y Capas--> 
-				<div id="leyenda"><a href="javascript:toggle_visibility('feedback')" >Ver Capas</a></div>
+				<div id="leyenda"><a href="javascript:toggle_visibility('feedback')">Ver Leyenda</a></div>
 				<div id="symbology">
-					<img src="Imagenes/matriz_impacto.png" width="257" height="168">
+				<div class="color" style="background:rgb(147,208,78);">Verde: Impacto bajo				</div><div class="sep"></div>
+				<div class="color" style="background:rgb(255,255,0);">Amarillo: Impacto medio			</div><div class="sep"></div>
+				<div class="color" style="background:rgb(255,192,0);">Naranja: Impacto significativo	</div><div class="sep"></div>
+				<div class="color" style="background:rgb(255,0,0);">Rojo: Impacto severo				</div><div class="sep"></div>
+				<!--
+					<iframe id="sym" src="http://www.snet.gob.sv/imoran/load_symbology02.php?mapa=sismograma&id=0" width="100%" height="100%" align="top" scrolling="no" frameborder="0" style='border:none;'></iframe>
+				-->
 				</div>
 				<!-- Muestra Capas--> 
 				<div id="feedback" class="shadow" style="display: none;">
