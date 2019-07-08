@@ -67,7 +67,7 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+<!--
     <script src="js/jquery-1.12.4.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/tether.min.js"></script>
@@ -76,14 +76,16 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
     <link href="css/ihover.css" rel="stylesheet" />
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     <script src="js/bootstrap.min.js"></script>
+-->
 	
-	<script src="js/kendo.all.min.js" type="text/javascript"></script>
-	<script src="js/kendo.aspnetmvc.min.js" type="text/javascript"></script>
-	<script src="js/kendo.culture.es-SV.min.js" type="text/javascript"></script>	
     <!--
 	<script src="jquery.lwMultiSelect.js"></script>
     <link rel="stylesheet" href="jquery.lwMultiSelect.css" />
 	-->
+	
+	<script src="js/kendo.all.min.js" type="text/javascript"></script>
+	<script src="js/kendo.aspnetmvc.min.js" type="text/javascript"></script>
+	<script src="js/kendo.culture.es-SV.min.js" type="text/javascript"></script>	
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -103,6 +105,7 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
 	width: 100% !important;
 	height: 100px !important;
 }
+
 .loading-div-background {
 		// opacity: 0.8; 
         display:none;
@@ -124,22 +127,26 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
          margin-left:-150px;
          margin-top: -100px;
 }
+
 .loading-div h2 {
 	color: black !important;
 	font-size: 25px;
 }
-.loading-div-background-form {
+
+
+<!-- TOGGLE MAP DIV-->
+.loading-div-background-map {
         display:none;
         position:fixed;
-		opacity: 1;
+		// opacity: 1;
         top:0;
         left:0;
-        background:rgba(0, 0, 0, 0.2);
+        background:rgba(0, 0, 0, 1);
         width:100%;
         height:100%;
 }
-.loading-div-form {
-         width: 550px;
+.loading-div-map {
+         width: 600px;
          height: auto;
          background-color: rgba(255, 255, 255, 1);
          text-align:center;
@@ -150,7 +157,7 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
          // margin-left:-150px;
          // margin-top: -100px;
 }
-.loading-div-form h2 {
+.loading-div-map h2 {
 	color: black !important;
 	font-size: 25px;
 }
@@ -159,7 +166,7 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
 	margin-bottom:	2.5px;
 }
 .col-md-12, .col-md-3 {
-	padding-top: 5px;
+	// padding-top: 5px;
 }
 iframe {
   overflow: hidden !important;
@@ -287,11 +294,6 @@ iframe {
 <!-- CONTENIDO DE TABLA -->
 	</div>
 	
-	<div id="mapaUni" class="row">	
-<!-- CONTENIDO DE MAPA -->
-<!-- CONTENIDO DE MAPA -->	
-	</div>
-	
 	<div id="msgArea" class="col-md-12" style="top: -30px; color:red;">
 	</div>
 
@@ -333,6 +335,13 @@ iframe {
 // Funciones Ivan Moran //
 // ------------------------------------------
 
+function toggle_map(id) {
+	var e = document.getElementById(id);
+	if(e.style.display == 'none')
+		e.style.display = 'block';
+	else
+		e.style.display = 'none';
+}
 
 function ShowProgressAnimation() {
 	$("#loading-div-background").show();
@@ -349,7 +358,7 @@ function explode(){
 
 // Funcion encargada de mostrar el mapa con los municipios seleccionados
 function miMapaUni(va){
-	var mapa = "<iframe id='iframeMapaUni' width='100%' height='600px' scrolling='no' frameBorder='0' src='mapa_alertas_unificado.php?id="+va+"' ></iframe>";
+	var mapa = "<iframe id='iframeMapaUni' width='100%' height='800px' scrolling='yes' frameBorder='0' src='UnificacionReporte.php?id="+va+"' ></iframe>";
 	$('#mapaUni').html(mapa);
 }
 
@@ -518,13 +527,23 @@ function setInputDateIni(_id){
 </script>
 
 <div id="loading-div-background" class="loading-div-background" style="width:100%; height:100%; display: none;">
-	<div class="ui-corner-all loading-div" id="loading-div" >
+	<div id="loading-div" class="ui-corner-all loading-div"  >
 
 		<img alt="Loading.." src="Imagenes/loading.gif" style="height: 30px; margin: 30px;">
 		<!--<h2 id="msg_text" style="color: white; font-weight: normal;">Municipios Agregados Correctamente</h2>-->
 		<!--<button id="Button1" onclick="(HideProgressAnimation(), refresh())">Aceptar</button>-->
 	</div>
 </div>
+
+<div id="toggle_map" class="loading-div-background-map" style="display: none;">
+	<div id="loading-div" class="ui-corner-all loading-div-map"  >
+	<div id="mapaUni" class="row">	
+	<!-- CONTENIDO DE MAPA -->
+	<!-- CONTENIDO DE MAPA -->	
+	</div>
+	</div>
+</div>
+
 
 </body>
 </html>

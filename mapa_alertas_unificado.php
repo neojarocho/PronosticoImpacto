@@ -813,29 +813,7 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
 		+"</tr>																																									"			
 		+"</table>																																								"
 		+"<br>																																									"
-		+"</div>																																								"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		+"</div>																																					"
 
 
 			require(["dojo/dom"], function(dom){ dom.byId("my_content").innerHTML = con; });
@@ -963,8 +941,9 @@ function toggle_visibility(id) {
 		e.style.display = 'block';
 	else
 		e.style.display = 'none';
-	}
+}
 	
+
 // $(document).ready(function () {            
 /* your code here */
 /* your code here */
