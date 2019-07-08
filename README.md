@@ -1,0 +1,2 @@
+# PronosticoImpacto
+Aplicación de Pronostico
