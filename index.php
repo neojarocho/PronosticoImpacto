@@ -66,14 +66,21 @@ $("#contenedorprincipal").load("PaginaConsulta.php");
 }
 
 
+<<<<<<< HEAD
 function getBotonEspecial_Atencion(id_area) {
 $("#contenedorprincipal").load("especial_atencion.php",{id_area:id_area});
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 }
 
 $(function () {
 
+<<<<<<< HEAD
  //aREAS
+=======
+ //AREAS
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
     var Meteorologia='1';
     var Hidrologia='2';
     var Geologia='3';
@@ -124,7 +131,11 @@ $(function () {
     <!-- Content here -->
 
 	<!--BARRAAAAAAA MENUUUU-->
+<<<<<<< HEAD
 	<nav class="navbar navbar-default"  style="background-color: #1b2020; color: black">
+=======
+	<nav class="navbar navbar-default"  style="background-color: #3c8293; color: black">
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
@@ -146,9 +157,12 @@ $(function () {
 							<li><a id="M_Sequía" onClick="getBotonImpacto(1,3)">Sequía</a></li>
 							<li><a id="M_vientos" onClick="getBotonImpacto(1,4)">Vientos Fuertes</a></li>
 							<li><a id="M_erupcion" onClick="getBotonImpacto(1,6)">Erupción Volcanica</a></li>
+<<<<<<< HEAD
 							<li role="separator" class="divider"></li>
 							<li><a id="M_erupcion" onClick="getBotonEspecial_Atencion(1)">Especial Atención</a></li>
 
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 							<!--<li role="separator" class="divider"></li>
 							<li><a id="TodasCamaras">Unidas</a></li>-->
 						</ul>
@@ -162,8 +176,11 @@ $(function () {
 							<li><a id="H_lluvias" onClick="getBotonImpacto(2,1)">Lluvias intensas y tormentas eléctricas</a></li>
 							<li><a id="H_temporal" onClick="getBotonImpacto(2,2)">Temporal</a></li>
 							<li><a id="H_Sequía" onClick="getBotonImpacto(2,3)">Sequía</a></li>
+<<<<<<< HEAD
 							<li role="separator" class="divider"></li>
 							<li><a id="M_erupcion" onClick="getBotonEspecial_Atencion(2)">Especial Atención</a></li>
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 						</ul>
 					</li>
 				</ul>
@@ -176,8 +193,11 @@ $(function () {
 							<li><a id="G_temporal" onClick="getBotonImpacto(3,2)" >Temporal</a></li>
 							<li><a id="G_sismo" onClick="getBotonImpacto(3,5)" >Sismo</a></li>
 							<li><a id="G_erupcion" onClick="getBotonImpacto(3,6)" >Erupción Volcanica</a></li>
+<<<<<<< HEAD
 							<li role="separator" class="divider"></li>
 							<li><a id="M_erupcion" onClick="getBotonEspecial_Atencion(3)">Especial Atención</a></li>
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 						</ul>
 					</li>
 				</ul>
@@ -205,7 +225,11 @@ $(function () {
 					<div class="form-group">
 						<input type="text" class="form-control" placeholder="¿Que camara buscas?">
 					</div>
+<<<<<<< HEAD
 					<button type="submit" class="btn btn-default">Buscar</a>
+=======
+					<button type="submit" class="btn btn-default">Buscar</button>
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 				</form>-->
 
 			<ul class="nav navbar-nav navbar-right">

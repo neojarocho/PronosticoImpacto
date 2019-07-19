@@ -11,9 +11,12 @@ header('Content-Type: text/html; charset=utf-8');
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 //	INSERTAR IMPACTO DIARIO
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+<<<<<<< HEAD
 $id_usuario = 1;
 
 
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 if(isset($_POST['registrar'])){
 include('database_connection.php');
 
@@ -26,6 +29,10 @@ include('database_connection.php');
 	$descripcion= $_POST["descripcion"];
 	$id_periodo= $_POST["periodo"];
 	$id_estado_impacto= 1;
+<<<<<<< HEAD
+=======
+	$id_usuario = 1;
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 	//// INGRESO DE DATOS GENERALES
 	$sqlIngresoDatosGenerales="INSERT INTO public.impacto_diario( id_area, id_fenomeno, fecha, correlativo, titulo, descripcion, id_periodo, id_estado_impacto, id_usuario) VALUES ($id_area, $id_fenomeno, NOW(), $correlativo, '$titulo', '$descripcion', $id_periodo, $id_estado_impacto, $id_usuario)";
@@ -115,15 +122,24 @@ include('database_connection.php');
 	//	CONSULTAR CONSECUENCIA
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 	if($_GET["opt"] == 'consecuencias'){
+<<<<<<< HEAD
 		$id_area = $_GET["id_area"];
 		$id_fenomeno = $_GET["id_fenomeno"];
 		$id_impacto = $_GET["impacto"];
 
 		$sqlConsecuencias="SELECT ci.id_consecuencia_impacto,ci.id_area, ci.id_fenomeno, ci.id_impacto, (SELECT c.consecuencia FROM public.consecuencia c WHERE c.id_consecuencia=ci.id_consecuencia) AS consecuencia, ci.estado
+=======
+		$id_impacto = $_GET["impacto"];
+		$id_area = $_GET["id_area"];
+		$id_fenomeno = $_GET["id_fenomeno"];
+
+		$sqlConsecuencias="SELECT ci.id_consecuencia_impacto,ci.id_area, ci.id_fenomeno, ci.id_impacto, (SELECT c.consecuencia FROM public.consecuencia c where c.id_consecuencia=ci.id_consecuencia), ci.estado
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		FROM public.consecuencia_impacto ci
 		WHERE ci.id_area=$id_area AND ci.id_fenomeno= $id_fenomeno AND ci.id_impacto= $id_impacto;";
 		$resultConsecuencias = pg_query($sqlConsecuencias) or die('Query failed: '.pg_last_error()); 
 		$con = pg_fetch_all($resultConsecuencias);
+<<<<<<< HEAD
 
 		if (count($con)>0){
 			echo json_encode($con, JSON_FORCE_OBJECT);
@@ -133,6 +149,9 @@ include('database_connection.php');
 			$con[0]['consecuencia']="";
 			echo json_encode("NA", JSON_FORCE_OBJECT);	
 		}
+=======
+		echo json_encode($con, JSON_FORCE_OBJECT);
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	}
 
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
@@ -142,6 +161,7 @@ include('database_connection.php');
 		$id_impacto= $_GET["impacto"];
 		$id_probabilidad= $_GET["probabilidad"];
 
+<<<<<<< HEAD
 		$sqlCategoria="SELECT ip.id_color, c.id_categoria, c.categoria, ip.id_impacto_probabilidad FROM public.impacto_probabilidad as ip inner join public.categoria as c on ip.id_categoria=c.id_categoria WHERE ip.id_impacto = $id_impacto and ip.id_probabilidad=$id_probabilidad";
 		$resultCategoria = pg_query($sqlCategoria) or die('Query failed: '.pg_last_error());
 		$categoria = pg_fetch_all($resultCategoria);
@@ -155,6 +175,13 @@ include('database_connection.php');
 		}
 		
 		
+=======
+		$sqlCategoria="SELECT ip.id_color, c.id_categoria, c.categoria, ip.id_impacto_probabilidad FROM public.impacto_probabilidad as ip inner join public.categoria as c on ip.id_categoria=c.id_categoria where ip.id_impacto = $id_impacto and ip.id_probabilidad=$id_probabilidad";
+		$resultCategoria = pg_query($sqlCategoria) or die('Query failed: '.pg_last_error());
+		$categoria = pg_fetch_all($resultCategoria);
+		$categoria = $categoria[0];
+		echo json_encode($categoria, JSON_FORCE_OBJECT);
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	}
 }
 
@@ -186,12 +213,22 @@ include('database_connection.php');
 		// echo "</pre>";
 		// exit();
 
+<<<<<<< HEAD
 		// function xplo($val) {
 			// $v = explode("=", $val);
 			// return $v;
 		// }
 
 		// $id_usuario = 1;
+=======
+		function xplo($val) {
+			$v = explode("=", $val);
+			return $v;
+		}
+		// echo xplo($porciones[0])[0];
+		// $id_impacto_diario = 2;
+		$id_usuario = 1;
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		$fecha_ingreso = date('Y-m-d');
 
 		$datos=$datosh=array();
@@ -214,6 +251,7 @@ include('database_connection.php');
 			if (xplo($porciones[$i])[0] == 'id_impacto_probabilidad'){	$id_impacto_probabilidad	= xplo($porciones[$i])[1];}
 			// echo $i;
 		}
+<<<<<<< HEAD
 		
 		if ($datosh[0]==5) { $datosh = Array (1,2,3,4);};	
 
@@ -247,6 +285,39 @@ include('database_connection.php');
 		$result = pg_query($sql_sum) or die('Query failed: ' . pg_last_error());
 		}
 		
+=======
+
+		$sql_co = "";
+		if (count($datos)>0) {
+			for ($i=0; $i<=count($datos)-1; $i++) {
+				$sql_1 = "INSERT INTO public.impacto_diario_consecuencias(id_impacto_diario_detalle, id_consecuencia,id_impacto_diario) VALUES ((SELECT currval('impacto_diario_detalle_id_impacto_diario_detalle_seq')), ".$datos[$i].",".$id_impacto_diario."); \n";
+				$sql_co .=$sql_1;
+			}
+		}
+		// echo $sql_co;
+
+		$sql_ho = "";
+		if (count($datosh)>0) {		
+			for ($i=0; $i<=count($datosh)-1; $i++) {
+				$sql_2 = "INSERT INTO public.impacto_diario_horario(id_impacto_diario_detalle, id_horario,id_impacto_diario) VALUES ((SELECT currval('impacto_diario_detalle_id_impacto_diario_detalle_seq')), ".$datosh[$i].",".$id_impacto_diario."); \n";
+				$sql_ho .=$sql_2;
+			}
+		}
+		// echo $sql_ho;
+
+		$str_sql = "";
+		for ($i=0; $i<=count($code_muni)-1; $i++) {
+		// INSERT INTO persons (lastname,firstname) VALUES ('Moran', 'Ivan') RETURNING id;
+		$sql = 	"INSERT INTO public.impacto_diario_detalle(id_impacto_diario, cod_municipio, municipio, id_impacto, id_probabilidad, id_color, id_categoria, fecha_ingreso, id_usuario_ingreso, des_categoria, id_impacto_probabilidad) VALUES (".$id_impacto_diario.", '".$code_muni[$i]."', '".$name_muni[$i]."', ".$id_impacto.", ".$id_probabilidad.", ".$id_color.", ".$id_categoria.", '".$fecha_ingreso."', ".$id_usuario.",'".$categoria."',".$id_impacto_probabilidad.") RETURNING id_impacto_diario_detalle; \n";
+		$sql_sum = $sql_co.$sql_ho;
+
+		// echo "*".strlen($sql_sum)."*";
+		$result = pg_query($sql) or die('Query failed: ' . pg_last_error());
+		if (strlen($sql_sum)>0) {
+		$result = pg_query($sql_sum) or die('Query failed: ' . pg_last_error());
+		}
+		
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		
 		}
 
@@ -264,10 +335,15 @@ include('database_connection.php');
 		// echo "<pre>";
 		// print_r($porciones);
 		// echo "</pre>";
+<<<<<<< HEAD
+=======
+		// echo "<script>console.log('$porciones')</script>";
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		// exit();
 		$tipo_zona_dpto='';
 		$municipio[] ='';
 
+<<<<<<< HEAD
 		// function xplo($val) {
 			// $v = explode("=", $val);
 			// return $v;
@@ -277,6 +353,16 @@ include('database_connection.php');
 		$fecha_ingreso = date('Y-m-d');
 
 		$atencion = 0; $descripcion =0;
+=======
+		function xplo($val) {
+			$v = explode("=", $val);
+			return $v;
+		}
+
+		$id_usuario = 1;
+		$fecha_ingreso = date('Y-m-d');
+
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		for ($i=0; $i<=count($porciones)-1; $i++) {
 			if (xplo($porciones[$i])[0] == 'ed_impacto'){		$id_impacto					= xplo($porciones[$i])[1];}
 			if (xplo($porciones[$i])[0] == 'ed_probabilidad'){	$id_probabilidad			= xplo($porciones[$i])[1];}
@@ -289,6 +375,7 @@ include('database_connection.php');
 			if (xplo($porciones[$i])[0] == 'atencion'){			$atencion					= xplo($porciones[$i])[1];}
 			if (xplo($porciones[$i])[0] == 'descripcion'){		$descripcion				= xplo($porciones[$i])[1];}
 		}
+<<<<<<< HEAD
 		
 		if ($datosh[0]==5) { $datosh = Array (1,2,3,4);};	
 
@@ -329,6 +416,31 @@ include('database_connection.php');
 		// include("cnn.php");
 		$dbconn = my_dbconn4("PronosticoImpacto");
 		$sql="UPDATE public.impacto_diario_detalle SET id_impacto=$id_impacto, id_probabilidad=$id_probabilidad, id_color=$id_color, id_categoria=$id_categoria, des_categoria='".$categoria."', ".$v_aten.", ".$v_desc." WHERE id_impacto_diario_detalle = $id_impacto_diario_detalle;";
+=======
+
+		if 		($id_impacto == 1 && $id_probabilidad == 1): 	$id_color = 1;
+		elseif 	($id_impacto == 1 && $id_probabilidad == 2): 	$id_color = 1;
+		elseif 	($id_impacto == 1 && $id_probabilidad == 3): 	$id_color = 1;
+		elseif 	($id_impacto == 1 && $id_probabilidad == 4): 	$id_color = 1;
+		elseif 	($id_impacto == 2 && $id_probabilidad == 1): 	$id_color = 1;
+		elseif 	($id_impacto == 2 && $id_probabilidad == 2): 	$id_color = 1;
+		elseif 	($id_impacto == 2 && $id_probabilidad == 3): 	$id_color = 2;
+		elseif 	($id_impacto == 2 && $id_probabilidad == 4): 	$id_color = 2;
+		elseif 	($id_impacto == 3 && $id_probabilidad == 1): 	$id_color = 2;
+		elseif 	($id_impacto == 3 && $id_probabilidad == 2): 	$id_color = 2;
+		elseif 	($id_impacto == 3 && $id_probabilidad == 3): 	$id_color = 3;
+		elseif 	($id_impacto == 3 && $id_probabilidad == 4): 	$id_color = 3;
+		elseif 	($id_impacto == 4 && $id_probabilidad == 1): 	$id_color = 2;
+		elseif 	($id_impacto == 4 && $id_probabilidad == 2): 	$id_color = 3;
+		elseif 	($id_impacto == 4 && $id_probabilidad == 3): 	$id_color = 3;
+		elseif 	($id_impacto == 4 && $id_probabilidad == 4): 	$id_color = 4;
+		else: echo "No existe la categoria";
+		endif;
+
+		// include("cnn.php");
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql="UPDATE public.impacto_diario_detalle SET id_impacto=$id_impacto, id_probabilidad=$id_probabilidad, id_color=$id_color, id_categoria=$id_categoria, des_categoria='".$categoria."', especial_atencion='".$atencion."', descripcion='".$descripcion."' WHERE id_impacto_diario_detalle = $id_impacto_diario_detalle;";
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		$result=pg_query($dbconn, $sql);
 		// echo $sql;
 		
@@ -376,6 +488,7 @@ include('database_connection.php');
 			$dbconn = my_dbconn4("PronosticoImpacto");
 			$sql="DELETE FROM public.impacto_diario_consecuencias WHERE id_impacto_diario_detalle = ".$_POST["id"].";";
 			// echo $sql;
+<<<<<<< HEAD
 			$result=pg_query($dbconn, $sql);
 			
 			$sql="DELETE FROM public.impacto_diario_horario WHERE id_impacto_diario_detalle = ".$_POST["id"].";";
@@ -385,6 +498,17 @@ include('database_connection.php');
 			$sql="DELETE FROM public.impacto_diario_detalle WHERE id_impacto_diario_detalle = ".$_POST["id"].";";
 			// echo $sql;
 			$result=pg_query($dbconn, $sql);
+=======
+			$result=pg_query($dbconn, $sql);
+			
+			$sql="DELETE FROM public.impacto_diario_horario WHERE id_impacto_diario_detalle = ".$_POST["id"].";";
+			// echo $sql;
+			$result=pg_query($dbconn, $sql);
+			
+			$sql="DELETE FROM public.impacto_diario_detalle WHERE id_impacto_diario_detalle = ".$_POST["id"].";";
+			// echo $sql;
+			$result=pg_query($dbconn, $sql);
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	}
 	
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
@@ -395,6 +519,7 @@ include('database_connection.php');
 		$dbconn = my_dbconn4("PronosticoImpacto");
 		$sql="SELECT de.departamento, i.cod_municipio, i.municipio, im.impacto, CONCAT(pr.probabilidad,' - ',pr.valor_probabilidad) as probabilidad, i.id_color FROM  impacto_diario_detalle i INNER JOIN departamento de ON de.cod_departamento = LEFT(i.cod_municipio, 2) INNER JOIN impacto im ON im.id_impacto = i.id_impacto INNER JOIN probabilidad pr ON pr.id_probabilidad = i.id_probabilidad WHERE i.id_impacto_diario = ".$_POST["id"]." AND municipio IS NOT NULL; ";
 		$result=pg_query($dbconn, $sql);
+<<<<<<< HEAD
 
 		while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 			$ro[] = $row;
@@ -537,6 +662,136 @@ else {
 
 	}
 
+=======
+
+		while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+			$ro[] = $row;
+		} pg_free_result($result);
+		
+		@$nomuni = array_column($ro, 'cod_municipio');
+		@$imuni = implode("','", $nomuni);
+		// $imuni = "'".implode("','", $nomuni)."'";
+
+		echo json_encode($imuni, JSON_FORCE_OBJECT);
+	}		
+	
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+	// INSERTAR UNIFICADO
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+	if($_POST["opcion"] == 'insertUnificado'){
+		$porciones = explode("&", urldecode ($_POST['formMuni']));
+		// echo "<pre>";
+		// print_r($porciones);
+		// echo "</pre>";
+		
+		function xplo($val) {
+			$v = explode("=", $val);
+			return $v;
+		}
+
+		$ar=array();		
+		for ($i=0; $i<=count($porciones)-1; $i++) {
+			if (xplo($porciones[$i])[0] == 'titulo'){			$ar['titulo']		= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'descripcion'){		$ar['descripcion']	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'estado'){			$ar['estado']		= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'uni1'){				$ar['uni1']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'uni2'){				$ar['uni2']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'uni3'){				$ar['uni3']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'opt1'){				$ar['opt1']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'opt2'){				$ar['opt2']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'opt3'){				$ar['opt3']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'periodo_text'){		$ar['periodo_text']		= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'fenomeno_text'){	$ar['fenomeno_text']	= xplo($porciones[$i])[1];}
+		}
+		
+		// echo "/**********************/<br>";
+		
+		if (isset($ar['uni1'])) {$uni1=$ar['uni1'];	$area1 = 1;} else {	$uni1=''; }
+		if (isset($ar['uni2'])) {$uni2=$ar['uni2'];	$area2 = 2;} else {	$uni2=''; }
+		if (isset($ar['uni3'])) {$uni3=$ar['uni3'];	$area3 = 3;} else {	$uni3=''; }
+                                                            
+		if (isset($ar['opt1'])) {$opt1=$ar['opt1'];} else {	$opt1=''; }
+		if (isset($ar['opt2'])) {$opt2=$ar['opt2'];} else {	$opt2=''; }
+		if (isset($ar['opt3'])) {$opt3=$ar['opt3'];} else {	$opt3=''; }
+		// echo "/**********************/<br>";
+		
+		// echo $uni1;
+		// echo $uni2;
+		// echo $uni3;
+		
+		$to_uni = trim($uni1.",".$uni2.",".$uni3,',');
+		$to_uni = str_replace(",,", ",",$to_uni);
+		
+		// echo "<pre>";
+		// print_r($ar);
+		// echo "</pre>";
+		
+		# my code here
+		# ------------------------------------------------------------------------ #
+		# 1) ---***-*-*-*-*-- INGRESO A HISTORICO 
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql = "INSERT INTO public.his_impacto_diario(id_his_impacto_diario, id_area, id_fenomeno, fecha_creado, correlativo, titulo, descripcion, id_periodo, id_estado, id_usuario_creo, fecha_aprobado, id_usuario_aprobo, fecha_historico) 
+		SELECT id_impacto_diario, id_area, id_fenomeno, fecha, correlativo, titulo, descripcion, id_periodo, id_estado_impacto, id_usuario, fecha_aprobado, id_usuario_aprobo, now()
+		FROM public.impacto_diario
+		WHERE id_impacto_diario in (".$to_uni.");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		
+		# 2) ---***-*-*-*-*-- INGRESO A HISTORICO DETALLE
+		$sql = "
+		INSERT INTO public.his_impacto_diario_detalle(id_his_impacto_diario_detalle, id_his_impacto_diario, cod_municipio, municipio, impacto, probabilidad, color, categoria, especial_atencion, descripcion, fecha_ingreso, id_usuario_ingreso, horarios, consecuencias, no_matriz, departamento)
+		SELECT 
+		dd.id_impacto_diario_detalle,    
+		dd.id_impacto_diario,    
+		dd.cod_municipio,
+		dd.municipio,
+		(SELECT i.impacto FROM public.impacto i WHERE dd.id_impacto=i.id_impacto) as impacto,
+		(SELECT p.probabilidad FROM public.probabilidad p WHERE dd.id_probabilidad=p.id_probabilidad) as probabilidad,
+		(SELECT c.color FROM public.color c WHERE dd.id_color=c.id_color) as color,
+		(SELECT ca.des_categoria FROM public.categoria ca WHERE dd.id_categoria=ca.id_categoria) as categoria,
+		dd.especial_atencion,
+		dd.descripcion,
+		dd.fecha_ingreso,
+		dd.id_usuario_ingreso,
+		(SELECT array_to_string(array(select h.horario from impacto_diario_horario ho INNER JOIN horario h ON h.id_horario = ho.id_horario where ho.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as horarios,
+		(SELECT array_to_string(array(select c.consecuencia from impacto_diario_consecuencias dc INNER JOIN consecuencia c ON c.id_consecuencia = dc.id_consecuencia where dc.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as consecuencias,
+		dd.id_impacto_probabilidad,
+		(SELECT departamento FROM public.departamento WHERE  cod_departamento = LEFT(dd.cod_municipio, 2)) as departamento
+		FROM public.impacto_diario_detalle dd
+		WHERE dd.id_impacto_diario in (".$to_uni.");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		
+		# 3) --El valor id_impacto_probabilidad mayor de los tres 36,53,81
+		$sql = "
+		INSERT INTO public.unificado(titulo_general, des_general, periodo, fenomeno, id_impacto_probabilidad, fecha_ingresado, id_usuario_ingreso, des_categoria)
+		VALUES ('".$ar['titulo']."', '".$ar['descripcion']."', '".$ar['periodo_text']."', '".$ar['fenomeno_text']."', (select max(no_matriz) from public.his_impacto_diario_detalle WHERE id_his_impacto_diario in (".$to_uni.")),
+		NOW(), 1, '".$ar['estado']."');";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		
+		$values = "";
+		if ($uni1 !="") { $values .= " \n((SELECT currval('unificado_id_unificado_seq1')), ".$uni1.",".$area1."),";}
+		if ($uni2 !="") { $values .= " \n((SELECT currval('unificado_id_unificado_seq1')), ".$uni2.",".$area2."),";}
+		if ($uni3 !="") { $values .= " \n((SELECT currval('unificado_id_unificado_seq1')), ".$uni3.",".$area3."),";}
+		$values = trim($values,',');
+
+		$sql ="INSERT INTO public.unificado_informe(id_unificado, id_his_impacto_diario,id_area) VALUES ".$values.";";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		
+		# 4) ----**-*-*-*- BORRAR REGISTOS DE IMPACTO DIARIO (Por el momento Inhabilitar)
+		$sql = "UPDATE public.impacto_diario SET  id_estado_impacto=6 WHERE id_impacto_diario in (".$to_uni.");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		if(isset($result)){  echo 'done'; }
+
+	# my code here
+	# ------------------------------------------------------------------------ #
+
+	}
+
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	if($_POST["opcion"] == 'getUnificado'){
 		
 		$u1 = @$_POST["u1"];

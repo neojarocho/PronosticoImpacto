@@ -25,25 +25,17 @@ if(strlen (@$buscar)>0){$buscar = @$_GET['id'];} else {$buscar = 2;}
 // echo "********************************".$buscar."********************************";
 
 $dbconn = my_dbconn("PronosticoImpacto");
-$query="SELECT hd.id_his_impacto_diario_detalle, hd.id_his_impacto_diario, hd.cod_municipio, hd.municipio, (SELECT departamento FROM public.municipio m inner join public.departamento d on m.cod_departamento=d.cod_departamento and m.cod_municipio = hd.cod_municipio) as departamento, hd.no_matriz, hd.impacto, hd.probabilidad, 
-hd.color, (SELECT c.codigo	FROM public.color c where c.color=hd.color) as codigo,(SELECT c.transparencia	FROM public.color c where c.color=hd.color) as transparencia,
-(SELECT array_to_string(array(SELECT concat('<p>','<li>',hdk.consecuencias,'.</p>','<p>',hdk.especial_atencion,'<p>','<b><i>Por la ',hdk.horarios,'.</i></b>')
-							  from public.his_impacto_diario_detalle hdk 
-							  where  hdk.cod_municipio=hd.cod_municipio and hdk.id_his_impacto_diario in (SELECT id_his_impacto_diario 
-																   FROM public.unificado_informe	
-																   where id_unificado= '$buscar') 
-							  order by no_matriz desc), ''))
-						 as Consecuencias,
-hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso
-FROM public.his_impacto_diario_detalle hd 
-where hd.id_his_impacto_diario in (SELECT id_his_impacto_diario FROM public.unificado_informe	where id_unificado= '$buscar')
-
-and hd.no_matriz= (select max(no_matriz)
-							  from public.his_impacto_diario_detalle 
-							  where  id_his_impacto_diario in (SELECT id_his_impacto_diario FROM public.unificado_informe	where id_unificado= '$buscar')
-								and cod_municipio=hd.cod_municipio
-								GROUP BY cod_municipio,municipio)
-ORDER BY hd.cod_municipio;";
+$query="SELECT i.id_impacto_diario_detalle, i.id_impacto_diario, i.cod_municipio, i.municipio, im.impacto, CONCAT(pr.probabilidad,' - ',pr.valor_probabilidad) as probabilidad, de.departamento,
+pr.id_probabilidad, i.id_color, co.color, i.id_categoria, i.des_categoria as categoria, i.especial_atencion, i.descripcion, i.fecha_ingreso, i.id_usuario_ingreso,
+(SELECT fe.fenomeno FROM impacto_diario im INNER JOIN fenomeno fe ON fe.id_fenomeno = im.id_fenomeno WHERE im.id_impacto_diario = i.id_impacto_diario) as fenomeno,
+(SELECT array_to_string(array(select h.horario from impacto_diario_horario ho INNER JOIN horario h ON h.id_horario = ho.id_horario where ho.id_impacto_diario_detalle = i.id_impacto_diario_detalle), ', ')) as horarios,
+(SELECT array_to_string(array(select c.consecuencia from impacto_diario_consecuencias co INNER JOIN consecuencia c ON c.id_consecuencia = co.id_consecuencia where co.id_impacto_diario_detalle = i.id_impacto_diario_detalle), '<br> ')) as consecuencias
+FROM  impacto_diario_detalle i 
+INNER JOIN departamento de ON de.cod_departamento = LEFT(i.cod_municipio, 2) 
+INNER JOIN impacto im ON im.id_impacto = i.id_impacto 
+INNER JOIN probabilidad pr ON pr.id_probabilidad = i.id_probabilidad 
+INNER JOIN color co ON co.id_color = i.id_color
+WHERE i.id_impacto_diario = '$buscar' AND municipio IS NOT NULL ORDER BY i.cod_municipio;";
 $result=pg_query($dbconn, $query);
 while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 	$sh[] = $row;
@@ -61,8 +53,13 @@ exit();
 
 
 $dbconn = my_dbconn("PronosticoImpacto");
-$query="SELECT u.id_unificado, u.titulo_general, u.des_general, periodo, u.fecha_publicado, u.publicar, u.enviar_instituciones, u.envio_general, u.id_usuario_ingreso, fenomeno, u.id_impacto_probabilidad, u.des_categoria
-	FROM public.unificado u where u.id_unificado = '$buscar';";
+$query="SELECT d.id_impacto_diario, d.id_area, a.area, d.id_fenomeno, fe.fenomeno, d.fecha, d.correlativo, d.titulo, d.descripcion, 
+		d.id_periodo, pi.periodo, d.id_estado_impacto, d.id_usuario
+		FROM public.impacto_diario d
+		INNER JOIN area a ON a.id_area = d.id_area
+		INNER JOIN fenomeno fe ON fe.id_fenomeno = d.id_fenomeno
+		INNER JOIN periodo_impacto pi ON pi.id_periodo = d.id_periodo
+		WHERE d.id_impacto_diario = '$buscar'";
 $result=pg_query($dbconn, $query);
 while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 	$ti[] = $row;
@@ -86,9 +83,9 @@ $mu[]='';
 for ($i = 0; $i < count($sh); $i++) {
     $arr[$sh[$i]['cod_municipio']] = $sh[$i];
 	$mu[$i] = $sh[$i]['cod_municipio'];
-	if		( $sh[$i]['color'] == 'Verde') { $cg[$i] = $sh[$i]['cod_municipio']; } 
-	elseif	( $sh[$i]['color'] == 'Amarillo') { $cy[$i] = $sh[$i]['cod_municipio']; } 
-	elseif	( $sh[$i]['color'] == 'Anaranjado') { $co[$i] = $sh[$i]['cod_municipio']; } 
+	if		( $sh[$i]['id_color'] == 1) { $cg[$i] = $sh[$i]['cod_municipio']; } 
+	elseif	( $sh[$i]['id_color'] == 2) { $cy[$i] = $sh[$i]['cod_municipio']; } 
+	elseif	( $sh[$i]['id_color'] == 3) { $co[$i] = $sh[$i]['cod_municipio']; } 
 	else	{ $cr[$i] = $sh[$i]['cod_municipio']; } 
 }
 
@@ -97,49 +94,7 @@ for ($i = 0; $i < count($sh); $i++) {
 @$c3 = implode(",", @$co);
 @$c4 = implode(",", @$cr);
 $muni = "'".implode("','", $mu)."'";
-
-$por = explode(",", $muni);
-$con = count($por);
-
-$vr1=$vr2=$vr3=$vr4=$vr5=$vr6=$vr7=$vr8=$vr9=$vr10=$vr11=array();
-
-for ($i=0;$i<=$con;$i++) {
-	if($i>=0 	&& $i<=24  ){	$vr1[] =  @$por[$i];}
-	if($i>=25 	&& $i<=49  ){	$vr2[] =  @$por[$i];}
-	if($i>=50 	&& $i<=74  ){	$vr3[] =  @$por[$i];}
-	if($i>=75 	&& $i<=99  ){	$vr4[] =  @$por[$i];}
-	if($i>=100 	&& $i<=124 ){	$vr5[] =  @$por[$i];}
-	if($i>=125 	&& $i<=149 ){	$vr6[] =  @$por[$i];}
-	if($i>=150 	&& $i<=174 ){	$vr7[] =  @$por[$i];}
-	if($i>=175 	&& $i<=199 ){	$vr8[] =  @$por[$i];}
-	if($i>=200 	&& $i<=224 ){	$vr9[] =  @$por[$i];}
-	if($i>=225 	&& $i<=249 ){	$vr10[]=  @$por[$i];}
-	if($i>=250 	&& $i<=262 ){	$vr11[]=  @$por[$i];}
-}
-                          
-$m01 = implode(',',@$vr1);
-$m02 = implode(',',@$vr2);
-$m03 = implode(',',@$vr3);
-$m04 = implode(',',@$vr4);
-$m05 = implode(',',@$vr5);
-$m06 = implode(',',@$vr6);
-$m07 = implode(',',@$vr7);
-$m08 = implode(',',@$vr8);
-$m09 = implode(',',@$vr9);
-$m10 = implode(',',@$vr10);
-$m11 = implode(',',@$vr11);
-
-$m01 = rtrim($m01,',');
-$m02 = rtrim($m02,',');
-$m03 = rtrim($m03,',');
-$m04 = rtrim($m04,',');
-$m05 = rtrim($m05,',');
-$m06 = rtrim($m06,',');
-$m07 = rtrim($m07,',');
-$m08 = rtrim($m08,',');
-$m09 = rtrim($m09,',');
-$m10 = rtrim($m10,',');
-$m11 = rtrim($m11,',');
+// var_dump($c2);
 
 ?>
     
@@ -149,10 +104,7 @@ $m11 = rtrim($m11,',');
 <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
 
 <style>
-<<<<<<< HEAD
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 @font-face {
     font-family: 'RobotoLight'; /*a name to be used later*/
     src: url('fonts/Roboto-Light.ttf'); /*URL to font*/
@@ -172,8 +124,8 @@ $m11 = rtrim($m11,',');
 
 #map {
 		background: #fff;
-		height: 100% !important;
-		width: 100%	!important;
+		height: 100%;
+		width: 100%;
 		margin: 0;
 		padding: 0 !important;
 		border-style: solid;
@@ -210,16 +162,8 @@ h3 {
 	font-size: 100%;		 
 	margin-left: 5px;
 	margin-top: 5px;
-	border: 1px solid #bfbfbf;
+	padding:0px;
 	z-index: 40;
-	text-align:center;
-	padding:3px 4px;
-	width:79.219px;
-	height:22px;
-
-
-
-
 }	
 #leyenda a {
     color: rgb(0, 0, 0);
@@ -262,7 +206,7 @@ body {
 .container {
 	padding:0px;
 	margin: auto;
-	width:100% !important;
+	width:auto;
 }
 
 .mapa_marco {
@@ -328,7 +272,7 @@ body {
 	z-index:1;
 	position:relative;
 	// height: 60px;
-	width:100% !important;
+	width:auto !important;
 	margin-top:0px;
 	margin-bottom:0px;
 	// margin-left:-14px;
@@ -366,7 +310,7 @@ body {
 	
 .center {
     margin: auto;
-    width: 100% !important;
+    width: 100%;
     padding: 0px;
 }
 a {
@@ -396,12 +340,6 @@ a {
 }
 .ficha {
   margin-left: 5px;
-<<<<<<< HEAD
-  margin-right: 5px;
-  margin-bottom: 5px;
-  margin-top: 2px;
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 }
 .esriPopup .pointer, .esriPopup .outerPointer {
     background: rgba(87,188,196,.9);
@@ -409,11 +347,7 @@ a {
 /* change size of pop up*/
 .esriPopup .sizer {
     position: relative;
-<<<<<<< HEAD
     width: 165px !important;
-=======
-    width: 195px !important;
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	font-size: 10px !important;
     z-index: 1;
 }
@@ -421,31 +355,12 @@ a {
 	left: 25px !important;
 	margin-top: 25px !important;
 }
-.esriSimpleSlider {
-	z-index: 30;
-	top: 35px !important;
-}
-<<<<<<< HEAD
-
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 #HomeButton {
-	position: absolute;
-	// top: 200px;
-	// left: 20px;
-	margin-left: 20px;
-	margin-top: -475px;
-	z-index: 50;
+  position: absolute;
+  top: 325px;
+  left: 20px;
+  z-index: 50;
 }
-div.esriPopupWrapper .zoomTo {
-  display: none;
-}
-<<<<<<< HEAD
-=======
-.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev {
-  display: none;
-}
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 <script>
@@ -552,7 +467,7 @@ div.esriPopupWrapper .zoomTo {
 
 		map = new Map("map", {
 			basemap: "gray-vector",
-			sliderStyle: "small", // large/small
+			sliderStyle: "large", // large/small
 			infoWindow: popup,
 			extent: bbox,
 			center: [ -89.05,13.75 ],
@@ -574,21 +489,12 @@ div.esriPopupWrapper .zoomTo {
 
 	/* TEMPLATES */
 	var _blockGroupInfoTemplate = new InfoTemplate();
-<<<<<<< HEAD
-	_blockGroupInfoTemplate.setTitle("<b></b>");	
+	_blockGroupInfoTemplate.setTitle("<b>(${cod_ofi}) ${munic}</b>");	
 	
 	var _blockGroupInfoContent =
 	"<div class=\"GroupInfoContent\">" +
 	"Municipio: ${munic}<br>" +
 	"Departamento: ${dpto}<br>" +
-=======
-	_blockGroupInfoTemplate.setTitle("<b>${munic}</b>");
-	
-	var _blockGroupInfoContent =
-	"<div class='weekstyle'>" 		+
-		"Municipio: ${munic}<br>" 	+
-		"Departamento: ${dpto}<br>" +
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	"</div>";
 	
 	// /* DEFINE TEMPLATE */
@@ -646,7 +552,7 @@ div.esriPopupWrapper .zoomTo {
 		/* ----------------------------------------------------------------------------- */
 		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
-		"opacity": 0.75
+		"opacity": 0
 		});
 		alm.setInfoTemplates({
 		2: { infoTemplate: _blockGroupInfoTemplate }
@@ -678,51 +584,25 @@ div.esriPopupWrapper .zoomTo {
             infos.total = dynamicLayerInfos.length;
             e.target.setDynamicLayerInfos(dynamicLayerInfos, true);
 			
-
+			/* my function call to draw selected area */
+			console.log(mval);
+			my_custom_style(mval);
 			
          });
+		 
 
          // only create the layer list the first time update-end fires
          on.once(MyLayers, "update-end", buildLayerList);
          // hide the loading icon when the dynamic layer finishes updating
          MyLayers.on("update-end", hideLoading);
-		map.addLayer(MyLayers);
+         map.addLayer(MyLayers);
 		
 
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
-			map.graphics.enableMouseEvents();
-			map.graphics.on("mouse-out", closeDialog);
-			map.disableScrollWheelZoom();
-			
-			/* my function call to draw selected area */
-			// console.log(mval);
-			var mval_01	= <?php echo json_encode($m01); ?>;
-			var mval_02	= <?php echo json_encode($m02); ?>;
-			var mval_03	= <?php echo json_encode($m03); ?>;
-			var mval_04	= <?php echo json_encode($m04); ?>;
-			var mval_05	= <?php echo json_encode($m05); ?>;
-			var mval_06	= <?php echo json_encode($m06); ?>;
-			var mval_07	= <?php echo json_encode($m07); ?>;
-			var mval_08	= <?php echo json_encode($m08); ?>;
-			var mval_09	= <?php echo json_encode($m09); ?>;
-			var mval_10	= <?php echo json_encode($m10); ?>;
-			var mval_11	= <?php echo json_encode($m11); ?>;
-			// console.log(mval_02.length);
-			
-			// my_custom_style('0000');
-			if (mval_01.length > 0)		{	my_custom_style(mval_01)};
-			if (mval_02.length > 0)		{	my_custom_style(mval_02)};
-			if (mval_03.length > 0)		{	my_custom_style(mval_03)};
-			if (mval_04.length > 0)		{	my_custom_style(mval_04)};
-			if (mval_05.length > 0)		{	my_custom_style(mval_05)};
-			if (mval_06.length > 0)		{	my_custom_style(mval_06)};
-			if (mval_07.length > 0)		{	my_custom_style(mval_07)};
-			if (mval_08.length > 0)		{	my_custom_style(mval_08)};
-			if (mval_09.length > 0)		{	my_custom_style(mval_09)};
-			if (mval_10.length > 0)		{	my_custom_style(mval_10)};
-			if (mval_11.length > 0)		{	my_custom_style(mval_11)};			
-			
+          map.graphics.enableMouseEvents();
+          map.graphics.on("mouse-out", closeDialog);
+		  map.disableScrollWheelZoom();
         });
 		
         map.infoWindow.resize(245,125);
@@ -750,7 +630,7 @@ div.esriPopupWrapper .zoomTo {
 		});
 		query1.where = "cod_ofi IN ("+mval+")";
 		query1.returnGeometry = true;
-		query1.outFields = ["*"];
+		query1.outFields = ["cod_ofi"];
 		queryTask1.execute(query1, showResults1);		
 		});
 	}
@@ -770,13 +650,13 @@ div.esriPopupWrapper .zoomTo {
 					+"</tr>															"
 					+"</table>														";
 				
-	infoTemplate = new InfoTemplate("${munic}","<div class='weekstyle'>" +template1 +"</div>");
+	infoTemplate = new InfoTemplate("(${cod_ofi}) ${munic}","<div class='weekstyle'>" +template1 +"</div>");
 	
 	// symbol  = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([255,255,255,0.50]), 1 ), new Color([147,208,78,1]) );
-	symbol1 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([147,208,78	,0.80]) );
-	symbol2 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,255,0	,0.80]) );
-	symbol3 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,192,0	,0.80]) );
-	symbol4 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,0,0	,0.80]) );
+	symbol1 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([147,208,78,1]) );
+	symbol2 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,255,0,1]) );
+	symbol3 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,192,0,1]) );
+	symbol4 = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([0,0,165,0.15]), 1 ), new Color([255,0,0,1]) );
 	
 	var resultFeatures = featureSet.features;
 	
@@ -799,78 +679,32 @@ div.esriPopupWrapper .zoomTo {
 		dojo.connect(map.graphics, "onClick", function(evt) {
 			var g 	= evt.graphic;
 			var at = g.attributes;
-
-var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['codigo']+"'>																					"
-		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio "+va[at.cod_ofi]['municipio']+"</font>														"
-		+"</div>																																								"
-		+"<div class='row' style='text-align:center;'>																															"
-		+"<table style='width:100%' border=1>																																	"				
-		+"<!--<tr><th colspan=2></th></tr>-->																																	"				
-		+"<tr>																																									"			
-		+"	<td style='vertical-align: top; margin-top: 5px'>																													"
-		+"																																										"		
-		+"		<div class='ficha'><b>Municipio</b>: "+va[at.cod_ofi]['cod_municipio']+" - "+va[at.cod_ofi]['municipio']+"	</div>												"				
-		+"		<div class='ficha'><b>Departamento</b>:	"+va[at.cod_ofi]['departamento']+"	</div>																				"
-		+"	</td>																																								"				
-		+"</tr>																																									"
-		+"																																										"
-		+"<tr>																																									"
-		+"	<td style='vertical-align: top; margin-top: 5px; background-color: "+va[at.cod_ofi]['transparencia']+"'>															"
-		+"																																										"
-		+"		<div class='ficha'><b>Categoría</b>:	"+va[at.cod_ofi]['no_matriz']+"	 -	"+va[at.cod_ofi]['categoria']+" / "+va[at.cod_ofi]['color']+"	</div>				"				
-		+"		<div class='ficha'><b>Probabilidad</b>:	"+va[at.cod_ofi]['probabilidad']+"	</div>																				"
-		+"		<div class='ficha'><b>Impacto</b>:		"+va[at.cod_ofi]['impacto']+"		</div>																				"
-		+"																																										"
-		+"	</td>																																								"
-		+"</tr>																																									"
-		+"<tr>																																									"
-		+"	<td style='vertical-align: center; margin-top: 5px; background-color:#dddddd' align='center'>																		"
-		+"																																										"
-		+"																																										"
-		+"		<label class='ficha'>Consecuencias</label>																														"				
-		+"																																										"
-		+"	</td>																																								"				
-		+"																																										"			
-		+"</tr>																																									"
-		+"<tr>																																									"
-		+"	<td style='vertical-align: top; margin-top: 5px; background-color:#F3F3F3'>																							"
-		+"																																										"
-		+"		<div class='ficha'>"+va[at.cod_ofi]['consecuencias']+"	</div>																									"			
-		+"																																										"
-		+"																																										"
-		+"	</td>																																								"			
-		+"																																										"				
-		+"</tr>																																									"			
-		+"</table>																																								"
-		+"<br>																																									"
-<<<<<<< HEAD
-		+"</div>																																								"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
-		+"</div>																																					"
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
-
+			var con	= "<div class='row my_label'>"
+					+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio "+va[at.cod_ofi]['municipio']+"</font>"
+					+"</div>"
+					+"<div class='row' style='text-align:center;'>"
+					+"<table style='width:100%' border=1>																"
+					+"<!--<tr><th colspan=2></th></tr>-->																"
+					+"<tr>																								"
+					+"	<td style='vertical-align: top;' width='50%'>													"
+					+"		<div class='ficha'><b>Municipio</b>: 	"+va[at.cod_ofi]['municipio']+" </div>				"
+					+"		<div class='ficha'><b>Departamento</b>:	"+va[at.cod_ofi]['departamento']+" </div>			"
+					+"		<div class='ficha'><b>Probabilidad</b>:	"+va[at.cod_ofi]['probabilidad']+" </div>			"
+					+"		<div class='ficha'><b>Impacto</b>:		"+va[at.cod_ofi]['impacto']+" </div>				"
+					+"																									"
+					+"		<div class='ficha'><b>Horario</b>:		"+va[at.cod_ofi]['horarios']+"</div>				"
+					+"		<div class='ficha'><b>Consecuencias</b>:"+va[at.cod_ofi]['consecuencias']+" </div>			"
+					+"	</td>																							"
+					+"	<td style='vertical-align: top;' width='50%'>													"
+					+"		<div class='ficha'><b>Color</b>:			"+va[at.cod_ofi]['color']+" </div>				"					
+					+"		<div class='ficha'><b>Mensaje</b>:			"+va[at.cod_ofi]['categoria']+" </div>			"					
+					+"		<div class='ficha'><b>Especial Atencion</b>:"+va[at.cod_ofi]['especial_atencion']+" </div>	"
+					+"		<div class='ficha'><b>Descripción</b>:		"+va[at.cod_ofi]['descripcion']+" </div>		"
+					+"	</td>																							"
+					+"																									"
+					+"</tr>																								"
+					+"</table>																							"
+					+"</div>";
 
 			require(["dojo/dom"], function(dom){ dom.byId("my_content").innerHTML = con; });
 			// console.log(g.attributes.cod_ofi);
@@ -997,14 +831,8 @@ function toggle_visibility(id) {
 		e.style.display = 'block';
 	else
 		e.style.display = 'none';
-<<<<<<< HEAD
 	}
 	
-=======
-}
-	
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 // $(document).ready(function () {            
 /* your code here */
 /* your code here */
@@ -1019,22 +847,53 @@ function toggle_visibility(id) {
 
 <div class="center">
 <!--<div class="headerblock">- Mapa de pronóstico de Impacto -</div>-->
-
+	<div class='row' style='text-align:center;'>
+	<table style='width:100%' border=1>																		
+	<tr>
+		<?php 
+			function format_date($fe) {
+			$fecha = strtotime($fe); 
+			// $fecha = strtotime(substr($fe, 0,10)); 
+			$nfecha = date('d/m/Y H:i:s',$fecha);
+			return $nfecha;
+			}
+		
+		?>
+		<th colspan=2 style="text-align:right;"><div class='ficha'><b>Fecha Publicado</b>: <?php	$date = new DateTime($ti[0]['fecha']);	echo $date->format('Y-m-d H:i:s'); ?></div>	</th>
+		</tr>																				
+	<tr>																								
+		<td style='vertical-align: top;' width='50%'>																
+			<div class='ficha'><b>Área</b>:					<?php echo @$ti[0]['area']; ?>			</div>				
+			<div class='ficha'><b>Titulo Pronóstico</b>:	<?php echo @$ti[0]['titulo']; ?>			</div>				
+			<div class='ficha'><b>Descripción</b>:			<?php echo @$ti[0]['descripcion']; ?>	</div>					
+			<!--<div class='ficha'><b>Impacto fenomeno</b>:		<?php //echo @$ti[0]['impacto_fenomeno']; ?></div>-->			
+		
+		</td>																							
+		<td style='vertical-align: top;' width='50%'>																
+			<div class='ficha'><b>Fenomeno</b>:			<?php echo @$ti[0]['fenomeno']; ?>		</div>										
+			<div class='ficha'><b>Correlativo</b>:		<?php echo @$ti[0]['correlativo']; ?>	</div>											
+			<div class='ficha'><b>Período</b>:			<?php echo @$ti[0]['periodo']; ?>	
+			</div>											
+		</td>																							
+																										
+	</tr>																								
+	</table>	
+	</div>
 </div>
 <div class="row">
-<<<<<<< HEAD
-	<br>
-
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
-		<div class="col-md-8">
-	<!-- CONTENIDO MAPA-->
+		<!-- CONTENIDO MAPA-->
 		<div class="mapa_marco">
 			<div id="map">
 				<!-- Muestra/Oculta Leyenda y Capas--> 
-				<div id="leyenda"><a href="javascript:toggle_visibility('feedback')" >Ver Capas</a></div>
+				<div id="leyenda"><a href="javascript:toggle_visibility('feedback')">Ver Leyenda</a></div>
 				<div id="symbology">
-					<img src="Imagenes/matriz_impacto.png" width="257" height="168">
+				<div class="color" style="background:rgb(147,208,78);">Verde: Impacto bajo				</div><div class="sep"></div>
+				<div class="color" style="background:rgb(255,255,0);">Amarillo: Impacto medio			</div><div class="sep"></div>
+				<div class="color" style="background:rgb(255,192,0);">Naranja: Impacto significativo	</div><div class="sep"></div>
+				<div class="color" style="background:rgb(255,0,0);">Rojo: Impacto severo				</div><div class="sep"></div>
+				<!--
+					<iframe id="sym" src="http://www.snet.gob.sv/imoran/load_symbology02.php?mapa=sismograma&id=0" width="100%" height="100%" align="top" scrolling="no" frameborder="0" style='border:none;'></iframe>
+				-->
 				</div>
 				<!-- Muestra Capas--> 
 				<div id="feedback" class="shadow" style="display: none;">
@@ -1053,7 +912,7 @@ function toggle_visibility(id) {
 					</div>
 				</div>
 				<!-- Muestra Mapas base--> 
-				<div id="mapa_base" style="position:absolute; z-Index:999; right: 20px; margin-top: 5px;">
+				<div id="mapa_base" style="position:absolute; z-Index:999; right: 5px; margin-top: 5px;">
 					<div data-dojo-type="dijit/TitlePane" 
 						data-dojo-props="title:'Mapa Base', closable:false, open:false">
 						<div data-dojo-type="dijit/layout/ContentPane" style="width:265px; height:280px;">
@@ -1072,51 +931,30 @@ function toggle_visibility(id) {
 		</div>
 		<div id="HomeButton"></div>
 		<!-- CONTENIDO MAPA -->
-		</div>
+</div>
 
-
-		<div class="col-md-4">
-<div id="my_content" class="row" style="height: 100%">
+<div id="my_content" class="row">
 	<!-- CONTENIDO DATA -->
-
-	<div class='row my_label' style="background-color: <?php echo @$sh[0]['codigo']; ?>">
+	<div class='row my_label'>
 	<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio <?php echo $sh[0]['municipio']; ?></font>
 	</div>
 	<div class='row' style='text-align:center;'>
 	<table style='width:100%' border=1>																		
 	<!--<tr><th colspan=2></th></tr>-->																			
 	<tr>																								
-		<td style='vertical-align: top; margin-top: 5px'>
-																
-			<div class='ficha'><b>Municipio</b>: <?php echo @$sh[0]['cod_municipio']; ?> - <?php echo @$sh[0]['municipio']; ?>	</div>				
-			<div class='ficha'><b>Departamento</b>:	<?php echo @$sh[0]['departamento']; ?>	</div>
-		</td>																																							
-	</tr>
-
-	<tr>
-		<td style="vertical-align: top; margin-top: 5px; background-color: <?php echo @$sh[0]['transparencia']; ?>">
-
-			<div class='ficha'><b>Categoría</b>:	<?php echo @$sh[0]['no_matriz']; ?>	 -	<?php echo @$sh[0]['categoria']; ?> / <?php echo @$sh[0]['color']; ?>	</div>					
+		<td style='vertical-align: top;' width='50%'>																
+			<div class='ficha'><b>Municipio</b>: 	<?php echo @$sh[0]['municipio']; ?>	</div>				
+			<div class='ficha'><b>Departamento</b>:	<?php echo @$sh[0]['departamento']; ?>	</div>					
 			<div class='ficha'><b>Probabilidad</b>:	<?php echo @$sh[0]['probabilidad']; ?>	</div>			
 			<div class='ficha'><b>Impacto</b>:		<?php echo @$sh[0]['impacto']; ?>		</div>				
-
-		</td>
-	</tr>
-	<tr>
-		<td style='vertical-align: center; margin-top: 5px; background-color:#dddddd' align="center">
-			
-																		
-			<label class='ficha'>Consecuencias</label>						
-			
+			<div class='ficha'><b>Horario</b>:		<?php echo @$sh[0]['horarios']; ?>		</div>				
+			<div class='ficha'><b>Consecuencias</b>:<?php echo @$sh[0]['consecuencias']; ?>	</div>			
 		</td>																							
-																										
-	</tr>
-	<tr>
-		<td style='vertical-align: top; margin-top: 5px; background-color:#F3F3F3'>
-
-			<div class='ficha'><?php echo @$sh[0]['consecuencias']; ?>	</div>																
-									
-			
+		<td style='vertical-align: top;' width='50%'>																
+			<div class='ficha'><b>Color</b>:			<?php echo @$sh[0]['color']; ?>			</div>										
+			<div class='ficha'><b>Mensaje</b>:			<?php echo @$sh[0]['categoria']; ?>			</div>										
+			<div class='ficha'><b>Especial Atencion</b>:<?php echo @$sh[0]['especial_atencion']; ?> 	</div>
+			<div class='ficha'><b>Descripción</b>:		<?php echo @$sh[0]['descripcion']; ?> 		</div>		
 		</td>																							
 																										
 	</tr>																								
@@ -1124,17 +962,6 @@ function toggle_visibility(id) {
 	</div>
 	<!-- CONTENIDO DATA -->
 </div>
-		</div>
-
-
-
-
-
-	<br>
-
-</div>
-
-
 
 	<!-- CONTENIDO PIE 
 	<div id="footer" class="row" style="text-align:center;"><br>

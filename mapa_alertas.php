@@ -554,11 +554,20 @@ div.esriPopupWrapper .zoomTo {
 	_blockGroupInfoTemplate.setTitle("<b>${munic}</b>");	
 	
 	var _blockGroupInfoContent =
+<<<<<<< HEAD
 	"<div class=\"GroupInfoContent\">" +
 	"Municipio: ${munic}<br>" +
 	"Departamento: ${dpto}<br>" +
 	"</div>";
 	
+=======
+	"<div class='weekstyle'>" 		+
+		"Municipio: ${munic}<br>" 	+
+		"Departamento: ${dpto}<br>" +
+	"</div>";
+	
+	
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	// /* DEFINE TEMPLATE */
 	_blockGroupInfoTemplate.setContent(_blockGroupInfoContent); 
 

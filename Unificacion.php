@@ -1,8 +1,13 @@
 <?php 
 header('Access-Control-Allow-Origin: *'); 
 header('Content-Type: text/html; charset=utf-8');
+<<<<<<< HEAD
 include('database_connection.php');
 // include("header.php");
+=======
+
+include('database_connection.php');
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 
 $id_area_Ini = $_REQUEST['id_area'];
@@ -33,7 +38,11 @@ $Fenomeno_Info[] = $row;
 
 //// COMBO PERIODO
 $periodo = '';
+<<<<<<< HEAD
 $SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY id_periodo;";
+=======
+$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto;";
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 $resultPeriodo=pg_query($connect, $SqlPeriodo);
 while($row = pg_fetch_array($resultPeriodo, null, PGSQL_ASSOC)) {
     $TipoPeriodo[] = $row;
@@ -59,6 +68,10 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
 
 
 <!DOCTYPE html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 <html lang="en">
 <head>
     
@@ -77,10 +90,17 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
     <script src="js/bootstrap.min.js"></script>
 -->
 	
+<<<<<<< HEAD
 <!--
 	<script src="jquery.lwMultiSelect.js"></script>
     <link rel="stylesheet" href="jquery.lwMultiSelect.css" />
 -->
+=======
+    <!--
+	<script src="jquery.lwMultiSelect.js"></script>
+    <link rel="stylesheet" href="jquery.lwMultiSelect.css" />
+	-->
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	
 	<script src="js/kendo.all.min.js" type="text/javascript"></script>
 	<script src="js/kendo.aspnetmvc.min.js" type="text/javascript"></script>
@@ -105,9 +125,14 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
 	height: 100px !important;
 }
 
+<<<<<<< HEAD
 
 .loading-div-background {
 		opacity: 1 !important; 
+=======
+.loading-div-background {
+		// opacity: 0.8; 
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
         display:none;
         position:fixed;
         top:0;
@@ -138,13 +163,21 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
 .loading-div-background-map {
         display:none;
         position:fixed;
+<<<<<<< HEAD
         top:0;
         left:0;
         // background:rgba(0, 0, 0, 1) !important;
+=======
+		// opacity: 1;
+        top:0;
+        left:0;
+        background:rgba(0, 0, 0, 1);
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
         width:100%;
         height:100%;
 }
 .loading-div-map {
+<<<<<<< HEAD
          width: 75% !important;
          height: 875px !important;
          background-color: rgba(255, 255, 255, 1) !important;
@@ -173,6 +206,11 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
          width: 75% !important;
          height: 100% !important;
          background-color: rgba(255, 255, 255, 1) !important;
+=======
+         width: 600px;
+         height: auto;
+         background-color: rgba(255, 255, 255, 1);
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
          text-align:center;
          position:absolute;
          top: 50%;
@@ -181,11 +219,18 @@ $result = pg_query($sql) or die('Query failed: '.pg_last_error());
          // margin-left:-150px;
          // margin-top: -100px;
 }
+<<<<<<< HEAD
 #editUni {
 	background-color: rgba(255, 255, 255, 1);
 }
 
 
+=======
+.loading-div-map h2 {
+	color: black !important;
+	font-size: 25px;
+}
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 .space {
 	margin-top:		2.5px;
 	margin-bottom:	2.5px;
@@ -305,7 +350,10 @@ iframe {
 	<div id="tablaUni" class="row">
 <!-- CONTENIDO DE TABLA -->
 		<div class="" style="">
+<<<<<<< HEAD
 <!--
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 					<table class="table table-bordered"> 
 					<tr style="background:#EEEEEE;">  
 							<th width="20%">Area</th>
@@ -315,7 +363,10 @@ iframe {
 							<th width="5%"></th>  
 					</tr>  
 					</table>
+<<<<<<< HEAD
 -->
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 		</div>
 <!-- CONTENIDO DE TABLA -->
@@ -327,7 +378,10 @@ iframe {
 	<div class="row">
 		<div class="col-md-12" style="text-align: center;">
 			<div class="row">
+<<<<<<< HEAD
 <!--
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 				<div class="col-md-3">
 					<div class="form-check-inline">
 						<label class="form-check-label">
@@ -347,6 +401,7 @@ iframe {
 					  </label>
 					</div>
 				</div>
+<<<<<<< HEAD
 -->
 				<div class="" style="text-align:center;" style="width100%;">
 					 <button id="guardarUnificado" type="submit" class="btn btn-success" style="width: 225px;">UNIFICAR</button>
@@ -354,6 +409,14 @@ iframe {
 			</div>
 		</div>
 	</div>
+=======
+				<div class="col-md-3" style="text-align: right;" style="zoom: 1;">
+					 <button id="guardarUnificado" type="submit" class="btn btn-success" style="width: 70%">Unificar</button>
+				</div>
+			</div>
+		</div>
+	</div> <br>
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 </div>
 </div>
@@ -363,9 +426,14 @@ iframe {
 <script>
 // Funciones Ivan Moran //
 // ------------------------------------------
+<<<<<<< HEAD
 // $('#guardarUnificado').attr('disabled',true);
 
 function toggle_visibility(id) {
+=======
+
+function toggle_map(id) {
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	var e = document.getElementById(id);
 	if(e.style.display == 'none')
 		e.style.display = 'block';
@@ -386,6 +454,7 @@ function explode(){
   updateMuni($('#zona_dpto').val());
 }
 
+<<<<<<< HEAD
 function showMyMap(va) {
 	miMapaUni(va);
 	toggle_visibility('loading-div-background-map');
@@ -413,6 +482,12 @@ function miEditUni(va){
 	
 	// var edit = "<iframe id='iframeMapaUni' width='100%' height='800px' scrolling='yes' frameBorder='0' src='MeteorologiaEdicion.php?id_area=1&area=&id_fenomeno=1&fenomeno=&id_impacto_diario="+va+"' ></iframe>";
 	// $('#editUni').html(edit);
+=======
+// Funcion encargada de mostrar el mapa con los municipios seleccionados
+function miMapaUni(va){
+	var mapa = "<iframe id='iframeMapaUni' width='100%' height='800px' scrolling='yes' frameBorder='0' src='UnificacionReporte.php?id="+va+"' ></iframe>";
+	$('#mapaUni').html(mapa);
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 }
 
 // ACTUALIZAR LISTA DE ELEMENTOS POR AREA  CUANDO CAMBIA FECHA O PERIODO//
@@ -425,7 +500,11 @@ function validaDup() {
 	if(c1>1){ $('div#spa1').css( "backgroundColor", "red" ); console.log('Meteorología'); b=1;}  else { $('div#spa1').css( "backgroundColor", "white" ); }
 	if(c2>1){ $('div#spa2').css( "backgroundColor", "red" ); console.log('Hidrología');   b=1;}  else { $('div#spa2').css( "backgroundColor", "white" ); }
 	if(c3>1){ $('div#spa3').css( "backgroundColor", "red" ); console.log('Geología');	  b=1;}  else { $('div#spa3').css( "backgroundColor", "white" ); }
+<<<<<<< HEAD
 	if (b == 1) { msg = 'EL AREA ESTA DUPLICADA'; $('#guardarUnificado').attr('disabled',true); } else { $('#guardarUnificado').attr('disabled',false); }
+=======
+	if (b == 1) { msg = 'EL AREA ESTA DUPLICADA'; }
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	$('#msgArea').html(msg);
 	return b;
 }
@@ -451,7 +530,10 @@ $('#periodo').change(function() {
 	if (fecha != ""){
 		addUni(fecha,periodo);
 		console.log(periodo+":"+fecha);
+<<<<<<< HEAD
 		$("#guardarUnificado").show();
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		// getUnificado();
 	}
 });
@@ -462,7 +544,10 @@ $('#fecha').change(function() {
 	if(periodo != ''){
 		addUni(fecha,periodo);
 		console.log(periodo+":"+fecha);
+<<<<<<< HEAD
 		$("#guardarUnificado").show();
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		// getUnificado();
 	}
 });
@@ -480,7 +565,10 @@ function trRefresh(){
 	if (fecha != "" && periodo != ""){
 		addUni(fecha,periodo);
 	}
+<<<<<<< HEAD
 	setTimeout(function(){ $("#guardarUnificado").show(); }, 700);
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 }
 
 function getUnificado() {
@@ -502,6 +590,7 @@ function getUnificado() {
 	return true;
 }
 
+<<<<<<< HEAD
 // # 
 function verTemplate(uni) {
 var template1 =   "<div style='text-align:center;'><h3>LOS PRONÓSTICOS SELECCIONADOS FUERON UNIFICADOS CORRECTAMENTE</h3>"
@@ -513,11 +602,14 @@ $('#tablaUni').html(template1);
 $('#verUni').attr('onclick', "window.open('UnificacionReporte.php?id="+uni+"','_blank')");
 }
 
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 // ------------------------------------------
 $(function() {
 	
 $("#formUnificado").on('submit', function(event){
 event.preventDefault();
+<<<<<<< HEAD
 ShowProgressAnimation();
 
 var periodo_text	= $("#periodo option:selected").text().replace(/\s/g,"%20");
@@ -527,16 +619,32 @@ var formUnificado	= $(this).serialize();
 console.log('********************');
 console.log(formUnificado + '&periodo_text=' + periodo_text + '&fenomeno_text=' + fenomeno_text);
 console.log('********************');
+=======
+
+
+	var periodo_text	= $("#periodo option:selected").text().replace(/\s/g,"%20");
+	var fenomeno_text	= $('#fenomeno').html().replace(/\s/g,"%20");
+	var formUnificado	= $(this).serialize();
+	
+	console.log('********************');
+	console.log(formUnificado + '&periodo_text=' + periodo_text + '&fenomeno_text=' + fenomeno_text);
+	console.log('********************');
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 if (validaDup()==0){
 		var formUnificado = $(this).serialize();
 		formUnificado = formUnificado + '&periodo_text=' + periodo_text + '&fenomeno_text=' + fenomeno_text
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		$.ajax({
 			url:"MeteorologiaProcesos.php",
 			method:"POST",
 			data:{formMuni:formUnificado, opcion:'insertUnificado'},
 			success:function(data) {
+<<<<<<< HEAD
 				console.log(data);
 				var mva = jQuery.parseJSON(data);
 				var uni = mva['uni'];
@@ -544,6 +652,13 @@ if (validaDup()==0){
 				verTemplate(uni);
 				HideProgressAnimation();
 				
+=======
+			// $('#action').attr("disabled", "disabled");
+			// alert('Entro al boton');
+			console.log(data);
+			// var id_imp = $('#id_impacto_diario_m').val();
+			
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 			}
 		});
 	}else { console.log('VALIDANDO');}
@@ -603,6 +718,7 @@ function setInputDateIni(_id){
 	</div>
 </div>
 
+<<<<<<< HEAD
 <div id="loading-div-background-map" class="loading-div-background" 	style="display: none; overflow:scroll; overflow-x: hidden;">
 	<div id="loading-div-map"	class="ui-corner-all loading-div-map"  style="background:rgba(255, 255, 255, 1); margin-bottom:2px;">
 	
@@ -612,10 +728,18 @@ function setInputDateIni(_id){
 	</div>
 	<div class="" style="padding-bottom: 5px; text-align:center; background:rgba(255, 255, 255, 1); width:100%;" >
 		 <button id="closeMapUni" type="submit" class="btn btn-success" style="margin-top:1px; width: 200px;" onclick="toggle_visibility('loading-div-background-map');">CERRAR</button>
+=======
+<div id="toggle_map" class="loading-div-background-map" style="display: none;">
+	<div id="loading-div" class="ui-corner-all loading-div-map"  >
+	<div id="mapaUni" class="row">	
+	<!-- CONTENIDO DE MAPA -->
+	<!-- CONTENIDO DE MAPA -->	
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	</div>
 	</div>
 </div>
 
+<<<<<<< HEAD
 <div id="loading-div-background-edit" class="loading-div-background" 	style="display: none; overflow:scroll;">
 	<div id="loading-div-edit"	class="ui-corner-all loading-div-edit"  style="background:rgba(255, 255, 255, 1);">
 	<div id="editUni" class="" >	
@@ -624,6 +748,8 @@ function setInputDateIni(_id){
 	</div>
 	</div>
 </div>
+=======
+>>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 </body>
 </html>
