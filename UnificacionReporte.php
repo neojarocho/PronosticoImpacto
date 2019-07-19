@@ -25,7 +25,6 @@ $Unificados = $Unificados[0];
 ///----------------------*************************************-------------------------------------------------
 ///----------------------*************************************-------------------------------------------------
 
-<<<<<<< HEAD
 /// CATEGORIA TOMAR ACCIÓN (ROJO)*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*
 ///*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*
 $CategoriaROJO = '';
@@ -87,15 +86,10 @@ $CategoriaAMARILLO = pg_num_rows($resultGridCategoriaAMARILLO);
 $CategoriaVERDE = '';
 
 $sqlGridCategoriaVERDE="SELECT hd.categoria,hd.no_matriz, concat(ip.descripcion, ' ',hd.consecuencias, '<br> Durante: ',hd.horarios) as mensaje, string_agg(concat(hd.municipio,'',(CASE WHEN hd.especial_atencion ISNULL THEN '' 
-=======
-/// CONDICIONES
-$sqlGridCondiciones="SELECT hd.categoria,hd.no_matriz, concat(ip.descripcion, ' ',hd.consecuencias, '<br> Durante: ',hd.horarios) as mensaje, string_agg(concat(hd.municipio,'',(CASE WHEN hd.especial_atencion ISNULL THEN '' 
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
             ELSE concat(' (', hd.especial_atencion,')')
        END)), ', ') as municipios, string_agg(distinct hd.departamento,'<br> ') as departamentos, (SELECT  a.imagen   FROM public.area a where a.id_area =ui.id_area) as imagen
 FROM public.his_impacto_diario_detalle hd inner join public.impacto_probabilidad ip on ip.id_impacto_probabilidad = hd.no_matriz
 inner join public.unificado_informe ui on ui.id_his_impacto_diario= hd.id_his_impacto_diario
-<<<<<<< HEAD
 WHERE ui.id_unificado= $id_unificado and hd.color='Verde'
 GROUP BY hd.categoria, hd.no_matriz,mensaje,imagen
 ORDER BY hd.no_matriz desc;";
@@ -150,15 +144,6 @@ $CategoriaResumen = pg_num_rows($resultGridCategoriaResumen);
 
 
 
-=======
-WHERE ui.id_unificado= $id_unificado
-GROUP BY hd.categoria, hd.no_matriz,mensaje,imagen
-ORDER BY hd.no_matriz desc;";
-$resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.pg_last_error());
-
-
-// var_dump($Unificados);
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 ?>
 
@@ -282,7 +267,6 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
             
            
-<<<<<<< HEAD
    
 
 <!-- ----------------------------------------------------------------------------------------- --> 
@@ -464,33 +448,19 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
         <div  class="col-md-12" id="CategoriaVERDE">
       <br> 
-=======
-        </div>
-
-
-        <div class="col-md-12">
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
             <br />  
             <div class="table-responsive">
                 <div id="employee_table">  
                     <table class="table table-bordered"> 
-<<<<<<< HEAD
                         <caption style="background: #6ab93c; color: #ffffff; text-align: center; font-size: 18px;">CONDICIONES NORMALES</caption>
-=======
-                        <caption style="background: #0d7997; color: #ffffff; text-align: center; font-size: 18px;">Información</caption>
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 
                         <tr style="background:#EEEEEE" align="center">  
 
 
 
-<<<<<<< HEAD
                         <th width="10%">Categoria</th>
-=======
-                        <th width="10%">categoria</th>
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
                         <th width="10%">no_matriz</th>
                         <th width="10%">Departamentos</th>
                         <th width="30%">Municipios</th>
@@ -501,17 +471,10 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
 
                         <?php  
-<<<<<<< HEAD
                         while($row = pg_fetch_array($resultGridCategoriaVERDE))  
                         {  
                         ?>  
                         <tr style="background:#FFFFFF; font-size: 12px;">  
-=======
-                        while($row = pg_fetch_array($resultGridCondiciones))  
-                        {  
-                        ?>  
-                        <tr style="background:#FFFFFF;">  
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
                             <td><h4 style="line-height: 1.5em; font-size: 16px;"><?php echo $row["categoria"]; ?></h4></td>
                                 <td><h4 style="line-height: 1.5em; font-size: 16px;"><?php echo $row["no_matriz"]; ?></h4></td>
 
@@ -537,7 +500,6 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
 
 
-<<<<<<< HEAD
 <!-- ----------------------------------------------------------------------------------------- --> 
 <!-- ------------------------------------------RESUMENNNNNNNN------------------------------------- --> 
 <!-- ----------------------------------------------------------------------------------------- -->
@@ -600,8 +562,6 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
 
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 
 
@@ -627,7 +587,6 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
 
 <script>
-<<<<<<< HEAD
 
     function toggle_visibility(id) {
     var e = document.getElementById(id);
@@ -640,8 +599,6 @@ $resultGridCondiciones = pg_query($sqlGridCondiciones) or die('Query failed: '.p
 
 
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
     $(function(){
 
 fecha = new Date(document.getElementById('fecha_ingresado').value);
@@ -698,7 +655,6 @@ var Fechita = diaSemana + ' ' + dia;
   actualizarHora();
   var intervalo = setInterval(actualizarHora,1000);
 });
-<<<<<<< HEAD
 
 
 <?php
@@ -733,6 +689,4 @@ toggle_visibility ('CategoriaVERDE');
 <?php
 }
 ?>
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 </script>

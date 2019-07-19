@@ -513,7 +513,6 @@ iframe {
 // toggle_visibility('infoMunicipios');
 // addContent(<?php echo $id_impacto_diario; ?>);*/
 
-<<<<<<< HEAD
 // ConteConsecuencias
 // contenedorHorario
 function validaCon(name) {
@@ -532,8 +531,6 @@ function validaCon(name) {
 	return vali;
 }
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 // Funcion encargada de mostrar el mapa con los municipios seleccionados
 function mi_mapa(va){
@@ -542,7 +539,6 @@ function mi_mapa(va){
 		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"' ></iframe>";
 		$('#mi_target').html(data);
 	}
-<<<<<<< HEAD
 }
 
 function mapaRefresh(){
@@ -554,19 +550,6 @@ function mapaRefresh(){
 	}
 }
 
-=======
-}
-
-function mapaRefresh(){
-	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
-	if (id_impacto_diario != '') {
-		console.log(id_impacto_diario);
-		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+id_impacto_diario+"' ></iframe>";
-		$('#mi_target').html(data);
-	}
-}
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 function ediContent(va) {
 	//$("#id_idiario_det").val(va);
 	var midata = {id:va};
@@ -897,11 +880,7 @@ $('.action').change(function(){
 		}
 		
 		var id_area =  $('#id_area').val();
-<<<<<<< HEAD
 		// console.log(id_area);
-=======
-		console.log(id_area);
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		
 		var nomuni = String($("#filter").val());
 		getnoMuni($('#id_impacto_diario_m').val());
@@ -934,7 +913,6 @@ $('.action').change(function(){
 /*****************************************************/
 	$('#formMunicipios').on('submit', function(event){
 	event.preventDefault();
-<<<<<<< HEAD
 	// ConteConsecuencias
 	// contenedorHorario
 	if(validaCon('ConteConsecuencias')==false)  { return;}
@@ -943,10 +921,6 @@ $('.action').change(function(){
 	$('#action').prop('disabled', true);
 	ShowProgressAnimation();
 	
-=======
-	$('#action').prop('disabled', true);
-	ShowProgressAnimation();
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 		if($('#tipo_zona_dpto').val() == ''){
 			alert("Please Select Country");
@@ -1008,17 +982,12 @@ $('.action').change(function(){
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-<<<<<<< HEAD
 					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" required data-required-msg=''>"+obj[i]['consecuencia']+"</div>";
 				}
 				if (varCons.length==0){
 					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
 					$('#action').prop('disabled',true);
 				}; /******************************************************************************/
-=======
-					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+">"+obj[i]['consecuencia']+"</div>";
-				}
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 				document.getElementById("ConteConsecuencias").innerHTML = varCons;
 				if(probabilidad != ''){
 					$.ajax({

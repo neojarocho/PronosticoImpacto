@@ -41,11 +41,7 @@ include("cnn.php");
 
 //// COMBO PERIODO
 $periodo = '';
-<<<<<<< HEAD
 $SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY id_periodo;";
-=======
-$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto;";
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 $resultPeriodo=pg_query($connect, $SqlPeriodo);
 while($row = pg_fetch_array($resultPeriodo, null, PGSQL_ASSOC)) {
 	$TipoPeriodo[] = $row;
@@ -253,7 +249,6 @@ iframe {
 #pnum {
 	float: right !important;
 }
-<<<<<<< HEAD
 
 	#fieldlist {
 		margin: 0;
@@ -316,8 +311,6 @@ iframe {
 	.k-tooltip-validation .k-warning {
 		display: none;
 	}
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 </style>
 <link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
 </head>
@@ -511,19 +504,12 @@ iframe {
 						<ul style="color:#4F7C91;">
 							<?php                                  
 							while ($rowHorario = pg_fetch_array($resultHorario, null, PGSQL_ASSOC)) {
-<<<<<<< HEAD
 							echo "<div class='checkbox'><input class='group1' name='datosh[]' type='checkbox' value=".$rowHorario['id_horario']." >".$rowHorario['horario']."</div>";
-=======
-							echo "<div class='checkbox'><input name='datosh[]' type='checkbox' value=".$rowHorario['id_horario'].">".$rowHorario['horario']."</div>";
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 					
 						} 
 						pg_free_result($resultHorario);              
 						?>    
-<<<<<<< HEAD
 						<div class='checkbox'><input class='group2' name='datosh[]' type='checkbox' value="5" onClick='todoElDia()'>Todo el día</div>
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 						</ul>
 						</label>
 					</div>
@@ -590,7 +576,6 @@ toggle_visibility('infoMunicipios');
 addContent(<?php echo $id_impacto_diario; ?>);
 $('#formGeneral').find('input, textarea, button, select').attr('disabled','disabled');
 
-<<<<<<< HEAD
 // ConteConsecuencias
 // contenedorHorario
 function validaCon(name) {
@@ -609,8 +594,6 @@ function validaCon(name) {
 	return vali;
 }
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 // Funcion encargada de mostrar el mapa con los municipios seleccionados
 function mi_mapa(va){
 	var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"' ></iframe>";
@@ -620,11 +603,7 @@ function mi_mapa(va){
 function mapaRefresh(){
 	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
 	if (id_impacto_diario != '') {
-<<<<<<< HEAD
 		// console.log(id_impacto_diario);
-=======
-		console.log(id_impacto_diario);
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+id_impacto_diario+"' ></iframe>";
 		$('#mi_target').html(data);
 	}
@@ -632,12 +611,8 @@ function mapaRefresh(){
 
 function ediContent(va) {
 	//$("#id_idiario_det").val(va);
-<<<<<<< HEAD
 	var area = $('#id_area').val();
 	var midata = {id:va, area:area};
-=======
-	var midata = {id:va};
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
     $.ajax({
 		async : true,
 		method: "GET",
@@ -728,21 +703,10 @@ function updateMuni(query) {
 		});
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD:MeteorologiaEdicion.php
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 // ------------------------------------------
 // BORRAR MUNICIPIOS DE MENU DE MUNICIPIOS //
 function delContent(va){
 	ShowProgressAnimation();
-<<<<<<< HEAD
-=======
-
-function delContent(va){
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3:bk/MeteorologiaIngreso.php_bk_26022019
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	// data = {id:va, opcion:'deleteContent'};
 	$.ajax({
 		url:'MeteorologiaProcesos.php',
@@ -776,22 +740,14 @@ $(document).ready(function () {
 	
 });
 
-<<<<<<< HEAD
 /*
-=======
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 function myFunction(va) {
 	$("#id_idiario_det").val(va);
 	toggle_visibility("loading-div-popup-form");
 	// console.log(va);
 	// console.log($("#id_idiario_det").val(va));
 }
-<<<<<<< HEAD
 */
-=======
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 $(document).ready(function(){
 
@@ -894,7 +850,6 @@ return false;
 function setInputDateIni(_id){
     var _dat = document.querySelector(_id);
     var hoy = new Date(),
-<<<<<<< HEAD
 		d = hoy.getDate(),
 		m = hoy.getMonth()+1, 
 		y = hoy.getFullYear(),
@@ -906,23 +861,6 @@ function setInputDateIni(_id){
     data = y+"-"+m+"-"+d;
     _dat.value = data;
     // console.log(data);
-=======
-        d = hoy.getDate(),
-        m = hoy.getMonth()+1, 
-        y = hoy.getFullYear(),
-        data;
-
-    if(d < 10){
-        d = "0"+d;
-    };
-    if(m < 10){
-        m = "0"+m;
-    };
-
-    data = y+"-"+m+"-"+d;
-    // console.log(data);
-    _dat.value = data;
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 };
 
 // setInputDateIni("#fecha_ini");
@@ -968,10 +906,7 @@ var validator = $("#formMunicipios").kendoValidator({
 				if (input.is("[class=requerido]")) {
 					ret = input.val() >=1;
 				}
-<<<<<<< HEAD
 				// if() { ret = true; }
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 			return ret;
 		}
 		},
@@ -1000,11 +935,7 @@ $('.action').change(function(){
 		}
 		
 		var id_area =  $('#id_area').val();
-<<<<<<< HEAD
 		// console.log(id_area);
-=======
-		console.log(id_area);
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		
 		var nomuni = String($("#filter").val());
 		getnoMuni($('#id_impacto_diario_m').val());
@@ -1037,14 +968,11 @@ $('.action').change(function(){
 /*****************************************************/
 	$('#formMunicipios').on('submit', function(event){
 	event.preventDefault();
-<<<<<<< HEAD
 	// ConteConsecuencias
 	// contenedorHorario
 	if(validaCon('ConteConsecuencias')==false)  { return;}
 	if(validaCon('contenedorHorario')==false) 	{ return;}
 	
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	$('#action').prop('disabled', true);
 	ShowProgressAnimation();
 
@@ -1108,17 +1036,12 @@ $('.action').change(function(){
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-<<<<<<< HEAD
 					varCons +="<div class='accept'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" >"+obj[i]['consecuencia']+"</div>";
 				}
 				if (varCons.length==0){
 					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
 					$('#action').prop('disabled',true);
 				}; /******************************************************************************/
-=======
-					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+">"+obj[i]['consecuencia']+"</div>";
-				}
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 				document.getElementById("ConteConsecuencias").innerHTML = varCons;
 				if(probabilidad != ''){
 					$.ajax({
@@ -1126,10 +1049,7 @@ $('.action').change(function(){
 						method:"GET",
 						data: {probabilidad:probabilidad,impacto:impacto, opt:'categoria'},
 						success:function(categoria){
-<<<<<<< HEAD
 							console.log(categoria);
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 							var cat = jQuery.parseJSON(categoria);
 							$('#id_color').val(cat['id_color']);
 							$('#categoria').val(cat['categoria']);
@@ -1170,7 +1090,6 @@ $('.action').change(function(){
 		}				  
 	});
 
-<<<<<<< HEAD
 	// });
 });
 
@@ -1183,13 +1102,6 @@ else
 	$("input.group1").prop("disabled", false);
 	// console.log('HABILITADO');
 }
-=======
-
-	// });
-
-});
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 </script>
 <div id="loading-div-background" class="loading-div-background" style="display: none;">
 	<div class="ui-corner-all loading-div" id="loading-div" >

@@ -25,11 +25,7 @@ $Fenomeno_Info[] = $row;
 $sqlGridImpactoDiario="SELECT id.id_impacto_diario, to_char(id.fecha, 'DD/MM/YYYY - HH:MI:SS') as fecha, id.correlativo, id.titulo, id.descripcion, 
 (SELECT pi.periodo FROM public.periodo_impacto pi where id.id_periodo=pi.id_periodo), 
 (SELECT ei.estado_impacto FROM public.estado_impacto ei where id.id_estado_impacto=ei.id_estado_impacto)
-<<<<<<< HEAD
   FROM public.impacto_diario id WHERE id_estado_impacto <> '6' and id.id_area = ".$id_area_Ini." AND id.id_fenomeno = ".$id_fenomeno_Ini." order by id.fecha desc;";
-=======
-  FROM public.impacto_diario id WHERE id.id_area = ".$id_area_Ini." AND id.id_fenomeno = ".$id_fenomeno_Ini." ;";
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 $resultGridImpactoDiario = pg_query($sqlGridImpactoDiario) or die('Query failed: '.pg_last_error());
 
 
@@ -108,7 +104,6 @@ function b_del(id) {
 }
 
 
-<<<<<<< HEAD
 function b_comp(id) {
 	console.log("comparar:"+id);
 	$("#contenedorprincipal").load("VistaInformes.php",
@@ -140,15 +135,12 @@ function b_comp(id) {
 
 
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 </script>
    
 </head>
 <body>
 
 
-<<<<<<< HEAD
 
 <!-- ---*-*-*-*-*-*--*-*-*-*--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**-- -->
 
@@ -169,21 +161,6 @@ function b_comp(id) {
 			  </tr>
 			</table>		
 
-=======
-<div class="container-fluid">
-	<div class="row" style="background: #485668; color:#ffffff;">
-		<div class="col-md-12" style="text-align: center">
-
-			<table style="width:100%" border=0>
-			  <tr>	<th></th></tr>
-			  <tr>
-			  <td><h4 style="text-align:left;"		><?php echo $Area_Info[0]["area"]; ?></td>
-			  <td><h4 style="text-align:center;"	><?php echo $Fenomeno_Info[0]["fenomeno"]; ?></td>
-			  <td><h4 style="text-align:right;"		></h4>&nbsp;</td>
-			  </tr>
-			</table>		
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		</div>
 	</div>
 
@@ -226,18 +203,10 @@ function b_comp(id) {
 		<p></p>
 		<div id="employee_table">  
 			<table class="table table-bordered"> 
-<<<<<<< HEAD
 				<caption  style="background: #205e76; color: #ffffff; text-align: center; font-size: 15px;">EN PROCESO</caption>
 				<tr style="background:#e5e5e5;"> 
 						<th width="5%"></th>   
 						<th width="20%">Fecha</th>
-=======
-				<caption style="background: #7D7D7D; color: #ffffff; text-align: center; font-size: 15px;">Informes Pendientes</caption>
-				<tr style="background:#EEEEEE;">  
-						<th width="10%">Fecha</th>
-						<th width="10%">Hora</th> 
-						<th width="5%" >No.</th> 
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 						<th width="45%">Título</th>
 						<th width="15%">Período</th>
 						<th width="10%">Estado</th>   
@@ -249,24 +218,16 @@ function b_comp(id) {
 				while($row = pg_fetch_array($resultGridImpactoDiario))  
 				{ 
 				?>  
-<<<<<<< HEAD
 					<tr style="background:#FFFFFF;">
 						<td align="center">
 							<button type="button" class="btn btn-secondary glyphicon glyphicon-pencil btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
 						</td>  
 						<td><?php echo $row["fecha"]; ?></td>   
-=======
-					<tr style="background:#FFFFFF;"> 
-						<td><?php echo $row["fecha"]; ?></td>  
-						<td><?php echo $row["hora"]; ?></td> 
-						<td><?php echo $row["correlativo"]; ?></td> 
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 						<td><?php echo $row["titulo"]; ?></td> 
 						<td><?php echo $row["periodo"]; ?></td> 
 						<td><?php echo $row["estado_impacto"]; ?></td> 
 
 						<td align="center">
-<<<<<<< HEAD
 							<button type="button" class="btn btn-info glyphicon glyphicon-transfer btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_comp($(this).attr('id'))";></button>
 						</td>
 						<td align="center">
@@ -301,14 +262,6 @@ function b_comp(id) {
 						<th width="5%"></th>  
 					 
 				</tr>  
-=======
-							<button type="button" class="btn btn-info glyphicon glyphicon-pencil btn-sm" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
-						</td>  
-						<td align="center">
-							<button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_del($(this).attr('id'))";></button>
-						</td>  
-					</tr>  
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 				<?php  
 				while($row = pg_fetch_array($resultGridVista))  
 				{ 

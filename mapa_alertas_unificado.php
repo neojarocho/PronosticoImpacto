@@ -149,10 +149,7 @@ $m11 = rtrim($m11,',');
 <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
 
 <style>
-<<<<<<< HEAD
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 @font-face {
     font-family: 'RobotoLight'; /*a name to be used later*/
     src: url('fonts/Roboto-Light.ttf'); /*URL to font*/
@@ -396,12 +393,9 @@ a {
 }
 .ficha {
   margin-left: 5px;
-<<<<<<< HEAD
   margin-right: 5px;
   margin-bottom: 5px;
   margin-top: 2px;
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 }
 .esriPopup .pointer, .esriPopup .outerPointer {
     background: rgba(87,188,196,.9);
@@ -409,11 +403,7 @@ a {
 /* change size of pop up*/
 .esriPopup .sizer {
     position: relative;
-<<<<<<< HEAD
     width: 165px !important;
-=======
-    width: 195px !important;
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	font-size: 10px !important;
     z-index: 1;
 }
@@ -425,10 +415,7 @@ a {
 	z-index: 30;
 	top: 35px !important;
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 #HomeButton {
 	position: absolute;
 	// top: 200px;
@@ -440,12 +427,6 @@ a {
 div.esriPopupWrapper .zoomTo {
   display: none;
 }
-<<<<<<< HEAD
-=======
-.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev {
-  display: none;
-}
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 <script>
@@ -574,21 +555,12 @@ div.esriPopupWrapper .zoomTo {
 
 	/* TEMPLATES */
 	var _blockGroupInfoTemplate = new InfoTemplate();
-<<<<<<< HEAD
 	_blockGroupInfoTemplate.setTitle("<b></b>");	
 	
 	var _blockGroupInfoContent =
 	"<div class=\"GroupInfoContent\">" +
 	"Municipio: ${munic}<br>" +
 	"Departamento: ${dpto}<br>" +
-=======
-	_blockGroupInfoTemplate.setTitle("<b>${munic}</b>");
-	
-	var _blockGroupInfoContent =
-	"<div class='weekstyle'>" 		+
-		"Municipio: ${munic}<br>" 	+
-		"Departamento: ${dpto}<br>" +
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 	"</div>";
 	
 	// /* DEFINE TEMPLATE */
@@ -843,7 +815,6 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
 		+"</tr>																																									"			
 		+"</table>																																								"
 		+"<br>																																									"
-<<<<<<< HEAD
 		+"</div>																																								"
 
 
@@ -867,9 +838,6 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
 
 
 
-=======
-		+"</div>																																					"
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 
 
 			require(["dojo/dom"], function(dom){ dom.byId("my_content").innerHTML = con; });
@@ -997,14 +965,8 @@ function toggle_visibility(id) {
 		e.style.display = 'block';
 	else
 		e.style.display = 'none';
-<<<<<<< HEAD
 	}
 	
-=======
-}
-	
-
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 // $(document).ready(function () {            
 /* your code here */
 /* your code here */
@@ -1022,11 +984,8 @@ function toggle_visibility(id) {
 
 </div>
 <div class="row">
-<<<<<<< HEAD
 	<br>
 
-=======
->>>>>>> 2cb5af4d6d5e40748d6eae412e979d2a944a1bb3
 		<div class="col-md-8">
 	<!-- CONTENIDO MAPA-->
 		<div class="mapa_marco">
