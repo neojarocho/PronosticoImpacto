@@ -1,19 +1,47 @@
 <?php 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: text/html; charset=utf-8');
-
 include('database_connection.php');
 
 $id_area_Ini = $_REQUEST['id_area'];
 $area_Ini = $_REQUEST['area'];
 $id_fenomeno_Ini = $_REQUEST['id_fenomeno'];
 $fenomeno_Ini = $_REQUEST['fenomeno'];
-//var_dump($_REQUEST); echo('algo');
-//exit();
+$id_impacto_diario = $_REQUEST['id_impacto_diario'];
+
+
+#--------------------------------------------------------------------------------------------------------
+# IVAN MORAN CODE INI
+#--------------------------------------------------------------------------------------------------------
+include("cnn.php");
+// function getMuniData(va) {
+	$dbconn = my_dbconn4("PronosticoImpacto");
+	$sql="
+	SELECT i.id_impacto_diario, i.id_area, i.id_fenomeno, 
+	i.fecha, i.correlativo, i.titulo, i.descripcion, i.id_periodo, p.periodo, 
+	i.id_estado_impacto, es.estado_impacto, i.id_usuario
+	FROM public.impacto_diario i
+	INNER JOIN periodo_impacto p ON p.id_periodo = i.id_periodo
+	INNER JOIN estado_impacto es on es.id_estado_impacto = i.id_estado_impacto
+	WHERE i.id_impacto_diario = ".$id_impacto_diario.";
+	";
+	$result=pg_query($dbconn, $sql);
+
+	while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
+		$ro[] = $row;
+	} pg_free_result($result);
+	$ro=$ro[0];
+	// return $ro;
+// }
+// var_dump($ro);
+
+#--------------------------------------------------------------------------------------------------------
+# IVAN MORAN CODE FIN
+#--------------------------------------------------------------------------------------------------------
 
 //// COMBO PERIODO
 $periodo = '';
-$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto;";
+$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY id_periodo;";
 $resultPeriodo=pg_query($connect, $SqlPeriodo);
 while($row = pg_fetch_array($resultPeriodo, null, PGSQL_ASSOC)) {
 	$TipoPeriodo[] = $row;
@@ -36,8 +64,7 @@ while($row = pg_fetch_array($resultImpactoFenomeno , null, PGSQL_ASSOC)) {
 
 $resultImpactoFenomeno = $TipoImpactoFenomeno ;
 
-foreach($resultImpactoFenomeno  as $row)
-{
+foreach($resultImpactoFenomeno  as $row) {
 	$ImpactoFenomeno  .= '<option value="'.$row['id_impacto'].'">'.$row['impacto'].'</option>';
 }
 
@@ -59,22 +86,6 @@ $resultImpacto = pg_query($sqlImpacto) or die('Query failed: '.pg_last_error());
 $sqlHorario="SELECT id_horario, horario	FROM public.horario;";
 $resultHorario = pg_query($sqlHorario) or die('Query failed: '.pg_last_error()); 
 
-// //// COMBO HORARIO
-// $Horario = '';
-// $SqlHorario="SELECT id_horario, horario	FROM public.horario;";
-// $resultHorario=pg_query($connect, $SqlHorario);
-// while($row = pg_fetch_array($resultHorario, null, PGSQL_ASSOC)) {
-// 	$TipoHorario[] = $row;
-// } pg_free_result($resultHorario);
-
-// $resultHorario=$TipoHorario;
-
-// foreach($resultHorario as $row)
-// {
-// 	$Horario .= '<option value="'.$row['id_horario'].'">'.$row['horario'].'</option>';
-
-// }
-
 
 //// COMBO TIPO DE SELECCIÓN DE ZONA / DPTO
 $tipo_zona_dpto = '';
@@ -89,8 +100,7 @@ while($row = pg_fetch_array($resultZonaDpto, null, PGSQL_ASSOC)) {
 
 $resultZonaDpto=$TipoSeleccion;
 
-foreach($resultZonaDpto as $row)
-{
+foreach($resultZonaDpto as $row) {
 	$tipo_zona_dpto .= '<option value="'.$row['tipo_zona_dpto'].'">'.$row['tipo_zona_dpto'].'</option>';
 }
 
@@ -125,7 +135,7 @@ foreach($resultProbabilidad as $row)
 }
 
 /// NUMERO DE INFORME
-$sqlCorrelativo="select coalesce((SELECT correlativo + 1 FROM public.impacto_diario where id_area = $id_area_Ini and id_fenomeno= $id_fenomeno_Ini order by correlativo desc LIMIT 1),1)";
+$sqlCorrelativo="select coalesce((SELECT correlativo FROM public.impacto_diario where id_area = $id_area_Ini and id_fenomeno= $id_fenomeno_Ini order by correlativo desc LIMIT 1),1)";
 $resultCorrelativo = pg_query($sqlCorrelativo) or die('Query failed: '.pg_last_error());
 $correlativo = pg_fetch_all($resultCorrelativo);
 $correlativo = $correlativo[0]['coalesce'];
@@ -137,10 +147,8 @@ $correlativo = $correlativo[0]['coalesce'];
 
 
 if(@$id_impacto_diario==''){
-
-$estado_impacto = 'Nuevo';
-//$fecha_ini = '05/12/2018';
-
+	$estado_impacto = 'Nuevo';
+	//$fecha_ini = '05/12/2018';
 };
 
 ?>
@@ -160,32 +168,37 @@ $estado_impacto = 'Nuevo';
         <link href="css/kendo.dataviz.min.css" rel="stylesheet" type="text/css"/> 
 		-->
 
-		<script src="jquery.lwMultiSelect.js"></script>
-		<link rel="stylesheet" href="jquery.lwMultiSelect.css" />
+		<script src="js/jquery.lwMultiSelect.js"></script>
+		<link rel="stylesheet" href="js/jquery.lwMultiSelect.css" />
 
 		<script src="js/kendo.all.min.js" type="text/javascript"></script>
 		<script src="js/kendo.aspnetmvc.min.js" type="text/javascript"></script>
 		<script src="js/kendo.culture.es-SV.min.js" type="text/javascript"></script>
 
 <style type="text/css">
+#mapa_ivan {
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
 .btn-sq {
 	width: 100% !important;
 	height: 100px !important;
 }
-
-#loading-div-background {
+.loading-div-background {
+		// opacity: 0.8; 
         display:none;
         position:fixed;
         top:0;
         left:0;
-        background:black;
+        background:rgba(0, 0, 0, 0.2);
         width:100%;
         height:100%;
 }
-#loading-div {
+.loading-div {
          width: 300px;
          height: 200px;
-         background-color: rgba(255, 255, 255, 1);
+         background-color: rgba(255, 255, 255, 0);
          text-align:center;
          position:absolute;
          left: 50%;
@@ -193,45 +206,135 @@ $estado_impacto = 'Nuevo';
          margin-left:-150px;
          margin-top: -100px;
 }
-#loading-div h2 {
+.loading-div h2 {
 	color: black !important;
 	font-size: 25px;
 }
-</style>
+.loading-div-background-form {
+        display:none;
+        position:fixed;
+		opacity: 1;
+        top:0;
+        left:0;
+        background:rgba(0, 0, 0, 0.2);
+        width:100%;
+        height:100%;
+}
+.loading-div-form {
+         width: 550px;
+         height: auto;
+         background-color: rgba(255, 255, 255, 1);
+         text-align:center;
+         position:absolute;
+         top: 50%;
+         left: 50%;
+		 transform: translate(-50%, -50%);
+         // margin-left:-150px;
+         // margin-top: -100px;
+}
+.loading-div-form h2 {
+	color: black !important;
+	font-size: 25px;
+}
+.space {
+	margin-top:		2.5px;
+	margin-bottom:	2.5px;
+}
+.col-md-12, .col-md-3 {
+	padding-top: 5px;
+}
+iframe {
+  overflow: hidden !important;
+}
+#pnum {
+	float: right !important;
+}
 
+	#fieldlist {
+		margin: 0;
+		padding: 0;
+	}
+	
+	#fieldlist li {
+		list-style: none;
+		padding-bottom: .7em;
+		text-align: left;
+		display: flex;
+		flex-wrap: wrap;
+	}
+	
+	#fieldlist label {
+		width: 100%;
+		display: block;
+		padding-bottom: .3em;
+		font-weight: bold;
+		text-transform: uppercase;
+		font-size: 12px;
+		color: #444;
+	}
+	
+	#fieldlist li.status {
+		text-align: center;
+	}
+	
+	#fieldlist li .k-widget:not(.k-tooltip),
+	#fieldlist li .k-textbox {
+		margin: 0 5px 5px 0;
+	}
+	.confirm {
+		padding-top: 1em;
+	}
+	
+	.valid {
+		color: green;
+	}
+	
+	.invalid {
+		color: red;
+	}
+	#fieldlist li input[type="checkbox"] {
+		margin: 0 5px 0 0;
+	}
+	
+	span.k-widget.k-tooltip-validation {
+		display; inline-block;
+		width: 160px;
+		text-align: left;
+		border: 0;
+		padding: 0;
+		margin: 0;
+		background: none;
+		box-shadow: none;
+		color: red;
+	}
+	
+	.k-tooltip-validation .k-warning {
+		display: none;
+	}
+</style>
+<link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
 </head>
 
 <body>
 	
 
 <div class="container-fluid">
-
-	<div class="row" style="background: #5DADE2; color:#ffffff; font: cursive;">
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-1" style="text-align: right;">
-					<label><h4 class="glyphicon glyphicon-tint"></h4></label>
-				</div>
-				<div class="col-md-11">
-					<input type="hidden" id="id_area" name="id_area" value="<?php echo $id_area_Ini; ?>"></input> 	
-					<label id="area"><h4><?php echo $area_Ini; ?></h4></label>
-				</div>					
-			</div>
+	<div class="row" style="background: #485668; color:#ffffff;">
+		<div class="col-md-12" style="text-align: center">
+			<input type="hidden" id="id_area" name="id_area" value="<?php echo $id_area_Ini; ?>"></input> 	
+			<input type="hidden" id="id_fenomeno" name="id_fenomeno" value="<?php echo $id_fenomeno_Ini; ?>"></input> 	
+					
+			<table style="width:100%" border=0>
+			  <tr>	<th></th></tr>
+			  <tr>
+			  <td><h4 style="text-align:left;"		><?php echo $area_Ini; ?></td>
+			  <td><h4 style="text-align:center;"	><?php echo  $fenomeno_Ini; ?></td>
+			  <td><h4 style="text-align:right;"		><?php echo  $id_impacto_diario; ?></h4></td>
+			  </tr>
+			</table>	
+			
 		</div>
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-1" style="text-align: center;">
-					<label><h4 class="glyphicon glyphicon-flash"></h4></label>
-				</div>
-				<div class="col-md-11" style="text-align: left;">
-					<input type="hidden" id="id_fenomeno" name="id_fenomeno" value="<?php echo $id_fenomeno_Ini; ?>"></input> 	
-					<label id="fenomeno"><h4><?php echo  $fenomeno_Ini; ?></h4></label>
-				</div>
-			</div>
-		</div>
-
 	</div>
-
 </div>
 
 <br>
@@ -241,49 +344,57 @@ $estado_impacto = 'Nuevo';
 <div class="container">
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Informe de Impacto</a></li>
-    <li><a data-toggle="tab" href="#menu1">Pronostico</a></li>
+    <li><a data-toggle="tab" href="#menu1" onclick="mi_mapa(<?php echo $id_impacto_diario; ?>);">Mapa de Pronóstico</a></li>
+    <li id="pnum"><a data-toggle="tab" href="#menu2">Pronóstico Numerico</a></li>
   </ul>
 
-  <div class="tab-content">
+<div class="tab-content">
 <div id="home" class="tab-pane fade in active">
 <!-- INICIO DE LA FICHA DE INGRESO -->
 
 <!-- ####################################################################################### -->
 <!-- DATOS GENERALES DEL INFORME -->
 <div id="datosGenerales" class="row" style="background: #ededf0">
-<form id="formGeneral" name="formGeneral" action="MeteorologiaProcesos.php" method="post" enctype="multipart/form-data">
       	<div class="col-md-12" style="background:#7D7D7D;">
       		<div class="row" style="text-align: center; color:#FFFFFF;">
-      			<div class="col-md-4" style="text-align: left;">
-      				<h5 style="font-weight: bold;">DATOS GENERALES DEL INFORME</h5> 
-      			</div>
-      			<div class="col-md-4">
-      				<label id="correlativo"><h5>Informe No. <?php echo $correlativo;?></h5></label> 
-      			</div>
-      			<div class="col-md-4">
-      				<label id='estado_impacto'><h5>Estado:<?php echo $estado_impacto;?></h5></label> 
-      			</div>
+
+			<table style="width:100%" border=0>
+			  <tr>	<th></th></tr>
+			  <tr>
+			  <td><h5 style="margin-left:5px;	text-align:left;font-weight: bold;"	>DATOS GENERALES DEL INFORME				</h5></td>
+			  <td><h5 style="margin-left:-5px;	text-align:center;"					>Informe No. <?php echo $correlativo;?>		</h5></td>
+			  <td><h5 style="margin-right:5px;	text-align:right;"					>Estado:<?php echo $ro['estado_impacto'];?>	</h5></td>
+			  </tr>
+			</table>				
+
       		</div>
       	</div>
+<form id="formGeneral" name="formGeneral" action="MeteorologiaProcesos.php" method="post" enctype="multipart/form-data">
 
 		<div class="col-md-12">
 			<label>Titulo</label>  
-			<input type="text" name="titulo" id="titulo" class="form-control" placeholder="Ingrese un titulo" required data-required-msg="Ingrese un titulo para los datos generales del informe de impacto"/>
+			<input type="text" name="titulo" id="titulo" class="form-control" placeholder="Ingrese un titulo" required data-required-msg="" value="<?php echo $ro['titulo']; ?>"/>
 		</div>
  
+		<div class="col-md-9">
+			<label>Descripción</label>  
+			<textarea name="descripcion" id="descripcion" class="form-control" placeholder="Ingrese descripción" required data-required-msg="" ><?php echo $ro['descripcion']; ?></textarea>  
+		</div>
+		
 		<div class="col-md-3">
 			<label>Periodo</label> 
 			<select name="periodo" id="periodo" class="form-control" placeholder="Ingrese periodo" required data-required-msg="Ingrese el periodo">
-			<option value="" style="font-style: italic; color: #B2BABB;">Seleción</option>
+			<option value="<?php echo $ro['id_periodo']?>" style="font-style: italic; color: #B2BABB;"><?php echo $ro['periodo']?></option>
 			<?php echo $periodo; ?>
 			</select>
 		</div>
 
+<!--
 		<div class="col-md-3">
 			<label>Impacto del fenomeno</label> 
 			<select name="ImpactoFenomeno" id="ImpactoFenomeno" class="form-control" placeholder="Ingrese impacto" required data-required-msg="Ingrese el impacto del fenomeno">
-			<option value="" style="font-style: italic; color: #B2BABB;">Seleción</option>
-			<?php echo $ImpactoFenomeno; ?>
+			<option value="<?php //echo $ro['id_impacto_fenomeno']?>" style="font-style: italic; color: #B2BABB;"><?php //echo $ro['impacto']?></option>
+			<?php //echo $ImpactoFenomeno; ?>
 			</select>
 		</div>
 	
@@ -296,18 +407,15 @@ $estado_impacto = 'Nuevo';
 			<label>Fecha Finaliza</label>
 			<input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required data-required-msg="Ingrese fecha de finalización"></input> 
 		</div> 
+-->
 
-		<div class="col-md-12">
-			<label>Descripción</label>  
-			<textarea name="descripcion" id="descripcion" class="form-control" placeholder="Ingrese descripción" required data-required-msg="Ingrese la descripción del informe de impacto"></textarea>  
-		</div>
 
 	<div class="col-md-12" >
 		<div class="col-md-9" id="MensajeGuardado">
 
 		</div> 
 		<div class="col-md-3" align="right">
-			<input type="hidden" name="id_impacto_diario" id="id_impacto_diario"></input> 
+			<input type="hidden" name="id_impacto_diario" id="id_impacto_diario" value="<?php echo $id_impacto_diario; ?>"></input>
 			<input type="hidden" id="registrar" name="registrar" value="registrar"></input> 
 			<input type="button" name="GuardarGeneral" id="GuardarGeneral" value="Guardar Datos Generales" class="btn btn-primary" /> </input> 
 		</div> 
@@ -370,10 +478,11 @@ $estado_impacto = 'Nuevo';
 				
 			<div class="row"><p></p>
 				<div class="col-md-12">
-					<input type="hidden" name="filter" id="filter" value="0000" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
-					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="50" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
-					<input type="hidden" name="id_categoria" id="id_categoria" class="form-control k-invalid" required="" data-required-msg="id_categoria" aria-invalid="true">
-					<input type="hidden" name="id_color" id="id_color" class="form-control k-invalid" required="" data-required-msg="id_color" aria-invalid="true">
+					<input type="hidden" name="filter" id="filter" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
+					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="<?php echo $id_impacto_diario?>" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
+					<input type="hidden" name="id_categoria" id="id_categoria" class="form-control k-invalid" required="" data-required-msg="Seleccione impacto" aria-invalid="true">
+					<input type="hidden" name="id_color" id="id_color" class="form-control k-invalid" required="" data-required-msg="Seleccion probabilidad" aria-invalid="true">
+					<input type="hidden" name="id_impacto_probabilidad" id="id_impacto_probabilidad" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
 					<textarea name="categoria" id="categoria" class="form-control" style="font-size: 11pt;font-weight: bold"></textarea>
 				</div>	
 			</div>	
@@ -387,6 +496,7 @@ $estado_impacto = 'Nuevo';
 					</div>
 			
 				</div>	
+				
 				<div class="col-md-4">
 					<label>Horario</label> 
 					<div id="contenedorHorario" class="form-check" style="background: #FFFFFF" placeholder="Ingrese horario" required data-required-msg="Ingrese horario">
@@ -394,17 +504,18 @@ $estado_impacto = 'Nuevo';
 						<ul style="color:#4F7C91;">
 							<?php                                  
 							while ($rowHorario = pg_fetch_array($resultHorario, null, PGSQL_ASSOC)) {
-							echo "<div class='checkbox'><input name='datosh[]' type='checkbox' value=".$rowHorario['id_horario'].">".$rowHorario['horario']."</div>";
+							echo "<div class='checkbox'><input class='group1' name='datosh[]' type='checkbox' value=".$rowHorario['id_horario']." >".$rowHorario['horario']."</div>";
 					
 						} 
 						pg_free_result($resultHorario);              
 						?>    
+						<div class='checkbox'><input class='group2' name='datosh[]' type='checkbox' value="5" onClick='todoElDia()'>Todo el día</div>
 						</ul>
 						</label>
 					</div>
 					<div>
 						<!--<input type="hidden" name="hidden_municipio" id="hidden_municipio" />-->
-						<input type="submit" name="insert" id="action" class="btn btn-info" value="Agregar Municipios" />
+						<input type="submit" name="insert" id="action" class="btn btn-primary" value="Agregar Municipios" />
 					</div>
 				</div>	
 			</div>			
@@ -420,126 +531,102 @@ $estado_impacto = 'Nuevo';
 		</div>
 	</div>
 </div>
-
 <!-- FIN DE LA FICHA DE INGRESO -->
   
     <div id="menu1" class="tab-pane fade">
-	<h3>Apoyo a pronostico</h3>
-	<div class="row" style="background: #4F7C91;">
-		<div class="col-md-12" style="text-align: center; color:white;" >
-		<h4>Apoyo para diagnostico</h4>
-		</div>
-	</div>  
+		<!--<h3>Apoyo a pronostico</h3>-->
+		<div class="row" style="background: #4F7C91;">
+			<div class="col-md-12" style="text-align: center; color:white;" >
+			<h4>Mapa de Pronóstico de Impacto</h4>
+			</div>
+		</div>  
 
-	<div class="row" class="mi_target" style="background: #CFDEE2;">
-		<div class="col-md-12" style="margin-top: 10px; height:100%;">
-		<iframe width="100%" height="622px" src="mapa_alertas.php?id=3"></iframe>
-		</div>
-	</div>  
+		<div class="row" class="mi_target" id= "mi_target" style="background: #FFFFFF;">
+			<!-- CONTENIDO AQUI -->
+		</div>  
     </div>
+	
+    <div id="menu2" class="tab-pane fade">
+		<!--<h3>Apoyo a pronostico</h3>-->
+		<div class="row" style="background: #4F7C91;">
+			<div class="col-md-12" style="text-align: center; color:white;" >
+			<h4>Pronóstico Numerico</h4>
+			</div>
+		</div>  
+
+		<div class="row" class="mi_target" id= "mi_pronostico" style="background: #FFFFFF;">
+			<!-- CONTENIDO AQUI -->
+			<iframe id='prono_ivan' width='100%' height='1700px' scrolling='no' frameBorder='0' src='http://srt.marn.gob.sv/web/geotiff/map.php' ></iframe>
+			<!-- CONTENIDO AQUI -->
+		</div>  
+    </div>	
 
   </div>
 
 
 <script>
-function explode(){
-  // alert("Municipios Agregados");
-  ShowProgressAnimation();
-  updateContent($('#zona_dpto').val());
-}
-// setTimeout(explode, 1000);
 
-function addContent(va) {
-	// alert(va);
+
+/***************************************/
+/* FUNCIONES IVAN MORAN */
+/***************************************/
+getnoMuni(<?php echo $id_impacto_diario; ?>);
+// mi_mapa(<?php echo $id_impacto_diario; ?>);
+toggle_visibility('infoMunicipios');
+addContent(<?php echo $id_impacto_diario; ?>);
+$('#formGeneral').find('input, textarea, button, select').attr('disabled','disabled');
+
+// ConteConsecuencias
+// contenedorHorario
+function validaCon(name) {
+
+	if($("#err" + name).length != 0) {
+		$("#err" + name).remove();
+	}	
+	if(jQuery("#"+name+" input[type=checkbox]:checked").length >=1) {
+		$("#"+name).after("<div id='err"+name+"' style='text-align:center;color:red;'></div>");
+		vali = true;
+		} 
+	else {
+		$("#"+name).after("<div id='err"+name+"' style='text-align:center;color:red;'>SELECCIONA UN VALOR</div>");
+		vali = false;
+		}
+	return vali;
+}
+
+// Funcion encargada de mostrar el mapa con los municipios seleccionados
+function mi_mapa(va){
+	var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"' ></iframe>";
+	$('#mi_target').html(data);
+}
+
+function mapaRefresh(){
+	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
+	if (id_impacto_diario != '') {
+		// console.log(id_impacto_diario);
+		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+id_impacto_diario+"' ></iframe>";
+		$('#mi_target').html(data);
+	}
+}
+
+function ediContent(va) {
+	//$("#id_idiario_det").val(va);
+	var area = $('#id_area').val();
+	var midata = {id:va, area:area};
     $.ajax({
 		async : true,
 		method: "GET",
-		url: "muni.php",
-		data: "id="+va,
+		url: "editCurMuni.php",
+		data: midata,
 		success: function(msg){
-			$("#verMunicipios").html(msg);
+			$("#curMuni").html(msg);
        }
      });	
+	// Agregar un ajax que traida todo
+	toggle_visibility("loading-div-popup-form");
+	// console.log(va);
+	// console.log($("#id_idiario_det").val(va));
 }
-
-function getnoMuni(va) {
-	var x = {}; // this makes an object.	
-	// alert(va);
-	$.ajax({
-		async : true,
-		method: "GET",
-		url: "nomuni.php",
-		data: "id="+va,
-		success: function(msg){
-			var obj = jQuery.parseJSON(msg);
-			$("#filter").val(obj);
-			// var filter 	= msg;
-			console.log(filter);
-			// return filter.x;
-	   },
-		error: function() {
-			alert('Error occured');
-		}
-	 });
-}
-
-/***************************************/
-// UPDATE MENU DE MUNICIPIOS
-function updateContent(query) {
-		var action = "zona_dpto";
-		if (query == "" ) { query = "Ahuachapán" };
-		var resultZonaDpto = 'municipio';
-		
-		// getnoMuni($('#id_impacto_diario_m').val());
-		var nomuni = String($("#filter").val());
-
-		// console.log("filter2:"+nomuni);
-		// console.log("resultZonaDpto:"+resultZonaDpto);
-		$.ajax({
-			url:'MeteorologiaProcesos.php',
-			method:"POST",
-			data:{action:action, query:query, nomuni:nomuni},
-			success:function(data){
-				$('#'+resultZonaDpto).html(data);
-				// console.log($('#'+resultZonaDpto).html(data));
-				if(resultZonaDpto == 'municipio'){
-					// console.log("MUNICIPIO"+data);
-					$('#municipio').val();
-					$('#municipio').data('plugin_lwMultiSelect').updateList();
-				}
-			}
-		});
-}
-
-
-function deleteContent(va){
-	// data = {id:va, opcion:'deleteContent'};
-	$.ajax({
-		url:'MeteorologiaProcesos.php',
-		method:"POST",
-		data: {id:va, opcion:'deleteContent'},
-		success:function(data){
-			//alert (categoria);	
-			// console.log(JSON.stringify(categoria));
-			console.log(data);
-			}
-		});			
-	
-}
-/***************************************/
-
-// Funcion para ocultar y mostrar elementos
-function toggle_visibility(id) {
-	var e = document.getElementById(id);
-	if(e.style.display == 'none')
-		e.style.display = 'block';
-	else
-		e.style.display = 'none';
-}	
-
-$(document).ready(function () {
-	$("#loading-div-background").css({ opacity: 0.8 });
-});
 
 function ShowProgressAnimation() {
 	$("#loading-div-background").show();
@@ -549,13 +636,129 @@ function HideProgressAnimation() {
 	$("#loading-div-background").hide();
 }
 
+function explode(){
+  // ShowProgressAnimation();
+  updateMuni($('#zona_dpto').val());
+}
 
+function refresh(){
+  updateMuni($('#zona_dpto').val());
+}
+// setTimeout(explode, 1000);
+
+// ------------------------------------------
+// ACTUALIZAR LISTA DE MUNICIPIOS SELECCIONADOS //
+function addContent(va) {
+    $.ajax({
+		async : true,
+		method: "GET",
+		url: "muni.php",
+		data: "id="+va,
+		success: function(msg){
+			$("#verMunicipios").html(msg);
+       }
+     });	
+	 // mi_mapa(va);
+	 // refresh();
+}
+
+// ------------------------------------------
+// ACTUALIZAR LISTA DE MUNICIPIOS YA SELECCIONADOS //	
+function getnoMuni(va) {
+	$.ajax({
+		url:'MeteorologiaProcesos.php',
+		method:"POST",
+		data: {id:va, opcion:'getnoMuni'},
+		success:function(data){
+			var obj = jQuery.parseJSON(data);
+			$("#filter").val(obj);
+			refresh();
+			$('#action').prop('disabled', false);
+			HideProgressAnimation();
+			// console.log(filter);
+			}
+		});
+}
+
+// ------------------------------------------
+// ACTUALIZAR LISTA DE MENU DE MUNICIPIOS //	
+function updateMuni(query) {
+		var action = "zona_dpto";
+		if (query == "" ) { query = "Ahuachapán" };
+		var resultZonaDpto = 'municipio';
+		var nomuni = String($("#filter").val());
+
+		$.ajax({
+			url:'MeteorologiaProcesos.php',
+			method:"POST",
+			data:{action:action, query:query, nomuni:nomuni},
+			success:function(data){
+				$('#'+resultZonaDpto).html(data);
+				if(resultZonaDpto == 'municipio'){
+					// console.log("MUNICIPIO"+data);
+					$('#municipio').val();
+					$('#municipio').data('plugin_lwMultiSelect').updateList();
+				}
+			}
+		});
+}
+
+// ------------------------------------------
+// BORRAR MUNICIPIOS DE MENU DE MUNICIPIOS //
+function delContent(va){
+	ShowProgressAnimation();
+	// data = {id:va, opcion:'deleteContent'};
+	$.ajax({
+		url:'MeteorologiaProcesos.php',
+		method:"POST",
+		data: {id:va, opcion:'deleteContent'},
+		success:function(data){
+			//alert (categoria);	
+			// console.log(JSON.stringify(categoria));
+			// console.log(data);
+			addContent($('#id_impacto_diario_m').val());
+			getnoMuni($('#id_impacto_diario_m').val());
+			// document.getElementById("msg_text").innerHTML = "Municipio Borrado Correctamente";
+			// setTimeout(explode, 500);
+			}
+		});
+}
+// ------------------------------------------
+// FUNCION PARA OCULTAR Y MOSTRAR ELEMENTOS DIVS
+function toggle_visibility(id) {
+	var e = document.getElementById(id);
+	if(e.style.display == 'none')
+		e.style.display = 'block';
+	else
+		e.style.display = 'none';
+}
+
+// ------------------------------------------
+// FUNCION PARA INDICAR QUE UNA TAREA SE HIZO CORRECTAMENTE
+$(document).ready(function () {
+	$(".loading-div-background").css({ opacity: 0.8 });
+	
+});
+
+/*
+function myFunction(va) {
+	$("#id_idiario_det").val(va);
+	toggle_visibility("loading-div-popup-form");
+	// console.log(va);
+	// console.log($("#id_idiario_det").val(va));
+}
+*/
 
 $(document).ready(function(){
 
 window.onbeforeunload = function() {
     return "¿Esta seguro que quiere salir de esta pagina?";
 }
+
+
+/***************************************/
+/* FIN FUNCIONES IVAN MORAN */
+/***************************************/
 
 //--------------------------------------------------------
 //--------------------------------------------------------
@@ -591,8 +794,7 @@ window.onbeforeunload = function() {
 //*************************************-----------------------------------------------------------------------------------
 
 
-$(function() {	
-
+$(function() {
 	var validator = $("#formGeneral").kendoValidator({
 		rules: {
 			verifySelect: function(input){
@@ -613,7 +815,7 @@ $(function() {
 $("#GuardarGeneral").on("click", function(){
 	if (validator.validate()) {
 		// alert(document.forms["formGeneral"].submit();
-		$.ajax({
+		/* $.ajax({
 			url:'MeteorologiaProcesos.php',
 			method:"POST",
 			data:{registrar: 'registrar', id_area:<?php echo $id_area_Ini; ?>, id_fenomeno:<?php echo $id_fenomeno_Ini; ?>, correlativo:<?php echo $correlativo; ?>, titulo:$("#titulo").val(), descripcion:$("#descripcion").val(), periodo:$("#periodo").val(), id_estado_impacto:$("#id_estado_impacto").val(), ImpactoFenomeno:$("#ImpactoFenomeno").val(),fecha_ini:$("#fecha_ini").val(),fecha_fin:$("#fecha_fin").val()},
@@ -624,14 +826,15 @@ $("#GuardarGeneral").on("click", function(){
 				document.getElementById("MensajeGuardado").innerHTML = "Los registros fueron guardados correctamente, inicie asignación de municipios pronosticando sus impactos.";
 
 				$('#formGeneral').find('input, textarea, button, select').attr('disabled','disabled');
-				toggle_visibility('infoMunicipios');
+				//toggle_visibility('infoMunicipios');
 			}
 		}).done(function(con){
 			var obj = jQuery.parseJSON(con);
 			var id_impacto = obj['currval'];
 			$("#id_impacto_diario_m").val(id_impacto);
+			mi_mapa(id_impacto);
 			// console.log(id_impacto_diario);
-		});
+		}); */
 	} 
 	else {
 		status.text("Los registros a guardar no son validos")
@@ -647,24 +850,20 @@ return false;
 function setInputDateIni(_id){
     var _dat = document.querySelector(_id);
     var hoy = new Date(),
-        d = hoy.getDate(),
-        m = hoy.getMonth()+1, 
-        y = hoy.getFullYear(),
-        data;
+		d = hoy.getDate(),
+		m = hoy.getMonth()+1, 
+		y = hoy.getFullYear(),
+		data;
 
-    if(d < 10){
-        d = "0"+d;
-    };
-    if(m < 10){
-        m = "0"+m;
-    };
+    if(d < 10){ d = "0"+d; };
+    if(m < 10){ m = "0"+m; };
 
     data = y+"-"+m+"-"+d;
-    // console.log(data);
     _dat.value = data;
+    // console.log(data);
 };
 
-setInputDateIni("#fecha_ini");
+// setInputDateIni("#fecha_ini");
 
 //--------------------------------------------------------
 //--------------------------------------------------------
@@ -689,8 +888,8 @@ function setInputDateFin(_id){
     _dat.value = data;
 };
 
-setInputDateFin("#fecha_fin");
-	
+// setInputDateFin("#fecha_fin");
+
 });
 
 //*************************************-----------------------------------------------------------------------------------
@@ -707,6 +906,7 @@ var validator = $("#formMunicipios").kendoValidator({
 				if (input.is("[class=requerido]")) {
 					ret = input.val() >=1;
 				}
+				// if() { ret = true; }
 			return ret;
 		}
 		},
@@ -720,19 +920,13 @@ status = $(".status");
 // ***************************************************************************
 $('#municipio').lwMultiSelect();
 $('.action').change(function(){
-	//alert('holaaaaa');
 	if($(this).val() != ''){
-		//alert($(this).attr("id_muni_zona_dpto"));
-		//alert($(this).val());
-		
+	
 		var action = $(this).attr("id");
 		var query = $(this).val();
 		var resultZonaDpto = '';
-		// String(nomuni);
 		// console.log("action:"+action);
 		// console.log("query:"+$(this).val());
-		//alert(query);
-		//alert(resultZonaDpto);
 		if(action == 'tipo_zona_dpto'){
 			resultZonaDpto = 'zona_dpto';
 		}
@@ -740,15 +934,21 @@ $('.action').change(function(){
 			resultZonaDpto = 'municipio';
 		}
 		
-		getnoMuni($('#id_impacto_diario_m').val());
+		var id_area =  $('#id_area').val();
+		// console.log(id_area);
+		
 		var nomuni = String($("#filter").val());
+		getnoMuni($('#id_impacto_diario_m').val());
+		addContent($('#id_impacto_diario_m').val());
+		/* setTimeout(refresh, 800); */
+
 		// console.log("filter1:"+filter);
 		// console.log("filter2:"+nomuni);
 		// console.log("resultZonaDpto:"+resultZonaDpto);
 		$.ajax({
 			url:'MeteorologiaProcesos.php',
 			method:"POST",
-			data:{action:action, query:query, nomuni:nomuni},
+			data:{action:action, query:query, nomuni:nomuni, id_area:id_area},
 			success:function(data){
 				$('#'+resultZonaDpto).html(data);
 				// console.log($('#'+resultZonaDpto).html(data));
@@ -768,17 +968,30 @@ $('.action').change(function(){
 /*****************************************************/
 	$('#formMunicipios').on('submit', function(event){
 	event.preventDefault();
+	// ConteConsecuencias
+	// contenedorHorario
+	if(validaCon('ConteConsecuencias')==false)  { return;}
+	if(validaCon('contenedorHorario')==false) 	{ return;}
+	
+	$('#action').prop('disabled', true);
+	ShowProgressAnimation();
 
 		if($('#tipo_zona_dpto').val() == ''){
 			alert("Please Select Country");
+			$('#action').prop('disabled', false);
+			HideProgressAnimation();
 			return false;
 		}
 		else if($('#zona_dpto').val() == ''){
 			alert("Please Select State");
+			$('#action').prop('disabled', false);
+			HideProgressAnimation();
 			return false;
 		}
 		else if($('#municipio').val() == ''){
-			alert("Please Select City");
+			alert("Seleccione un Municipio");
+			$('#action').prop('disabled', false);
+			HideProgressAnimation();
 			return false;
 		}
 		else {
@@ -787,165 +1000,126 @@ $('.action').change(function(){
 			// var formMunicipios = $('#formMunicipios').serialize();
 			var AgregarMuni ='AgregarMuni';
 
-
 			$('#municipio').val($('#municipio').val());
 			//$('#action').attr('disabled', 'disabled');
 			var formMunicipios = $(this).serialize();
-			// var formMunicipios = $(this);
-			// console.log('********************');
-			// console.log(formMunicipios);
-			// console.log('********************');
 
 			$.ajax({
 				url:"MeteorologiaProcesos.php",
 				method:"POST",
-				data:{formMuni:formMunicipios},
+				data:{formMuni:formMunicipios, opcion:'insertContent'},
 				success:function(data) {
-				// $('#action').attr("disabled", "disabled");
-				// alert('Entro al boton');
 				// console.log(data);
 				var id_imp = $('#id_impacto_diario_m').val();
 				addContent(id_imp);
 				getnoMuni($('#id_impacto_diario_m').val());
-				setTimeout(explode, 500);
-				if(data == 'done') {
-					// upContent($('#zona_dpto').val());
-					// alert('Data Inserted');
-					// $('#municipio').html('');
-					// $('#municipio').data('plugin_lwMultiSelect').updateList();
-					// $('#municipio').data('plugin_lwMultiSelect').removeAll();
-					// $('#insert_data')[0].reset();
-				}
+				// document.getElementById("msg_text").innerHTML = "Municipios Agregados Correctamente";
+				// setTimeout(explode, 800);
 				}
 			});
 		}
 	});
 
-	// FUNCION PARA IMPACTO Y PROBABILIDAD QUE COLOREA -----------------------------------
+	// COLOREA POR IMPACTO -----------------------------------
 	$('#impacto').change(function() {
-	// alert ('Entro en impacto');
-	var id_area = $("#id_area").val();
-	var id_fenomeno = $("#id_fenomeno").val();
-	var probabilidad = $("#probabilidad").val();
-	var impacto = $(this).val();
-	consecuencias = {id_area:id_area,id_fenomeno:id_fenomeno,impacto:impacto,consecuencias:'consecuencias'};
-	$.ajax({
-		url: "MeteorologiaProcesos.php",
-		type: "POST",
-		data: consecuencias
-	}).done(function(con){
-	//alert (consecuencias);	
-	var obj = jQuery.parseJSON(con);
-	var id_consecuencia_impacto = obj['id_consecuencia_impacto'];
-	var consecuencia = obj[0]['consecuencia'];
-	// console.log(obj);
-
-	varCons='';
-	var size = Object.keys(obj).length;
-	// console.log(size);
-
-	for (var i = 0; i < size ; i++) {
-		varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+">"+obj[i]['consecuencia']+"</div>";
-	}
-	// console.log(consecuencia);
-	$("#ConteConsecuencias").val(consecuencia);
-
-	document.getElementById("ConteConsecuencias").innerHTML = varCons;
-
-	//CONSULTANDO COLOR SEGUN PROBABILIDAD  -----------------------------------	
-	if(probabilidad != ''){
-			categoria = {probabilidad:probabilidad,impacto:impacto,categoria:'categoria'};
-			$.ajax({
-				url: "MeteorologiaProcesos.php",
-				type: "POST",
-				data: categoria
-			}).done(function(categoria){
-			//alert (categoria);	
-			// console.log(JSON.stringify(categoria));
-			var id_color = categoria['id_color'];
-			var id_categoria = categoria['id_categoria'];
-			var categoria = categoria['categoria'];
-			// console.log('**********'+id_categoria+categoria+id_color+'**********');
-
-			$('#categoria').val(categoria);
-			$('#id_categoria').val(id_categoria);
-			$('#id_color').val(id_color);
-
-			if (id_color == 1){
-				$('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");// Verde
-			}
-			if (id_color == 2){
-				$('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");// Amarillo
-			}
-			if (id_color == 3){
-				$('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");// Anaranjado
-			}
-			if (id_color == 4){
-				$('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); // Rojo
-			}
+		var id_area = $("#id_area").val();
+		var id_fenomeno = $("#id_fenomeno").val();
+		var probabilidad = $("#probabilidad").val();
+		var impacto = $(this).val();
+		
+		$.ajax({
+			url: "MeteorologiaProcesos.php",
+			type: "GET",
+			data: {id_area:id_area,id_fenomeno:id_fenomeno,impacto:impacto, opt:'consecuencias'},
+			}).done(function(con){
+				var obj = jQuery.parseJSON(con);
+				var size = Object.keys(obj).length;
+				var varCons='';
+				for (var i = 0; i < size ; i++) {
+					varCons +="<div class='accept'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" >"+obj[i]['consecuencia']+"</div>";
+				}
+				if (varCons.length==0){
+					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
+					$('#action').prop('disabled',true);
+				}; /******************************************************************************/
+				document.getElementById("ConteConsecuencias").innerHTML = varCons;
+				if(probabilidad != ''){
+					$.ajax({
+						url:'MeteorologiaProcesos.php',
+						method:"GET",
+						data: {probabilidad:probabilidad,impacto:impacto, opt:'categoria'},
+						success:function(categoria){
+							console.log(categoria);
+							var cat = jQuery.parseJSON(categoria);
+							$('#id_color').val(cat['id_color']);
+							$('#categoria').val(cat['categoria']);
+							$('#id_categoria').val(cat['id_categoria']);
+							$('#id_impacto_probabilidad').val(cat['id_impacto_probabilidad']);
+							if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");	/*Verde*/ 		}
+							if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");	/*Amarillo*/	}
+							if (cat['id_color'] == 3){	$('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");	/*Anaranjado*/	}
+							if (cat['id_color'] == 4){	$('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); 	/*Rojo*/		}
+						}
+					});
+				}
+			
 			});
-	}
-	});
-
 	});
 	
+	// COLOREA POR PROBABILIDAD -----------------------------------
 	$('#probabilidad').change(function() {
-	
-	var impacto = $("#impacto").val();
-	var probabilidad = $(this).val();
-	
-	//CONSULTANDO COLOR SEGUN IMPACTO
-	if(impacto != ''){
-
-	categoria = {probabilidad:probabilidad,impacto:impacto,categoria:'categoria'};
-	$.ajax({
-		url: "MeteorologiaProcesos.php",
-		type: "POST",
-		data: categoria
-	}).done(function(categoria){
-	//alert (categoria);	
-	// console.log(JSON.stringify(categoria));
-	var id_color = categoria['id_color'];
-	var id_categoria = categoria['id_categoria'];
-	var categoria = categoria['categoria'];
-	// console.log('**********'+id_categoria+categoria+id_color+'**********');
-	
-	$('#categoria').val(categoria);
-	$('#id_categoria').val(id_categoria);
-	$('#id_color').val(id_color);
-	
-	if (id_color == 1){ 
-		$('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");// Verde rgba(123, 239, 178, 1)
-	}
-	if (id_color == 2){ 		
-		$('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");// Amarillo rgba(255, 255, 126, 1)
-	}
-	if (id_color == 3){
-		$('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");// Anaranjado rgba(252, 185, 65, 1)
-	}
-	if (id_color == 4){
-		$('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); // Rojo rgba(236, 100, 75, 1)
-	}
+		var impacto = $("#impacto").val();
+		var probabilidad = $(this).val();
+		if(impacto != ''){
+			$.ajax({
+				url:'MeteorologiaProcesos.php',
+				method:"GET",
+				data: {probabilidad:probabilidad,impacto:impacto, opt:'categoria'},
+				success:function(categoria){
+					var cat = jQuery.parseJSON(categoria);
+					$('#id_color').val(cat['id_color']);
+					$('#categoria').val(cat['categoria']);
+					$('#id_categoria').val(cat['id_categoria']);
+					$('#id_impacto_probabilidad').val(cat['id_impacto_probabilidad']);
+					if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");	/*Verde*/ 		}
+					if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");	/*Amarillo*/	}
+					if (cat['id_color'] == 3){ $('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");	/*Anaranjado*/	}
+					if (cat['id_color'] == 4){ $('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); 	/*Rojo*/		}
+				}
+			});
+		}				  
 	});
-	}
-						      
-	});
-
 
 	// });
-
 });
 
+function todoElDia() {
+if($("input.group2").is(":checked") == true){
+	$("input.group1").prop("disabled", true);
+	// console.log('DESABILITADO');
+}
+else 
+	$("input.group1").prop("disabled", false);
+	// console.log('HABILITADO');
+}
 </script>
-
-<div id="loading-div-background" style="opacity: 0.8; display: none;">
-	<div class="ui-corner-all" id="loading-div">
+<div id="loading-div-background" class="loading-div-background" style="display: none;">
+	<div class="ui-corner-all loading-div" id="loading-div" >
 		<p><br><br></p>
-		<!--<img alt="Loading.." src="Imagenes/loading.gif" style="height: 30px; margin: 30px;">-->
-		<h2 style="color: white; font-weight: normal;">Municipios Agregados Correctamente</h2>
-		<button id="Button1" onclick="HideProgressAnimation();">Aceptar</button>
+		<img alt="Loading.." src="Imagenes/loading.gif" style="height: 30px; margin: 30px;">
+		<!--<h2 id="msg_text" style="color: white; font-weight: normal;">Municipios Agregados Correctamente</h2>-->
+		<!--<button id="Button1" onclick="(HideProgressAnimation(), refresh())">Aceptar</button>-->
 	</div>
 </div>
+
+<div id="loading-div-popup-form" class="loading-div-background-form" style="display: none;">
+	<div class="ui-corner-all loading-div-form" id="loading-div-form" >
+	<div><br></div>
+	<div id="curMuni">
+		<!-- CONTENIDO DE MUNICIPIO SELECCIONADO -->
+	</div>
+	</div>
+</div>
+
 </body>
 </html>
-

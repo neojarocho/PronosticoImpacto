@@ -935,7 +935,7 @@ function toggle_visibility(id) {
 <div class="center">
 <!--<div class="headerblock">- Mapa de pronóstico de Impacto -</div>-->
 	<div class='row' style='text-align:center;'>
-	<table style='width:100%' border=1>																		
+	<table style='width:100%' border=3>																		
 	<tr>
 		<?php 
 			function format_date($fe) {
@@ -961,9 +961,8 @@ function toggle_visibility(id) {
 			<div class='ficha'><b>Correlativo</b>:		<?php echo @$ti[0]['correlativo']; ?>	</div>											
 			<div class='ficha'><b>Período</b>:			<?php echo @$ti[0]['periodo']; ?>	
 			</div>											
-		</td>																							
-																										
-	</tr>																								
+		</td>																																														
+	</tr>
 	</table>	
 	</div>
 </div>
@@ -1038,7 +1037,7 @@ function toggle_visibility(id) {
 			<div class='ficha'><b>Descripción</b>:		<?php echo @$sh[0]['descripcion']; ?> 		</div>		
 		</td>																							
 																										
-	</tr>																								
+	</tr>	
 	</table>	
 	</div>
 	<!-- CONTENIDO DATA -->
