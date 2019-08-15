@@ -8,7 +8,7 @@ include('database_connection.php');
 ////---------------------------------------------------------------------------------------------------------------- ULTIMOS
 $sqlGridImpactoDiarioHisULTIMOS="SELECT id_unificado,fenomeno, titulo_general, periodo,to_char(fecha_ingresado, 'DD/MM/YYYY - HH:MI:SS') as fecha, extract(day from  fecha_ingresado), des_categoria, des_categoria, (CASE WHEN nivel_impacto_publicado ISNULL THEN '1' 
             ELSE nivel_impacto_publicado
-       END) as nivel FROM public.unificado WHERE fecha_ingresado > (CURRENT_DATE - 10) order by fecha_ingresado desc;";
+       END) as nivel FROM public.unificado WHERE fecha_ingresado > (CURRENT_DATE - interval '2 week') order by fecha_ingresado desc;";
 $sqlGridImpactoDiarioHisULTIMOS = pg_query($sqlGridImpactoDiarioHisULTIMOS) or die('Query failed: '.pg_last_error());
 
 
@@ -190,21 +190,7 @@ ULTIMOS.style.display = 'block';
 <div style="background: #e4e6e6; padding-top: 15px;padding-bottom: 15px;">
 
 
-        <div class="row" style="margin: 5px;">
-            <div class="col-md-12">
 
-
-                <button type="button" id="BotonUltimos" onclick="Ocultar('ULTIMOS');" class="list-group-item active EfectoBtN" style="background-color:#55656f; text-align: center;">
-                   
-                    <h5>Últimos Pronósticos</h5> </button>
-
-
-            </div>
-
- 
-        </div>
-
-          <p></p>
 
 
         <div class="row" style="margin: 5px;">
@@ -214,7 +200,7 @@ ULTIMOS.style.display = 'block';
                 <button type="button" id='BotonLluvias' onclick="Ocultar('LLUVIA');" class="list-group-item active EfectoBtN" style="background-color:#3b7db5; border-color:#55656f; text-align: center;">
                     <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/Lluvias.png">
                     <h5>Lluvias intensas y tormentas eléctricas</h5> </button>
-                    </a>
+                    
 
         
 
@@ -268,11 +254,25 @@ ULTIMOS.style.display = 'block';
 
 
 
- 
+   <br>
         </div>
 
 
+        <div class="row" style="margin: 5px;">
+            <div class="col-md-12">
 
+ <br>
+                <button type="button" id="BotonUltimos" onclick="Ocultar('ULTIMOS');" class="list-group-item active EfectoBtN" style="background-color:#55656f; text-align: center;">
+                   
+                    <h5>Últimos Pronósticos Integrados</h5> </button>
+
+
+            </div>
+
+ 
+        </div>
+
+        
               
 
 
@@ -289,29 +289,31 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="ULTIMOS">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #55656f; color: white; text-align: center; font-size: 15px;">ÚLTIMOS PRONÓSTICOS DE IMPACTO</caption>
+                <caption style="background: #55656f; color: white; text-align: center; font-size: 15px;">ÚLTIMOS PRONÓSTICOS INTEGRADOS</caption>
                 <tr style="background:#afc2ce;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
-                        <th style="text-align: center;" width="10%">Categoría</th>               
+                        <th style="text-align: center;" width="10%">Categoría</th>          
                 </tr>  
                 <?php  
                 while($row = pg_fetch_array($sqlGridImpactoDiarioHisULTIMOS))  
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
 
 
-                    <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>   
+                    <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
 
-
+                    <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -333,25 +335,28 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="LLUVIA">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #428bca; color: white; text-align: center; font-size: 15px;">PRONOSTICOS DE IMPACTOS - LLUVIAS INTENSAS Y TORMENTAS ELÉCTRICAS</caption>
+                <caption style="background: #428bca; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - LLUVIAS INTENSAS Y TORMENTAS ELÉCTRICAS</caption>
                 <tr style="background:#c6dcef;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
-                        <th style="text-align: center;" width="10%">Categoría</th>            
+                        <th style="text-align: center;" width="10%">Categoría</th>           
                 </tr>  
                 <?php  
                 while($row = pg_fetch_array($sqlGridImpactoDiarioHisLLUVIAS))  
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
-                                        <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>   
+                                        <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
+                    <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -374,25 +379,28 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="TEMPORAL">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #04b2ce; color: white; text-align: center; font-size: 15px;">PRONOSTICOS DE IMPACTOS - TEMPORAL</caption>
+                <caption style="background: #04b2ce; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - TEMPORAL</caption>
                 <tr style="background:#cdf3f9;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
-                        <th style="text-align: center;" width="10%">Categoría</th>                
+                        <th style="text-align: center;" width="10%">Categoría</th>              
                 </tr>  
                 <?php  
                 while($row = pg_fetch_array($sqlGridImpactoDiarioHisTEMPORAL))  
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
-                                        <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>   
+                                        <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
+                                    <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -416,13 +424,15 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="SEQUIA">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #6f4c8a; color: white; text-align: center; font-size: 15px;">PRONOSTICOS DE IMPACTOS - SEQUIA</caption>
+                <caption style="background: #6f4c8a; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - SEQUIA</caption>
                 <tr style="background:#dccfe6;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
                         <th style="text-align: center;" width="10%">Categoría</th>               
@@ -432,9 +442,10 @@ ULTIMOS.style.display = 'block';
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
-                                        <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>    
+                                        <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>    
+                                        <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -457,25 +468,28 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="VIENTOS">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #b9751c; color: white; text-align: center; font-size: 15px;">PRONOSTICOS DE IMPACTOS - VIENTOS FUERTES</caption>
+                <caption style="background: #b9751c; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - VIENTOS FUERTES</caption>
                 <tr style="background:#f8debd;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
-                        <th style="text-align: center;" width="10%">Categoría</th>               
+                        <th style="text-align: center;" width="10%">Categoría</th>             
                 </tr>  
                 <?php  
                 while($row = pg_fetch_array($sqlGridImpactoDiarioHisVIENTOS))  
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>  
-                                        <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>   
+                                        <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
+                              <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -499,25 +513,28 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="ERUPCION">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #8c4255; color: white; text-align: center; font-size: 15px;">PRONOSTICOS DE IMPACTOS - ERUPCIÓN VOLCÁNICA</caption>
+                <caption style="background: #8c4255; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - ERUPCIÓN VOLCÁNICA</caption>
                 <tr style="background:#dcc6cc;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
-                        <th style="text-align: center;" width="10%">Categoría</th>            
+                        <th style="text-align: center;" width="10%">Categoría</th>          
                 </tr>  
                 <?php  
                 while($row = pg_fetch_array($sqlGridImpactoDiarioHisERUPCION))  
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
-                                        <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>    
+                                        <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>    
+                           <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -541,27 +558,29 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="SISMO">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #147f7a; color: white; text-align: center; font-size: 15px;">PRONOSTICOS DE IMPACTOS - SISMOS</caption>
+                <caption style="background: #147f7a; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - SISMOS</caption>
                 <tr style="background:#b9dddb;">
-                        <th style="text-align: center;"   width="3%"></th>
-                        <th style="text-align: center;"   width="3%"></th> 
-                        <th style="text-align: center;"   width="3%"></th>     
+                        <th style="text-align: center;"   width="3%">View</th>
+                        <th style="text-align: center;"   width="3%">Print</th> 
+                        <th style="text-align: center;"   width="3%">Submit</th>
+                        <th style="text-align: center;"   width="3%">Tweet</th>
+                       
                         <th style="text-align: center;" width="13%">Fecha - Hora</th>
-                        <th style="text-align: center;" width="40%">Título</th>
+                        <th style="text-align: center;" width="37%">Título</th>
                         <th style="text-align: center;" width="20%">Fenomeno</th>
                         <th style="text-align: center;" width="8%">Período</th>
-                        <th style="text-align: center;" width="10%">Categoría</th>             
+                        <th style="text-align: center;" width="10%">Categoría</th>           
                 </tr>  
                 <?php  
                 while($row = pg_fetch_array($sqlGridImpactoDiarioHisSISMO))  
                 {  
                 ?>  
                 <tr style="background:#FFFFFF;">
-                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('ConsolidarReporte.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
-                                        <td align="center"><button type="button" class="btn btn-warning glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<td><?php echo $row["nivel"]; ?></td>')";></button></td>   
+                                        <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
 
-                    
+                              <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     

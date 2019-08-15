@@ -249,6 +249,68 @@ iframe {
 #pnum {
 	float: right !important;
 }
+
+	#fieldlist {
+		margin: 0;
+		padding: 0;
+	}
+	
+	#fieldlist li {
+		list-style: none;
+		padding-bottom: .7em;
+		text-align: left;
+		display: flex;
+		flex-wrap: wrap;
+	}
+	
+	#fieldlist label {
+		width: 100%;
+		display: block;
+		padding-bottom: .3em;
+		font-weight: bold;
+		text-transform: uppercase;
+		font-size: 12px;
+		color: #444;
+	}
+	
+	#fieldlist li.status {
+		text-align: center;
+	}
+	
+	#fieldlist li .k-widget:not(.k-tooltip),
+	#fieldlist li .k-textbox {
+		margin: 0 5px 5px 0;
+	}
+	.confirm {
+		padding-top: 1em;
+	}
+	
+	.valid {
+		color: green;
+	}
+	
+	.invalid {
+		color: red;
+	}
+	#fieldlist li input[type="checkbox"] {
+		margin: 0 5px 0 0;
+	}
+	
+	span.k-widget.k-tooltip-validation {
+		display; inline-block;
+		width: 160px;
+		text-align: left;
+		border: 0;
+		padding: 0;
+		margin: 0;
+		background: none;
+		box-shadow: none;
+		color: red;
+	}
+	
+	.k-tooltip-validation .k-warning {
+		display: none;
+	}
 </style>
 <link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
 </head>
@@ -326,27 +388,6 @@ iframe {
 			<?php echo $periodo; ?>
 			</select>
 		</div>
-
-<!--
-		<div class="col-md-3">
-			<label>Impacto del fenomeno</label> 
-			<select name="ImpactoFenomeno" id="ImpactoFenomeno" class="form-control" placeholder="Ingrese impacto" required data-required-msg="Ingrese el impacto del fenomeno">
-			<option value="" style="font-style: italic; color: #B2BABB;">Seleción</option>
-			<?php //echo $ImpactoFenomeno; ?>
-			</select>
-		</div>
-	
-		<div class="col-md-3">			      			
-			<label>Fecha Inicia</label> 
-			<input type="hidden" id="fecha_ini" name="fecha_ini" class="form-control" required data-required-msg="Ingrese fecha de inicio"> </input> 
-		</div> 
-
-		<div class="col-md-3">
-			<label>Fecha Finaliza</label>
-			<input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required data-required-msg="Ingrese fecha de finalización"></input> 
-		</div> 
--->
-
 
 	<div class="col-md-12" >
 		<div class="col-md-9" id="MensajeGuardado">
@@ -442,7 +483,7 @@ iframe {
 						<ul style="color:#4F7C91;">
 							<?php                                  
 							while ($rowHorario = pg_fetch_array($resultHorario, null, PGSQL_ASSOC)) {
-							echo "<div class='checkbox'><input name='datosh[]' type='checkbox' value=".$rowHorario['id_horario']." required required data-required-msg=''>".$rowHorario['horario']."</div>";
+							echo "<div class='checkbox'><input name='datosh[]' type='checkbox' value=".$rowHorario['id_horario']." >".$rowHorario['horario']."</div>";
 					
 						} 
 						pg_free_result($resultHorario);              
@@ -472,12 +513,12 @@ iframe {
 <!-- FIN DE LA FICHA DE INGRESO -->
   
     <div id="menu1" class="tab-pane fade">
-		<!--<h3>Apoyo a pronostico</h3>-->
+		<!--
 		<div class="row" style="background: #4F7C91;">
 			<div class="col-md-12" style="text-align: center; color:white;" >
 			<h4>Mapa de Pronóstico de Impacto</h4>
 			</div>
-		</div>  
+		</div>  -->
 
 		<div class="row" class="mi_target" id= "mi_target" style="background: #FFFFFF;">
 			<!-- CONTENIDO AQUI -->
@@ -536,7 +577,7 @@ function validaCon(name) {
 function mi_mapa(va){
 	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
 	if (id_impacto_diario != '') {
-		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+va+"' ></iframe>";
+		var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+va+"' ></iframe>";
 		$('#mi_target').html(data);
 	}
 }
@@ -545,13 +586,14 @@ function mapaRefresh(){
 	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
 	if (id_impacto_diario != '') {
 		// console.log(id_impacto_diario);
-		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+id_impacto_diario+"' ></iframe>";
+		var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+id_impacto_diario+"' ></iframe>";
 		$('#mi_target').html(data);
 	}
 }
 
 function ediContent(va) {
 	//$("#id_idiario_det").val(va);
+	var area = $('#id_area').val();
 	var midata = {id:va};
     $.ajax({
 		async : true,
@@ -680,7 +722,6 @@ $(document).ready(function () {
 	
 });
 
-
 /*
 function myFunction(va) {
 	$("#id_idiario_det").val(va);
@@ -689,7 +730,6 @@ function myFunction(va) {
 	// console.log($("#id_idiario_det").val(va));
 }
 */
-
 
 $(document).ready(function(){
 
@@ -792,21 +832,17 @@ return false;
 function setInputDateIni(_id){
     var _dat = document.querySelector(_id);
     var hoy = new Date(),
-        d = hoy.getDate(),
-        m = hoy.getMonth()+1, 
-        y = hoy.getFullYear(),
-        data;
+		d = hoy.getDate(),
+		m = hoy.getMonth()+1, 
+		y = hoy.getFullYear(),
+		data;
 
-    if(d < 10){
-        d = "0"+d;
-    };
-    if(m < 10){
-        m = "0"+m;
-    };
+    if(d < 10){ d = "0"+d; };
+    if(m < 10){ m = "0"+m; };
 
     data = y+"-"+m+"-"+d;
-    // console.log(data);
     _dat.value = data;
+    // console.log(data);
 };
 
 // setInputDateIni("#fecha_ini");
@@ -921,7 +957,6 @@ $('.action').change(function(){
 	$('#action').prop('disabled', true);
 	ShowProgressAnimation();
 	
-
 		if($('#tipo_zona_dpto').val() == ''){
 			alert("Please Select Country");
 			$('#action').prop('disabled', false);
@@ -941,28 +976,25 @@ $('.action').change(function(){
 			return false;
 		}
 		else {
-			// $('#hidden_city').val($('#municipio').val());
-			// //$('#action').attr('disabled', 'disabled');
-			// var formMunicipios = $('#formMunicipios').serialize();
 			var AgregarMuni ='AgregarMuni';
 
 			$('#municipio').val($('#municipio').val());
-			//$('#action').attr('disabled', 'disabled');
 			var formMunicipios = $(this).serialize();
+			// console.log(formMunicipios);
 
 			$.ajax({
 				url:"MeteorologiaProcesos.php",
 				method:"POST",
 				data:{formMuni:formMunicipios, opcion:'insertContent'},
 				success:function(data) {
-				// console.log(data);
+				console.log(data);
 				var id_imp = $('#id_impacto_diario_m').val();
 				addContent(id_imp);
 				getnoMuni($('#id_impacto_diario_m').val());
-				// document.getElementById("msg_text").innerHTML = "Municipios Agregados Correctamente";
-				// setTimeout(explode, 800);
 				}
 			});
+			
+			
 		}
 	});
 
@@ -982,7 +1014,7 @@ $('.action').change(function(){
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" required data-required-msg=''>"+obj[i]['consecuencia']+"</div>";
+					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
 				}
 				if (varCons.length==0){
 					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
@@ -995,6 +1027,7 @@ $('.action').change(function(){
 						method:"GET",
 						data: {probabilidad:probabilidad,impacto:impacto, opt:'categoria'},
 						success:function(categoria){
+							// console.log(categoria);
 							var cat = jQuery.parseJSON(categoria);
 							$('#id_color').val(cat['id_color']);
 							$('#categoria').val(cat['categoria']);
@@ -1035,9 +1068,7 @@ $('.action').change(function(){
 		}				  
 	});
 
-
 	// });
-
 });
 
 function todoElDia() {

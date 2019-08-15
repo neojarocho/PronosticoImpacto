@@ -119,7 +119,7 @@ include('database_connection.php');
 		$id_fenomeno = $_GET["id_fenomeno"];
 		$id_impacto = $_GET["impacto"];
 
-		$sqlConsecuencias="SELECT ci.id_consecuencia_impacto,ci.id_area, ci.id_fenomeno, ci.id_impacto, (SELECT c.consecuencia FROM public.consecuencia c WHERE c.id_consecuencia=ci.id_consecuencia) AS consecuencia, ci.estado
+		$sqlConsecuencias="SELECT ci.id_consecuencia_impacto,ci.id_consecuencia,ci.id_area, ci.id_fenomeno, ci.id_impacto, (SELECT c.consecuencia FROM public.consecuencia c WHERE c.id_consecuencia=ci.id_consecuencia) AS consecuencia, ci.estado
 		FROM public.consecuencia_impacto ci
 		WHERE ci.id_area=$id_area AND ci.id_fenomeno= $id_fenomeno AND ci.id_impacto= $id_impacto;";
 		$resultConsecuencias = pg_query($sqlConsecuencias) or die('Query failed: '.pg_last_error()); 
@@ -129,7 +129,7 @@ include('database_connection.php');
 			echo json_encode($con, JSON_FORCE_OBJECT);
 		}
 		else {
-			$con[0]['id_consecuencia_impacto']="";
+			$con[0]['id_consecuencia']="";
 			$con[0]['consecuencia']="";
 			echo json_encode("NA", JSON_FORCE_OBJECT);	
 		}
@@ -220,7 +220,7 @@ include('database_connection.php');
 		$sql_co = "";
 		if (count($datos)>0) {
 			for ($i=0; $i<=count($datos)-1; $i++) {
-				$sql_1 = "INSERT INTO public.impacto_diario_consecuencias(id_impacto_diario_detalle, id_consecuencia,id_impacto_diario) VALUES ((SELECT currval('impacto_diario_detalle_id_impacto_diario_detalle_seq')), ".$datos[$i].",".$id_impacto_diario."); \n";
+				$sql_1 = "INSERT INTO public.impacto_diario_consecuencias(id_impacto_diario_detalle, id_consecuencia,id_impacto_diario) VALUES ((SELECT currval('impacto_diario_detalle_seq')), ".$datos[$i].",".$id_impacto_diario."); \n";
 				$sql_co .=$sql_1;
 			}
 		}
@@ -229,7 +229,7 @@ include('database_connection.php');
 		$sql_ho = "";
 		if (count($datosh)>0) {		
 			for ($i=0; $i<=count($datosh)-1; $i++) {
-				$sql_2 = "INSERT INTO public.impacto_diario_horario(id_impacto_diario_detalle, id_horario,id_impacto_diario) VALUES ((SELECT currval('impacto_diario_detalle_id_impacto_diario_detalle_seq')), ".$datosh[$i].",".$id_impacto_diario."); \n";
+				$sql_2 = "INSERT INTO public.impacto_diario_horario(id_impacto_diario_detalle, id_horario,id_impacto_diario) VALUES ((SELECT currval('impacto_diario_detalle_seq')), ".$datosh[$i].",".$id_impacto_diario."); \n";
 				$sql_ho .=$sql_2;
 			}
 		}
@@ -239,16 +239,21 @@ include('database_connection.php');
 		for ($i=0; $i<=count($code_muni)-1; $i++) {
 		// INSERT INTO persons (lastname,firstname) VALUES ('Moran', 'Ivan') RETURNING id;
 		$sql = 	"INSERT INTO public.impacto_diario_detalle(id_impacto_diario, cod_municipio, municipio, id_impacto, id_probabilidad, id_color, id_categoria, fecha_ingreso, id_usuario_ingreso, des_categoria, id_impacto_probabilidad) VALUES (".$id_impacto_diario.", '".$code_muni[$i]."', '".$name_muni[$i]."', ".$id_impacto.", ".$id_probabilidad.", ".$id_color.", ".$id_categoria.", '".$fecha_ingreso."', ".$id_usuario.",'".$categoria."',".$id_impacto_probabilidad.") RETURNING id_impacto_diario_detalle; \n";
+		
 		$sql_sum = $sql_co.$sql_ho;
 
+		// echo $sql;
 		// echo "*".strlen($sql_sum)."*";
+		
 		$result = pg_query($sql) or die('Query failed: ' . pg_last_error());
+		
 		if (strlen($sql_sum)>0) {
 		$result = pg_query($sql_sum) or die('Query failed: ' . pg_last_error());
 		}
 		
 		
 		}
+		// exit();
 
 		if(isset($result)){  echo 'done'; }
 
@@ -446,8 +451,8 @@ include('database_connection.php');
 		if (isset($ar['opt2'])) {$opt2=$ar['opt2'];} else {	$opt2=''; }
 		if (isset($ar['opt3'])) {$opt3=$ar['opt3'];} else {	$opt3=''; }
 		
-if ($uni1=="" & $uni2=="" & $uni3=="") { echo "<div><h4>SELECCIONE AL MENOS UNA UNIDAD</h4></div>";}
-else {
+		if ($uni1=="" & $uni2=="" & $uni3=="") { echo "<div><h4>SELECCIONE AL MENOS UNA UNIDAD</h4></div>";}
+		else {
 		// echo "/**********************/<br>";
 		
 		// echo $uni1;
@@ -530,8 +535,13 @@ else {
 		// echo $sql;
 		$result=pg_query($dbconn, $sql);
 		
+		# 6 Funcion de consecuencias y horarios
+		$sql = "SELECT f_insert_unificado(".$ro['uni'].");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		
 		// if(isset($result)){  echo 'done'; }
-}
+		}
 	# my code here
 	# ------------------------------------------------------------------------ #
 
@@ -570,6 +580,56 @@ else {
 		
 	}
 	
+	if($_POST["opcion"] == 'updateForm'){
+		
+	// echo "OPCION UPDATE_FORM";
+
+	$arr = $_POST['updateMuni'];
+	
+	// echo $arr['titulo'];
+	// echo $arr['descripcion'];
+	// echo $arr['periodo'];
+	// echo $arr['id_impacto_diario'];
+	$dbconn = my_dbconn4("PronosticoImpacto");
+	$sql="UPDATE public.impacto_diario SET titulo='".$arr['titulo']."', descripcion='".$arr['descripcion']."', id_periodo=".$arr['periodo']." WHERE id_impacto_diario = ".$arr['id_impacto_diario'].";";
+	$result=pg_query($dbconn, $sql);
+	// echo $sql;
+	
+	
+		// echo "<pre>";
+		// print_r($arr);
+		// echo "</pre>";
+		// exit();
+	}
+	
+
+
+
+if($_POST["opcion"] == 'getCopy'){
+$dbconn = my_dbconn4("PronosticoImpacto");
+
+$id_duplicar=$_POST['id'];
+$sqlGridDuplicar="SELECT f_duplicar_informe($id_duplicar);";
+$resultGridDuplicar = pg_query($sqlGridDuplicar) or die('Query failed: '.pg_last_error());
+$Duplicar = pg_fetch_all($dbconn,$resultGridDuplicar);
+//$EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
+
+}
+
+
+
+if($_POST["opcion"] == 'getDelete'){
+$dbconn = my_dbconn4("PronosticoImpacto");
+
+$id_Delete=$_POST['id'];
+$sqlGridDelete="DELETE FROM public.impacto_diario	WHERE id_impacto_diario = $id_Delete;";
+$resultGridDelete = pg_query($sqlGridDelete) or die('Query failed: '.pg_last_error());
+$Delete = pg_fetch_all($dbconn,$resultGridDelete);
+//$EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
+
+}
+
+
 
 }
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

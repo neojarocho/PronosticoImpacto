@@ -1,6 +1,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<title>MARN | Condiciones Atmosfericas</title>
+<title>MARN | Pronostico de Impacto</title>
 
 <!-- Bootstrap JavaScript -->
 <script src="js/jquery-1.11.0.min.js"></script>

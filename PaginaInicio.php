@@ -18,6 +18,10 @@ $("#contenedorprincipal").load("Unificacion.php",{id_area:id_area,id_fenomeno:id
 console.log(id_area,id_fenomeno);
 }
 
+function getBotonConsultar() {
+$("#contenedorprincipal").load("PaginaConsulta.php");
+}
+
     $(function () {
  //AREAS
     var Meteorologia='1';
@@ -92,7 +96,7 @@ console.log(id_area,id_fenomeno);
             <div class="col-md-3">
 
                 <button type="button" id="BotonGeologia" class="list-group-item active text-center EfectoBtN" style="background-color:#602600;text-align: center;" >
-                    <h1 class="glyphicon glyphicon-stop"></h1><br />
+                    <h1 class="glyphicon glyphicon-eject"></h1><br />
                     <h2>Geología</h2> </button>
 					<p></p>
                     <button type="button" id="BotonGeologia_1" onClick="getBotonImpacto(3,1)" class="list-group-item active EfectoBtN" style="background-color:#803300;text-align: center;" >Lluvias intensas y tormentas eléctricas</button>
@@ -106,9 +110,9 @@ console.log(id_area,id_fenomeno);
             </div>
 
             <div class="col-md-3">
-                <button type="button" id="BotonUnificado" class="list-group-item active text-center EfectoBtN" style="background-color:#383d3e;text-align: center;" >
+                <button type="button" id="BotonUnificado" class="list-group-item active text-center EfectoBtN" style="background-color:#383d3e;text-align: center;" onClick="getBotonConsultar()" >
                     <h1 class="glyphicon glyphicon-link"></h1><br />
-                    <h2>Unificado</h2> </button>
+                    <h2>Integrado</h2> </button>
 					<p></p>
                     <button type="button" id="BotonUnificado_1" onClick="getBotonUnificado(4,1)" class="list-group-item active EfectoBtN" style="background-color:#43494a;text-align: center;" >Lluvias intensas y tormentas eléctricas</button>
 					<p></p>                           

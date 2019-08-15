@@ -24,7 +24,8 @@ $Fenomeno_Info[] = $row;
 //// GRID EN PROCESOS
 $sqlGridImpactoDiario="SELECT id.id_impacto_diario, to_char(id.fecha, 'DD/MM/YYYY - HH:MI:SS') as fecha, id.correlativo, id.titulo, id.descripcion, 
 (SELECT pi.periodo FROM public.periodo_impacto pi where id.id_periodo=pi.id_periodo), 
-(SELECT ei.estado_impacto FROM public.estado_impacto ei where id.id_estado_impacto=ei.id_estado_impacto)
+(SELECT ei.estado_impacto FROM public.estado_impacto ei where id.id_estado_impacto=ei.id_estado_impacto),
+(SELECT count (dd.id_impacto_diario_detalle) FROM public.impacto_diario_detalle dd where id.id_impacto_diario=dd.id_impacto_diario) as cantidad
   FROM public.impacto_diario id WHERE id_estado_impacto <> '6' and id.id_area = ".$id_area_Ini." AND id.id_fenomeno = ".$id_fenomeno_Ini." order by id.fecha desc;";
 $resultGridImpactoDiario = pg_query($sqlGridImpactoDiario) or die('Query failed: '.pg_last_error());
 
@@ -34,7 +35,8 @@ $resultGridImpactoDiario = pg_query($sqlGridImpactoDiario) or die('Query failed:
 //// GRID EN Historicos
 $sqlGridImpactoDiarioHis="SELECT id.id_impacto_diario, to_char(id.fecha, 'DD/MM/YYYY - HH:MI:SS') as fecha, id.correlativo, id.titulo, id.descripcion, 
 (SELECT pi.periodo FROM public.periodo_impacto pi where id.id_periodo=pi.id_periodo), 
-(SELECT ei.estado_impacto FROM public.estado_impacto ei where id.id_estado_impacto=ei.id_estado_impacto)
+(SELECT ei.estado_impacto FROM public.estado_impacto ei where id.id_estado_impacto=ei.id_estado_impacto),
+(SELECT count (dd.id_his_impacto_diario_detalle) FROM public.his_impacto_diario_detalle dd where id.id_impacto_diario=dd.id_his_impacto_diario) as cantidad
   FROM public.impacto_diario id WHERE id_estado_impacto = '6' and id.id_area = ".$id_area_Ini." AND id.id_fenomeno = ".$id_fenomeno_Ini." order by id.fecha desc;";
 $resultGridImpactoDiarioHis = pg_query($sqlGridImpactoDiarioHis) or die('Query failed: '.pg_last_error());
 
@@ -100,8 +102,47 @@ function b_edi(id) {
 } 
  
 function b_del(id) {
-	console.log("borrar:"+id);
+	var midata = {id:id,opcion:'getDelete'};
+    $.ajax({
+		async : true,
+		method: "POST",
+		url: "MeteorologiaProcesos.php",
+		data: midata,
+		success: function(msg){
+			//$("#curMuni").html(msg);
+			console.log(msg);
+			getBotonImpacto(<?php echo $id_area_Ini; ?>,<?php echo $id_fenomeno_Ini; ?>);
+       }
+     });	
 }
+
+
+
+
+
+function b_copy(id) {
+	//$("#id_idiario_det").val(va);
+	var midata = {id:id,opcion:'getCopy'};
+    $.ajax({
+		async : true,
+		method: "POST",
+		url: "MeteorologiaProcesos.php",
+		data: midata,
+		success: function(msg){
+			//$("#curMuni").html(msg);
+			console.log(msg);
+			getBotonImpacto(<?php echo $id_area_Ini; ?>,<?php echo $id_fenomeno_Ini; ?>);
+       }
+     });	
+	// Agregar un ajax que traida todo
+	//toggle_visibility("loading-div-popup-form");
+	// console.log(va);
+	// console.log($("#id_idiario_det").val(va));
+}
+
+
+
+
 
 
 function b_comp(id) {
@@ -116,7 +157,6 @@ function b_comp(id) {
 		}
 	);
 } 
-
 
 
 
@@ -175,9 +215,7 @@ function b_comp(id) {
                         <a href="#" class="list-group-item active text-center">
                             <h2 class="glyphicon glyphicon-pencil"></h2><br />Proceso
                         </a>
-                        <a href="#" class="list-group-item text-center">
-                            <h2 class="glyphicon glyphicon glyphicon-list-alt"></h2><br />Consultar
-                        </a>
+
                         <a href="#" class="list-group-item text-center">
                             <h2 class="glyphicon glyphicon-book"></h2><br />Historial
                         </a>
@@ -205,13 +243,17 @@ function b_comp(id) {
 			<table class="table table-bordered"> 
 				<caption  style="background: #205e76; color: #ffffff; text-align: center; font-size: 15px;">EN PROCESO</caption>
 				<tr style="background:#e5e5e5;"> 
-						<th width="5%"></th>   
-						<th width="20%">Fecha</th>
-						<th width="45%">Título</th>
-						<th width="15%">Período</th>
-						<th width="10%">Estado</th>   
-						<th width="5%"></th>
-						<th width="5%"></th>  
+						<th width="3%">Edit</th>
+						<th width="3%">View</th>
+						<th width="3%">Copy</th>
+						   
+						<th width="15%">Fecha</th>
+						<th width="3%">Cant</th>
+						<th width="50%">Título</th>
+						<th width="10%">Período</th>
+						<th width="10%">Estado</th> 
+						<th width="3%">Delete</th>    
+
 						
 				</tr>  
 				<?php  
@@ -220,19 +262,34 @@ function b_comp(id) {
 				?>  
 					<tr style="background:#FFFFFF;">
 						<td align="center">
-							<button type="button" class="btn btn-secondary glyphicon glyphicon-pencil btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
-						</td>  
-						<td><?php echo $row["fecha"]; ?></td>   
+							<button type="button" class="btn btn-primary glyphicon glyphicon-pencil btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
+						</td>
+						<td align="center">
+					
+
+
+
+							<button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_individual_ver.php?id=<?php echo $row["id_impacto_diario"]; ?>')"></button>
+
+
+
+
+
+						</td>
+						<td align="center">
+							<button type="button" class="btn btn-warning glyphicon glyphicon-duplicate btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_copy($(this).attr('id'))";></button>
+						</td>   
+
+
+						<td><?php echo $row["fecha"]; ?></td>
+						<td style="text-align: center;"><?php echo $row["cantidad"]; ?></td>     
 						<td><?php echo $row["titulo"]; ?></td> 
 						<td><?php echo $row["periodo"]; ?></td> 
 						<td><?php echo $row["estado_impacto"]; ?></td> 
-
-						<td align="center">
-							<button type="button" class="btn btn-info glyphicon glyphicon-transfer btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_comp($(this).attr('id'))";></button>
-						</td>
 						<td align="center">
 							<button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_del($(this).attr('id'))";></button>
-						</td> 
+						</td>  
+
   
 					</tr>  
 				<?php  
@@ -248,44 +305,7 @@ function b_comp(id) {
 
                         </div>
                         <!-- train section -->
-                        
-                        <div class="bhoechie-tab-content active">
-                            <div class="col-md-12">
-<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-		<p></p>
-		<div id="employee_table">  
-			<table class="table table-bordered"> 
-				<caption  style="background: #205e76; color: #ffffff; text-align: center; font-size: 15px;">VISTA POR PERIODOS</caption>
-				<tr style="background:#e5e5e5;">  
-						<th width="95%">Fecha</th>
-						<th width="5%"></th>  
-					 
-				</tr>  
-				<?php  
-				while($row = pg_fetch_array($resultGridVista))  
-				{ 
-				?>  
-					<tr style="background:#FFFFFF;"> 
-						<td><?php echo $row["fecha"]; ?></td>   
-						<td align="center">
-							<button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
-						</td>  
-						
-					</tr>  
-				<?php  
-				}  
-				?>  
-			</table>  
-		</div>
-<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-                 
-
-							</div>
-
-                        </div>
-                        <!-- train section -->
+    
                         <div class="bhoechie-tab-content">
                             <div class="col-md-12">
 <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -295,30 +315,38 @@ function b_comp(id) {
 		<div id="employee_table">  
 			<table class="table table-bordered"> 
 				<caption  style="background: #205e76; color: #ffffff; text-align: center; font-size: 15px;">HISTORICOS</caption>
-				<tr style="background:#e5e5e5;">  
-						<th width="20%">Fecha</th>
-						<th width="45%">Título</th>
+				<tr style="background:#e5e5e5;"> 
+						<th width="3%">View</th>     
+						<th width="3%">Copy</th>  
+						<th width="15%">Fecha</th>
+						<th width="3%">Cant</th>
+						<th width="51%">Título</th>
 						<th width="15%">Período</th>
 						<th width="10%">Estado</th>
-						<th width="5%">Ver</th>     
-						<th width="5%">Copia</th>  
+
  
 				</tr>  
 				<?php  
 				while($row = pg_fetch_array($resultGridImpactoDiarioHis))  
 				{ 
 				?>  
-					<tr style="background:#FFFFFF;"> 
-						<td><?php echo $row["fecha"]; ?></td>   
+					<tr style="background:#FFFFFF;">
+						<td align="center">
+				
+
+												<button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_individual_ver.php?id=<?php echo $row["id_impacto_diario"]; ?>')"></button>
+						</td>
+
+						<td align="center">
+							<button type="button" class="btn btn-warning glyphicon glyphicon-duplicate btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_copy($(this).attr('id'))";></button>
+						</td>   
+
+						<td><?php echo $row["fecha"]; ?></td> 
+						<td style="text-align: center;"><?php echo $row["cantidad"]; ?></td> 
 						<td><?php echo $row["titulo"]; ?></td> 
 						<td><?php echo $row["periodo"]; ?></td> 
 						<td><?php echo $row["estado_impacto"]; ?></td>
-						<td align="center">
-							<button type="button" class="btn btn-primary glyphicon glyphicon-search btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_edi($(this).attr('id'))";></button>
-						</td>   
-						<td align="center">
-							<button type="button" class="btn btn-warning glyphicon glyphicon-open-file btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_del($(this).attr('id'))";></button>
-						</td>  
+						
 					</tr>  
 				<?php  
 				}  
@@ -345,12 +373,13 @@ function b_comp(id) {
 			<table class="table table-bordered"> 
 				<caption style="background: #205e76; color: #ffffff; text-align: center; font-size: 15px;">VALIDAR</caption>
 				<tr style="background:#e5e5e5;">  
-						
+						<th width="3%"></th>
+						<th width="3%"></th> 
 						<th width="20%">Fecha</th>
 						<th width="60%">Título</th>
 						<th width="10%">Período</th>
-						<th width="5%">Validado</th>
-						<th width="5%">Verificar</th>    
+						<th width="4%">Ok</th>
+					  
   
 				</tr>  
 				<?php  
@@ -358,14 +387,18 @@ function b_comp(id) {
 				{  
 				?>  
 				<tr style="background:#FFFFFF;">
+						<td align="center">
+							<button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" 	onclick="b_Consultar($(this).attr('id'))";></button>
+						</td>  
+						<td align="center">
+							<button type="button" class="btn btn-success glyphicon glyphicon-ok btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_Validar($(this).attr('id'))";></button>
+						</td>
 
-						 <td><?php echo $row["fecha"]; ?></td>  
+						<td><?php echo $row["fecha"]; ?></td>  
 						<td><?php echo $row["titulo"]; ?></td> 
 						<td><?php echo $row["periodo"]; ?></td> 
 						<td><?php echo $row["validado"]; ?></td>
-						<td align="center">
-							<button type="button" class="btn btn-success glyphicon glyphicon-ok btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>" onclick="b_del($(this).attr('id'))";></button>
-						</td>  
+
 
 				</tr>  
 				<?php  

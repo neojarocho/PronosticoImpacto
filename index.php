@@ -1,4 +1,5 @@
 ﻿<?php 
+session_start();
 header('Access-Control-Allow-Origin: *'); 
 header('Content-Type: text/html; charset=utf-8');
 ?>
@@ -184,7 +185,7 @@ $(function () {
 
 				<ul class="nav navbar-nav">
 					<li>
-						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Unificar<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Integrar<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a id="U_lluvias" onClick="getBotonUnificado(4,1)">Lluvias intensas y tormentas eléctricas</a></li>
 							<li><a id="U_temporal" onClick="getBotonUnificado(4,2)">Temporal</a></li>
@@ -196,10 +197,10 @@ $(function () {
 					</li>
 				</ul>
 
-				<ul class="nav navbar-nav">
-					<li>
-						<a id="Consultar" onClick="getBotonConsultar()">Consultar</a>
-					</li>
+				<ul class="nav navbar-nav" style="">
+					<button id="Consultar" class="btn btn-outline-secondary glyphicon glyphicon-link" type="button" onClick="getBotonConsultar()" style="margin-top: 10px;   margin-left: 20px;"> <b>INTEGRADOS</b></button>
+						
+					
 				</ul>
 				<!--<form class="navbar-form navbar-right">
 					<div class="form-group">
@@ -235,7 +236,7 @@ $(function () {
 			</ul>
 
 		</div><!-- /.navbar-collapse -->
-
+<div id='login' class="col-md-3" style="width: 100%;height:25px;font-family: arial;color: black;text-shadow: 2px 2px 4px #ffffff;text-align: right;position: absolute;right:25px;z-index: 99;"><?php echo @$_SESSION['nombre']; ?> <span class="glyphicon glyphicon-user" style="color:#0d7997;"></span></div>
 	</nav>
 
 </div>

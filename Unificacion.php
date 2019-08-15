@@ -1,4 +1,4 @@
-<?php 
+v<?php 
 header('Access-Control-Allow-Origin: *'); 
 header('Content-Type: text/html; charset=utf-8');
 include('database_connection.php');
@@ -510,7 +510,7 @@ var template1 =   "<div style='text-align:center;'><h3>LOS PRONÓSTICOS SELECCIO
 				+ "</div>"
 				+ "</div>";	
 $('#tablaUni').html(template1);
-$('#verUni').attr('onclick', "window.open('UnificacionReporte.php?id="+uni+"','_blank')");
+$('#verUni').attr('onclick', "window.open('mapa_alerta_unificado_ver.php?id="+uni+"','_blank')");
 }
 
 // ------------------------------------------
