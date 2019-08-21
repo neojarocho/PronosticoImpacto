@@ -65,7 +65,7 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 
 ///----------------------*************************************-------------------------------------------------
 /// INFORMACIÓN GENERAL
-$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, u.des_categoria, u.des_categoria,	(SELECT c.codigo
+$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, UPPER(u.des_categoria)des_categoria,	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
 	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
     FROM public.unificado u
@@ -97,10 +97,10 @@ $AreaResumen = pg_num_rows($resultGridAreaResumen);
 //------------------------------------------------------------------------------------------------------
 
 
-$sqlTomarAccion="SELECT f_reporte_unificado($buscar,'Tomar acción');";
+$sqlTomarAccion="SELECT f_consulta_unificado($buscar,'Tomar acción');";
 $resultGridTomarAccion = pg_query($sqlTomarAccion) or die('Query failed: '.pg_last_error());
 $TomarAccion = pg_fetch_all($resultGridTomarAccion);
-$TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
+$TomarAccion = $TomarAccion[0]['f_consulta_unificado'];
 
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
@@ -110,10 +110,10 @@ $TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
 //--------------------------------ESTAR PREPARADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Estar preparados');";
+$sqlGridEstarPreparados="SELECT f_consulta_unificado($buscar,'Preparación');";
 $resultGridEstarPreparados = pg_query($sqlGridEstarPreparados) or die('Query failed: '.pg_last_error());
 $EstarPreparados = pg_fetch_all($resultGridEstarPreparados);
-$EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
+$EstarPreparados = $EstarPreparados[0]['f_consulta_unificado'];
 
 
 //------------------------------------------------------------------------------------------------------
@@ -124,10 +124,10 @@ $EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
 //--------------------------------ESTAR INFORMADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Estar informados');";
+$sqlGridEstarInformados="SELECT f_consulta_unificado($buscar,'Atención');";
 $resultGridEstarInformados = pg_query($sqlGridEstarInformados) or die('Query failed: '.pg_last_error());
 $EstarInformados = pg_fetch_all($resultGridEstarInformados);
-$EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
+$EstarInformados = $EstarInformados[0]['f_consulta_unificado'];
 
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
@@ -137,10 +137,10 @@ $EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
 //--------------------------------CONDICIONES NORMALES----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Monitoreo');";
+$sqlGridCondicionesNormales="SELECT f_consulta_unificado($buscar,'Vigilancia');";
 $resultGridCondicionesNormales = pg_query($sqlGridCondicionesNormales) or die('Query failed: '.pg_last_error());
 $CondicionesNormales = pg_fetch_all($resultGridCondicionesNormales);
-$CondicionesNormales = $CondicionesNormales[0]['f_reporte_unificado'];
+$CondicionesNormales = $CondicionesNormales[0]['f_consulta_unificado'];
 
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
@@ -1257,7 +1257,7 @@ if (nivel==1){
 
 <div class="row">
 
-		<div class="col-md-7">
+		<div class="col-md-6">
 
 <br>
 	<div class="row">
@@ -1308,7 +1308,7 @@ if (nivel==1){
 			<div class="row">
 
 		        <div class="col-md-12">
-		            <laber id="descripcion" style="line-height: 1.2em;"><h5><p style="text-align: justify;"><?php echo $Unificados['des_general'];?></p></h5></laber>
+		            <laber id="descripcion" ><h5><p style="text-align: justify; line-height: 1.5em;"><?php echo $Unificados['des_general'];?></p></h5></laber>
 		             <br>
 		        </div>
 
@@ -1321,7 +1321,7 @@ if (nivel==1){
 								<!-- Muestra/Oculta Leyenda y Capas--> 
 								<div id="leyenda"><a href="javascript:toggle_visibility('feedback')">Ver Capas</a></div>
 								<div id="symbology">
-									<img src="Imagenes/PaletaImpacto.png" width="130">
+									<img src="Imagenes/l_PaletaImpacto.png" width="150">
 								</div>
 								<!-- Muestra Capas--> 
 								<div id="feedback" class="shadow" style="display: none;">
@@ -1371,7 +1371,7 @@ if (nivel==1){
 			</div>
 		</div>
 		
-		<div class="col-md-5" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
+		<div class="col-md-6" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
 			<div class="row">
 
 
@@ -1386,14 +1386,14 @@ if (nivel==1){
 		        <div  class="col-md-12" id="TomarAccion" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 		  
 		                    <table class="table table-bordered"> 
-		                        <caption style="background: #F20505; color: #ffffff; text-align: left; font-size: 12px !important; padding-left: 10px;"><b>TOMAR ACCIÓN</b></caption>
+		                        <caption style="background: #F20505; text-align: left; color: #ffffff ;font-size: 14px !important; padding-left: 10px;"><b>TOMAR ACCIÓN</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridTomarAccion))  
 		                        {  
 		                        ?>  
 		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;">
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1409,14 +1409,14 @@ if (nivel==1){
 		        <div  class="col-md-12" id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 
 		                    <table class="table table-bordered"> 
-		                        <caption style="background: #f29e05; color: #ffffff; text-align: left; font-size: 12px !important; padding-left: 10px;"><b>ESTAR PREPARADOS</b></caption>
+		                        <caption style="background: #f29e05; color: #ffffff; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>PREPARACIÓN</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridEstarPreparados))  
 		                        {  
 		                        ?>  
 		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;">  
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1431,14 +1431,14 @@ if (nivel==1){
 
 		        <div  class="col-md-12" id="EstarInformados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 		                    <table class="table table-bordered"> 
-		                        <caption style="background: #ecdd03; color: #ffffff; text-align: left; font-size: 12px; padding-left: 10px;"><b>ESTAR INFORMADOS</b></caption>
+		                        <caption style="background: #ffef00; color: #7f7f7f; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>ATENCIÓN</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridEstarInformados))  
 		                        {  
 		                        ?>  
 		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1453,14 +1453,14 @@ if (nivel==1){
 
 		        <div  class="col-md-12" id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 							 <table class="table table-bordered"> 
-		                        <caption style="background: #6ab93c; color: #ffffff; text-align: left; font-size: 12px; padding-left: 10px;"><b>MONITOREO</b></caption>
+		                        <caption style="background: #6ab93c; color: #ffffff; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>VIGILANCIA</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridCondicionesNormales))  
 		                        {  
 		                        ?>  
 		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  

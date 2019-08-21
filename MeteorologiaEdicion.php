@@ -535,7 +535,7 @@ iframe {
 
 		<div class="row" class="mi_target" id= "mi_pronostico" style="background: #FFFFFF;">
 			<!-- CONTENIDO AQUI -->
-			<iframe id='prono_ivan' width='100%' height='1700px' scrolling='no' frameBorder='0' src='http://srt.marn.gob.sv/web/geotiff/map.php' ></iframe>
+			<iframe id='prono_ivan' width='100%' height='1700px' scrolling='no' frameBorder='0' src='http://srt.marn.gob.sv/web/geotiff/map.php' onload='resizeIframe(this)'></iframe>
 			<!-- CONTENIDO AQUI -->
 		</div>  
     </div>	
@@ -573,9 +573,13 @@ function validaCon(name) {
 	return vali;
 }
 
+function resizeIframe(obj) {
+  obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+}
+
 // Funcion encargada de mostrar el mapa con los municipios seleccionados
 function mi_mapa(va){
-	var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+va+"' ></iframe>";
+	var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+va+"' onload='resizeIframe(this)'></iframe>";
 	$('#mi_target').html(data);
 	
 	
@@ -586,12 +590,13 @@ function mapaRefresh(){
 	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
 	if (id_impacto_diario != '') {
 		// console.log(id_impacto_diario);
-		var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+id_impacto_diario+"' ></iframe>";
+		var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+id_impacto_diario+"' onload='resizeIframe(this)'></iframe>";
 		$('#mi_target').html(data);
 	}
 }
 
 function ediContent(va) {
+	$("#curMuni").html("");
 	//$("#id_idiario_det").val(va);
 	var area = $('#id_area').val();
 	var midata = {id:va, area:area};

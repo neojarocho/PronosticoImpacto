@@ -753,13 +753,13 @@ var takeScreenShot = function() {
             // center: [-90.35,14.00],
 
 		map = new Map("map", {
-			//basemap: "gray-vector",
+			//basemap: "gray",
 			sliderStyle: "small", // large/small
 			slider:false,
 			infoWindow: popup,
 			extent: bbox
 			//center: [ -88.85,13.75 ]
-			//zoom: 8
+			//zoom: 9
 		});
 		
 		// map = new Map("map", {

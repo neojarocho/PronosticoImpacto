@@ -313,7 +313,7 @@ ULTIMOS.style.display = 'block';
 
                     <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
 
-                    <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -356,7 +356,7 @@ ULTIMOS.style.display = 'block';
                     <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
                                         <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
-                    <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                    <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -400,7 +400,7 @@ ULTIMOS.style.display = 'block';
                     <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
                                         <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
-                                    <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                                    <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -445,7 +445,7 @@ ULTIMOS.style.display = 'block';
                     <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
                                         <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>    
-                                        <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                                        <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -489,7 +489,7 @@ ULTIMOS.style.display = 'block';
                     <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>  
                                         <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
-                              <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                              <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -534,7 +534,7 @@ ULTIMOS.style.display = 'block';
                     <td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-xs" onClick="window.open('mapa_alerta_unificado_ver.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td> 
                                         <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>    
-                           <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                           <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     
@@ -580,7 +580,7 @@ ULTIMOS.style.display = 'block';
                     <td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-print btn-xs" onClick="window.open('mapa_alertas_Consulta.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                                         <td align="center"><button type="button" class="btn btn-success glyphicon glyphicon-thumbs-up btn-xs" id="<?php echo $row["id_impacto_diario"]; ?>"  onclick="getBotonPublicado('<?php echo $row["id_unificado"]; ?>','<?php echo $row["nivel"]; ?>')";></button></td>   
 
-                              <td align="center"><button type="button" class="btn btn-secondary glyphicon glyphicon-list-alt btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
+                              <td align="center"><button type="button" class="btn btn-primary glyphicon glyphicon glyphicon-text-width btn-xs" onClick="window.open('mapa_alerta_unificado_twett.php?id=<?php echo $row["id_unificado"]; ?>')"></button></td>
                     <td><?php echo $row["fecha"]; ?></td> 
                     <td><?php echo $row["titulo_general"]; ?></td> 
                     

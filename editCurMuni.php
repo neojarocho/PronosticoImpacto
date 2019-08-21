@@ -1,4 +1,6 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: text/html; charset=utf-8');
 include("cnn.php");
 
 //// CAMPOS DEL MUNICIPIO SELECCIONADO
@@ -156,17 +158,18 @@ var a_ho2 = Object.values(a_ho).map(Number);
 var obj = jQuery.parseJSON(con);
 // console.log(obj);
 if (obj!=false){
-	var id_consecuencia_impacto = obj[0]['id_consecuencia_impacto'];
+	var id_consecuencia= obj[0]['id_consecuencia'];
 	var consecuencia = obj[0]['consecuencia'];
 	varCons='';
 	var size = Object.keys(obj).length;
 
 	for (var i = 0; i < size ; i++) {
-		var co_id = obj[i]['id_consecuencia_impacto'];
+		var co_id = obj[i]['id_consecuencia'];
+		// console.log(co_id+" : "+a_co2);
 		if ( checkValue(co_id, a_co2) ) {
-			varCons +="<div class='checkbox'><input id="+co_id+" name='datos_co[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" checked='checked'>"+obj[i]['consecuencia']+"</div>";
+			varCons +="<div class='checkbox'><input id="+co_id+" name='datos_co[]' type='checkbox' value="+obj[i]['id_consecuencia']+" checked='checked'>"+obj[i]['consecuencia']+"</div>";
 		} else {
-			varCons +="<div class='checkbox'><input id="+co_id+" name='datos_co[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" >"+obj[i]['consecuencia']+"</div>";
+			varCons +="<div class='checkbox'><input id="+co_id+" name='datos_co[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
 		}
 	}
 } else varCons = "<div class='checkbox' style='text-align:center; color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";		
@@ -212,16 +215,17 @@ $('#ed_impacto').change(function() {
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia_impacto']+" >"+obj[i]['consecuencia']+"</div>";
+					varCons +="<div class='checkbox'><input id="+obj[i]['id_consecuencia']+" name='datos_co[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
 				}
 				document.getElementById("ed_ConteConsecuencias").innerHTML = varCons;
+				// console.log(varCons);
 				if(probabilidad != ''){
 					$.ajax({
 						url:'MeteorologiaProcesos.php',
 						method:"GET",
 						data: {probabilidad:probabilidad,impacto:impacto, opt:'categoria'},
 						success:function(categoria){
-							console.log(categoria);
+							// console.log(categoria);
 							var cat = jQuery.parseJSON(categoria);
 							$('#id_color').val(cat['id_color']);
 							$('#ed_categoria').val(cat['categoria']);
@@ -290,6 +294,8 @@ if(validaCon('ed_ConteConsecuencias')==false)  { return;}
 if(validaCon('ed_contenedorHorario')==false)  { return;}
 
 		var updateMunicipios = $(this).serialize();
+		// console.log(updateMunicipios);
+		
 		$.ajax({
 			url:"MeteorologiaProcesos.php",
 			method:"POST",
@@ -318,7 +324,7 @@ else
 var cad    = new Array();
 // var cad    = $('#atencion').val();
 cad = $('#atencion').val().split(',');
-console.log('***'+cad+'***');
+// console.log('***'+cad+'***');
 if (cad.length >0 ){ cad = $('#atencion').val().split(','); }
 var arrCaf = <?php echo json_encode($array_ea); ?>;
 var arrObj = Object.keys(arrCaf).map(function (key) { return arrCaf[key]; });
@@ -397,7 +403,8 @@ popCad();
 				<!-- $("#id_idiario_det").val(va); -->
 				<div class="row"><p></p>
 					<div class="col-md-12">
-						<input type="hidden" 	name="id_idiario"		id="id_idiario" 		value="<?php echo $ro['id_impacto_diario_detalle']; ?>" class="form-control k-invalid" data-required-msg="Impacto diario Detalle" aria-invalid="true" >
+						<input type="hidden" 	name="id_idiario"			id="id_idiario" 			value="<?php echo $ro['id_impacto_diario_detalle']; ?>" class="form-control k-invalid" data-required-msg="Impacto diario Detalle" aria-invalid="true" >
+						<input type="hidden" 	name="id_impacto_diario_m"	id="id_impacto_diario_m"	value="<?php echo $ro['id_impacto_diario']; ?>"  >
 						<!-- 
 						<input type="text" 		name="cod_municipio"	id="cod_municipio" 	value="<?php echo $ro['cod_municipio']; ?>" class="form-control k-invalid" data-required-msg="Impacto diario Detalle" aria-invalid="true" >
 						<input type="text" 		name="municipio"		id="municipio" 		value="<?php echo $ro['municipio']; ?>" class="form-control k-invalid" data-required-msg="Impacto diario Detalle" aria-invalid="true" >

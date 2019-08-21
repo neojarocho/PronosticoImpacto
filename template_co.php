@@ -3,18 +3,19 @@
 <?php 
 header("Access-Control-Allow-Origin: *"); 
 header("Content-Type: text/html; charset=utf-8");
-include("header.php");
 include_once("cnn.php");
 
 
 // $buscar = @$_REQUEST["id"];
 // $nivel = @$_REQUEST["N"];
 
-$buscar = $arr['id_unificado'];
-$nivel = $arr['nivel'];
+$buscar = @$arr['id_unificado'];
+$nivel = @$arr['nivel'];
 // echo "*************************".$buscar."*************************";
-// if(strlen (@$buscar)>0){$buscar = @$_REQUEST["id"];} else {$buscar = 11; $nivel=1;}
+if(strlen (@$buscar)>0){$buscar = @$arr['id_unificado'];} else {$buscar = 12; $nivel=1;}
+// if(strlen (@$buscar)>0){$buscar = @$_REQUEST["id"];} else {$buscar = 12; $nivel=1;}
 // echo "********************************".$buscar."********************************";
+// echo "********************************".$nivel."********************************";
 
 
 if 		($nivel == 4){ $str_nivel = "4"; 		$s1=0; $s2=0; $s3=0; $s4=1;} 
@@ -175,24 +176,22 @@ pg_close($dbconn);
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
 <title>MARN | Pronostico de Impacto</title>
 
+<!-- Custom CSS -->
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
 <style>
 #map {
-		background: #fff;
-		height: 100% !important;
-		width: 100%	!important;
-		margin: 0;
-		padding: 0 !important;
-		padding-left: 10px !important;
-		padding-right: 10px !important;
-
+	background: #fff;
+	height: 100% !important;
+	width: 100%	!important;
+	margin: 0;
+	padding: 0 !important;
+	// padding-left: 10px !important;
+	// padding-right: 10px !important;
 }
-
-h3 {
-         margin: 0 0 5px 0;
-         border-bottom: 1px solid #444;
-		 font-size: medium;
-}
-
 body {
 	font: 100%/1.4 Verdana, Arial, Helvetica, sans-serif;
 	// background: #42413C;
@@ -203,19 +202,18 @@ body {
 
 .container {
 	padding:0px;
-	width:100% !important;
+	width:800px !important;
 }
-
 .mapa_marco {
-	width: 85%; 
-	height: 485px;
+	width: 95%; 
+	// height: 485px;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 	overflow: hidden;
 }
 .mapa_marco img {
-	margin-top: -25px;
+	margin-top: -50px;
 }
 
 	table {
@@ -255,8 +253,6 @@ ul.alin {
   list-style-position: outside;
   padding-left: 20px;
 }
-
-
 .FondoImagen{
     position: relative;
     display: inline-block;
@@ -266,97 +262,79 @@ ul.alin {
    
    
 <script type="text/javascript">
-<!-- para correo no vale el jquery -->
+<!-- para correo no vale jquery -->
 </script>
 </head>
-
-
 <body class="tundra">
-<div class="container" style="background: #fff; width: 1000px !important;">
+<div class="container" style="background: #fff;">
 
-<div class="row">
-	    <div id="banner" style="padding-bottom:5px;">
-	        <a>
-	            <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Banner3.png" width="100%" class="img-responsive"  id="PaginaInicio">
-	        </a>
-		 </div>
-
-
-</div>
-
-<table border=0 class="table-bordered"> 
-                   
+<table border=0 style="width:800px;">           
 <tr>
- 
-<td>
+	<td>
+		<div class="row">
+				<div id="banner" >
+					<a>
+						<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Banner3.png" width="100%" id="PaginaInicio">
+					</a>
+				 </div>
 
 
-         <div class="row"  style="color:#ffffff;  background: <?php echo $Unificados["codigo"];?>;">
-
-
-			 <div class="col-md-12" style="text-align: center; font-size: 15px">
-          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados["des_categoria"];?>: <?php echo $Unificados["titulo_general"];?></b></p>
-			</div>
 		</div>
+	</td>
+</tr>
 
-	<br>
-	<div class="row">
-        <div class="col-md-12">
-            <div class="row" style="text-align: left; color:#428bca; font-weight: 500; margin-top:-10px;">
-                <div class="col-md-8" >
-              
-
-                    <input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados["fecha_ingresado"];?>" style="display:none"/>
-
-
-            <laber><div>
-			<b> <?php echo $fecha_larga;?> </b>
-			</div></laber>
-
-
-
-                </div>
-        
-                <div class="col-md-4" style="text-align: right;">
-                <laber><div><b>Período: <?php echo $Unificados["periodo"];?></b></div></laber>
-
-
-                </div>
-            </div>
-
-        </div>
- 	</div>
-
-
-	<div class="row">
-
-		        <div>
-		            <div id="descripcion" style="line-height: 1.2em; font-size: auto; padding-top:10px;padding-left: 10px;padding-right: 10px;"><p style="text-align: justify;"><?php echo $Unificados["des_general"];?></p></div>
-		        </div>
-
+<tr>
+	<td>
+			<table border=0 style="width:100%;"> 
+				<tr>
+					<td colspan=2>
+						<div style="color:#ffffff;  background: <?php echo $Unificados["codigo"];?>;">
+							<div style="text-align:center;font-size:15px; margin-top:10px; margin-bottom:10px; font-weight:bold;height:25px;">
+							<?php echo $Unificados["des_categoria"];?>: <?php echo $Unificados["titulo_general"];?>
+							</div>
+						</div>
+					</td>	
+				</tr>		
+			
+				<tr style="text-align:left; color:#428bca;font-weight: bold;">
+					<td>
+						<input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados["fecha_ingresado"];?>" style="display:none"/>
+						<b><?php echo $fecha_larga;?> </b>	
+					</td>
+					<td>
+					<b>Período: <?php echo $Unificados["periodo"];?></b>
+					</td>
+				</tr>  
+				<tr>
+					<td colspan=2>
+						<div><br></div>
+					</td>	
+				</tr>
+				<tr>
+					<td colspan=2>
+						<div id="descripcion" style="color:black;"><?php echo $Unificados["des_general"];?></div>
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan=2>
 					<!-- CONTENIDO MAPA-->
 						<div class="mapa_marco" align="center">
 							<div id="map">
-								<!-- Muestra/Oculta Leyenda y Capas--> 
-								
 								<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/img_impacto/mapa_unificado_<?php echo $buscar; ?>.jpg" width="100%">
-
 							</div>
 						</div>
-					
-						<!-- CONTENIDO MAPA -->
-
-
-	</div>
-
-</td>
+					</td>
+				</tr>
+			</table>   
+	</td>
 </tr >
-<tr >
+
+<tr>
 <td>
 
-	<div>
 
-			<?php if($s1==1 and $sc1==1) {?>		
+		<?php if($s1==1 and $sc1==1) {?>		
 		<!---------------------------------------------------------------------------------------------> 
 		<!--------------------------------------------TOMAR ACCIÓN-------------------------------------> 
 		<!--------------------------------------------------------------------------------------------->
@@ -465,7 +443,8 @@ ul.alin {
 				</div>
 			<?php } ?>
 </td>
-</tr>     
+</tr>  
+
 <tr>  
 	<td >
 		<div>

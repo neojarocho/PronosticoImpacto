@@ -293,6 +293,8 @@ include('database_connection.php');
 			if (xplo($porciones[$i])[0] == 'id_idiario'){		$id_impacto_diario_detalle	= xplo($porciones[$i])[1];}
 			if (xplo($porciones[$i])[0] == 'atencion'){			$atencion					= xplo($porciones[$i])[1];}
 			if (xplo($porciones[$i])[0] == 'descripcion'){		$descripcion				= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_impacto_diario_m')	 {	$id_impacto_diario			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_impacto_probabilidad'){	$id_impacto_probabilidad	= xplo($porciones[$i])[1];}
 		}
 		
 		if ($datosh[0]==5) { $datosh = Array (1,2,3,4);};	
@@ -351,13 +353,13 @@ include('database_connection.php');
 		// Insertamos nuevo contenido
 		$sql_co = "";
 		for ($i=0; $i<=count(@$datos)-1; $i++) {
-			$sql_1 = "INSERT INTO public.impacto_diario_consecuencias(id_impacto_diario_detalle, id_consecuencia) VALUES (".$id_impacto_diario_detalle.", ".$datos[$i]."); \n";
+			$sql_1 = "INSERT INTO public.impacto_diario_consecuencias(id_impacto_diario_detalle, id_consecuencia,id_impacto_diario) VALUES (".$id_impacto_diario_detalle.", ".$datos[$i].",".$id_impacto_diario."); \n";
 			$sql_co .=$sql_1;
 		}	// echo $sql_co;
 
 		$sql_ho = "";
 		for ($i=0; $i<=count($datosh)-1; $i++) {
-			$sql_2 = "INSERT INTO public.impacto_diario_horario(id_impacto_diario_detalle, id_horario) VALUES (".$id_impacto_diario_detalle.", ".$datosh[$i]."); \n";
+			$sql_2 = "INSERT INTO public.impacto_diario_horario(id_impacto_diario_detalle, id_horario,id_impacto_diario) VALUES (".$id_impacto_diario_detalle.", ".$datosh[$i].",".$id_impacto_diario."); \n";
 			$sql_ho .=$sql_2;
 		}	// echo $sql_ho;
 
@@ -537,8 +539,13 @@ include('database_connection.php');
 		
 		# 6 Funcion de consecuencias y horarios
 		$sql = "SELECT f_insert_unificado(".$ro['uni'].");";
-		// echo $sql;
 		$result=pg_query($dbconn, $sql);
+		// echo $sql;
+		
+		# 7 Funcion de consecuencias y horarios
+		$sql = "SELECT f_ins_unificado_resumen(".$ro['uni'].");";
+		$result=pg_query($dbconn, $sql);
+		// echo $sql;
 		
 		// if(isset($result)){  echo 'done'; }
 		}

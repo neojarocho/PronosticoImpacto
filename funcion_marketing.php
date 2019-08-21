@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set("America/El_Salvador");
 function enviar_email($subject,$body_html,$grupo,$token,$body_plain){
 
 //next example will insert new conversation

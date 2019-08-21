@@ -78,7 +78,30 @@ select {
 	right:25px;
 	z-index: 99;
 	} 
-<!--<link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">-->
+.loading-div-background {
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        background:rgba(0, 0, 0, 0.2);
+        width:100%;
+        height:100%;
+}
+.loading-div {
+         width: 300px;
+         height: 200px;
+         background-color: rgba(255, 255, 255, 1);
+         text-align:center;
+         position:absolute;
+         left: 50%;
+         top: 50%;
+         margin-left:-150px;
+         margin-top: -100px;
+}
+.loading-div h2 {
+	color: black !important;
+	font-size: 25px;
+}
 </style>
 </head>
 
@@ -104,7 +127,7 @@ select {
 
 <div class="container">
 <ul class="nav nav-tabs">
-  <li class="active"><a data-toggle="tab" href="#menu1" >Mapa de Pronóstico</a></li>
+  <li class="active"><a data-toggle="tab" href="#menu1" >Publicar Informe</a></li>
 </ul>
 
 <!-- ####################################################################################### -->
@@ -129,9 +152,10 @@ select {
 			<div class="col-md-2" style="margin-top: 6px;">Nivel:</div>
 			<div class="col-md-5" style="">
 			<select name="nivel" id="nivel" class="form-control" placeholder="Ingrese nivel" required data-required-msg="Ingrese el periodo">
-			<option value="1" style="font-style: italic; color: #B2BABB;">1</option>
-			<option value="2" style="font-style: italic; color: #B2BABB;">2</option>
-			<option value="3" style="font-style: italic; color: #B2BABB;">3</option>
+			<option value="1" style="font-style: italic; color: #B2BABB;">Verde</option>
+			<option value="2" style="font-style: italic; color: #B2BABB;">Amarillo</option>
+			<option value="3" style="font-style: italic; color: #B2BABB;">Naranja</option>
+			<option value="4" style="font-style: italic; color: #B2BABB;">Rojo</option>
 			</select>
 			</div>
 		</div>
@@ -184,7 +208,7 @@ function mapaRefresh(){
 	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
 	if (id_impacto_diario != '') {
 		// console.log(id_impacto_diario);
-		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+id_impacto_diario+"' ></iframe>";
+		var data = "<iframe id='mapa_ivan' width='100%' height='840px' scrolling='no' frameBorder='0' src='mapa_alertas.php?id="+id_impacto_diario+"' onload='resizeIframe(this)'></iframe>";
 		$('#mi_target').html(data);
 	}
 }
@@ -208,16 +232,24 @@ function toggle_visibility(id) {
 }
 
 $("#bPublicar").on("click", function(){
+ShowProgressAnimation();
+
 	console.log("you choose Publicar button");
 	var mdata = {};
-	if($("#pub_we").is(":checked") == true){ mdata['pub_we'] = true; } else { mdata['pub_we']	 = false; }	
-	if($("#pub_in").is(":checked") == true){ mdata['pub_in'] = true; } else { mdata['pub_in']	 = false; }	
-	if($("#pub_co").is(":checked") == true){ mdata['pub_co'] = true; } else { mdata['pub_co']	 = false; }	
-	if($("#pub_re").is(":checked") == true){ mdata['pub_re'] = true; } else { mdata['pub_re']	 = false; }	
+	var op1 = op2 = op3 = op4 ="";
+	if($("#pub_we").is(":checked") == true){ mdata['pub_we'] = true; op1="SI";} else { mdata['pub_we']	 = false; op1="NO";}	
+	if($("#pub_in").is(":checked") == true){ mdata['pub_in'] = true; op2="SI";} else { mdata['pub_in']	 = false; op2="NO";}	
+	if($("#pub_co").is(":checked") == true){ mdata['pub_co'] = true; op3="SI";} else { mdata['pub_co']	 = false; op3="NO";}	
+	if($("#pub_re").is(":checked") == true){ mdata['pub_re'] = true; op4="SI";} else { mdata['pub_re']	 = false; op4="NO";}	
 	mdata['nivel']	= $("#nivel").val();
 	mdata['id_unificado']	= <?php echo $id_unificado; ?>;	
 	mdata['titulo']			= '<?php echo $mva; ?>';
+	var my_data = "<div>Publicar Contenido:		<span style='color:navy;font-weight: bold;'>"+op1+"</span></div>"+
+				  "<div>Correos Instituciones:	<span style='color:navy;font-weight: bold;'>"+op2+"</span></div>"+
+				  "<div>Correos General:		<span style='color:navy;font-weight: bold;'>"+op3+"</span></div>"+
+				  "<div>Publicar Redes Sociales:<span style='color:navy;font-weight: bold;'>"+op4+"</span></div>";
 	
+	$("#curMuni").html(my_data);
 	// console.log(mdata);
 	
     $.ajax({
@@ -244,27 +276,20 @@ $('#nivel').change(function() {
 
 // ------------------------------------------
 // FUNCION PARA INDICAR QUE UNA TAREA SE HIZO CORRECTAMENTE
-$(document).ready(function () {
-	$(".loading-div-background").css({ opacity: 0.8 });
+// $(document).ready(function () {
+	// $(".loading-div-background").css({ opacity: 0.8 });
 	// $('#mapa_ivan').contents().find('#banner').hide();
-});
+// });
 
 </script>
 <div id="loading-div-background" class="loading-div-background" style="display: none;">
 	<div class="ui-corner-all loading-div" id="loading-div" >
-		<p><br><br></p>
-		<img alt="Loading.." src="Imagenes/loading.gif" style="height: 30px; margin: 30px;">
-		<!--<h2 id="msg_text" style="color: white; font-weight: normal;">Municipios Agregados Correctamente</h2>-->
-		<!--<button id="Button1" onclick="(HideProgressAnimation(), refresh())">Aceptar</button>-->
-	</div>
-</div>
-
-<div id="loading-div-popup-form" class="loading-div-background-form" style="display: none;">
-	<div class="ui-corner-all loading-div-form" id="loading-div-form" >
-	<div><br></div>
-	<div id="curMuni">
-		<!-- CONTENIDO DE MUNICIPIO SELECCIONADO -->
-	</div>
+		<h4 id="msg_text">Opciones de Publicación Seleccionadas</h4>
+		<div id="curMuni">
+			<!-- CONTENIDO DE MUNICIPIO SELECCIONADO -->
+		</div>
+		<!--<div><img alt="Loading.." src="Imagenes/loading.gif" style="height: 30px; margin: 30px;"></div>-->
+		<div style="padding-top:5px;"><button id="Button1" onclick="HideProgressAnimation();">Aceptar</button></div>
 	</div>
 </div>
 

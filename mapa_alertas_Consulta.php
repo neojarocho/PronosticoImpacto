@@ -38,7 +38,7 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 
 ///----------------------*************************************-------------------------------------------------
 /// INFORMACIÓN GENERAL
-$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, u.des_categoria, u.des_categoria,	(SELECT c.codigo
+$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, UPPER(u.des_categoria) as des_categoria,	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
 	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
     FROM public.unificado u
@@ -77,7 +77,7 @@ $TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
 //--------------------------------ESTAR PREPARADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Estar preparados');";
+$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Preparación');";
 $resultGridEstarPreparados = pg_query($sqlGridEstarPreparados) or die('Query failed: '.pg_last_error());
 $EstarPreparados = pg_fetch_all($resultGridEstarPreparados);
 $EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
@@ -88,7 +88,7 @@ $EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
 //------------------------------------------------------------------------------------------------------
 //--------------------------------ESTAR INFORMADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Estar informados');";
+$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Atención');";
 $resultGridEstarInformados = pg_query($sqlGridEstarInformados) or die('Query failed: '.pg_last_error());
 $EstarInformados = pg_fetch_all($resultGridEstarInformados);
 $EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
@@ -99,7 +99,7 @@ $EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
 //------------------------------------------------------------------------------------------------------
 //--------------------------------CONDICIONES NORMALES----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Monitoreo');";
+$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Vigilancia');";
 $resultGridCondicionesNormales = pg_query($sqlGridCondicionesNormales) or die('Query failed: '.pg_last_error());
 $CondicionesNormales = pg_fetch_all($resultGridCondicionesNormales);
 $CondicionesNormales = $CondicionesNormales[0]['f_reporte_unificado'];
@@ -769,9 +769,13 @@ ul.alin {
 
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
-			map.graphics.enableMouseEvents();
-			map.graphics.on("mouse-out", closeDialog);
+			// map.graphics.enableMouseEvents();
+			// map.graphics.on("mouse-out", closeDialog);
+			// map.disableScrollWheelZoom();
+
 			map.disableScrollWheelZoom();
+			map.disablePan();
+			map.disableDoubleClickZoom();
 			
 			/* my function call to draw selected area */
 			// console.log(mval);
@@ -1225,11 +1229,11 @@ if (nivel==1){
 								<!-- Muestra/Oculta Leyenda y Capas--> 
 								
 								<div id="PuntosCardinales">
-									<img src="Imagenes/norte_arcmap.png" height="100">
+									<img src="Imagenes/PuntosCardinales.jpg" width="130">
 								</div>
 
 								<div id="symbology">
-									<img src="Imagenes/PaletaImpacto.png" width="130">
+									<img src="Imagenes/l_PaletaImpacto.png" width="150">
 								</div>
 								<!-- Muestra Capas--> 
 								<div id="feedback" class="shadow" style="display: none;">
@@ -1270,7 +1274,7 @@ if (nivel==1){
 		  
 							<table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="Imagenes/FondoTomarAccion.png"  style="width:100%"/>
+								  <img src="Imagenes/l_tomar_accion.png"  style="width:100%"/>
 								</div>
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
@@ -1293,7 +1297,7 @@ if (nivel==1){
 
 							<table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="Imagenes/FondoEstarPreparados.png"  style="width:100%"/>
+								  <img src="Imagenes/l_preparacion.png"  style="width:100%"/>
 								</div>
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
@@ -1316,7 +1320,7 @@ if (nivel==1){
 				<div   id="EstarInformados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							<table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="Imagenes/FondoEstarInformados.png"  style="width:100%"/>
+								  <img src="Imagenes/l_atencion.png"  style="width:100%"/>
 								</div>
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
@@ -1339,7 +1343,7 @@ if (nivel==1){
 				<div   id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							 <table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="Imagenes/FondoCondicionesNormales.png"  style="width:100%"/>
+								  <img src="Imagenes/l_vigilancia.png"  style="width:100%"/>
 								</div>
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
@@ -1373,7 +1377,7 @@ if (nivel==1){
 				{  
 				?>  
 				<tr style="background:#FFFFFF; font-size: 12px;">  
-						<td style="vertical-align:middle;"><img src="<?php echo $row["imagen"]; ?>" width="120 px"></td> 
+						<!-- <td style="vertical-align:middle;"><img src="<?php echo $row["imagen"]; ?>" width="120 px"></td>  -->
 						<td><h4 style="line-height: 1.5em; font-size: 12px;"><?php echo $row["condiciones"]; ?></h4></td>
 				</tr>  
 				<?php  
