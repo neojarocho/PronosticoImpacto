@@ -303,22 +303,9 @@ iframe {
 	</div>
 
 	<div id="tablaUni" class="row">
-<!-- CONTENIDO DE TABLA -->
-		<div class="" style="">
-<!--
-					<table class="table table-bordered"> 
-					<tr style="background:#EEEEEE;">  
-							<th width="20%">Area</th>
-							<th width="75%">Título</th>
-							<th width="20%">Hora</th> 
-							<th width="5%"></th> 
-							<th width="5%"></th>  
-					</tr>  
-					</table>
--->
+	<!-- CONTENIDO DE TABLA -->
 
-		</div>
-<!-- CONTENIDO DE TABLA -->
+	<!-- CONTENIDO DE TABLA -->
 	</div>
 	
 	<div id="msgArea" class="col-md-12" style="top: -30px; color:red;">
@@ -327,27 +314,7 @@ iframe {
 	<div class="row">
 		<div class="col-md-12" style="text-align: center;">
 			<div class="row">
-<!--
-				<div class="col-md-3">
-					<div class="form-check-inline">
-						<label class="form-check-label">
-						<input name='opt1' type="checkbox" class="form-check-input" value="1">  Publicar</label>
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-check-inline">
-						<label class="form-check-label" style="zoom: 1;">
-						<input name='opt2' type="checkbox" class="form-check-input" value="1">  Envio a Intituciones</label>
-					</div>
-				</div>
-				<div class="col-md-3">
-					<div class="form-check-inline">
-					  <label class="form-check-label" style="zoom: 1;">
-						<input name='opt3' type="checkbox" class="form-check-input" value="1">  Envio General
-					  </label>
-					</div>
-				</div>
--->
+
 				<div class="" style="text-align:center;" style="width100%;">
 					 <button id="guardarUnificado" type="submit" class="btn btn-success" style="width: 225px;">UNIFICAR</button>
 				</div>
@@ -416,17 +383,33 @@ function miEditUni(va){
 }
 
 // ACTUALIZAR LISTA DE ELEMENTOS POR AREA  CUANDO CAMBIA FECHA O PERIODO//
+function fillDesc() {
+	var d1 = $('input#desc1').val()+"\n";
+	var d2 = $('input#desc2').val()+"\n";
+	var d3 = $('input#desc3').val()+"\n";
+	
+	var to_uni = d1+d2+d3;
+	to_uni = to_uni.replace("undefined", "");
+	to_uni = to_uni.replace("\nundefined", "");
+	// console.log(to_uni);
+	
+	$('textarea#descripcion').val(to_uni);
+}	
+	
 function validaDup() {
 	var msg=''; 
 	var b  = 0;
 	var c1 = $('input#uni1').length;
 	var c2 = $('input#uni2').length;
 	var c3 = $('input#uni3').length;
+	
 	if(c1>1){ $('div#spa1').css( "backgroundColor", "red" ); console.log('Meteorología'); b=1;}  else { $('div#spa1').css( "backgroundColor", "white" ); }
 	if(c2>1){ $('div#spa2').css( "backgroundColor", "red" ); console.log('Hidrología');   b=1;}  else { $('div#spa2').css( "backgroundColor", "white" ); }
 	if(c3>1){ $('div#spa3').css( "backgroundColor", "red" ); console.log('Geología');	  b=1;}  else { $('div#spa3').css( "backgroundColor", "white" ); }
+	
 	if (b == 1) { msg = 'EL AREA ESTA DUPLICADA'; $('#guardarUnificado').attr('disabled',true); } else { $('#guardarUnificado').attr('disabled',false); }
 	$('#msgArea').html(msg);
+	fillDesc();
 	return b;
 }
 
@@ -438,8 +421,10 @@ function addUni(f,p) {
 		url: "t_uni.php",
 		data: {f:f, p:p, idf:idf},
 		success: function(msg){
+			// console.log(msg);
 			$("#tablaUni").html(msg);
 			getUnificado();
+			fillDesc();
        }
      });
 }
@@ -450,7 +435,7 @@ $('#periodo').change(function() {
 	var fecha = $("#fecha").val();
 	if (fecha != ""){
 		addUni(fecha,periodo);
-		console.log(periodo+":"+fecha);
+		// console.log(periodo+":"+fecha);
 		$("#guardarUnificado").show();
 		// getUnificado();
 	}
@@ -461,12 +446,14 @@ $('#fecha').change(function() {
 	var fecha = $(this).val();
 	if(periodo != ''){
 		addUni(fecha,periodo);
-		console.log(periodo+":"+fecha);
+		// console.log(periodo+":"+fecha);
 		$("#guardarUnificado").show();
 		// getUnificado();
 	}
 });
-
+//**********************************************//
+//	Remove Areas								//
+//**********************************************//
 function trDetach(id) {
 	ShowProgressAnimation();
 	$('#'+id).detach();
@@ -487,15 +474,19 @@ function getUnificado() {
 	var uni1 = $('#uni1').val();
 	var uni2 = $('#uni2').val();
 	var uni3 = $('#uni3').val();
+	
+	if (uni3 === null) {uni3="0";}
+	
 	// console.log(uni1+'-'+uni2+'-'+uni3);
 	$.ajax({
 		url:"MeteorologiaProcesos.php",
 		method:"POST",
 		data:{u1:uni1, u2:uni2, u3:uni3, opcion:'getUnificado'},
 		success:function(data) {
+			// console.log(data);
 			var va = jQuery.parseJSON(data);
+			// console.log(va);
 			$('#estado').val(va['desc']);
-			console.log(va);
 			HideProgressAnimation();
 		}
 	});
@@ -524,9 +515,9 @@ var periodo_text	= $("#periodo option:selected").text().replace(/\s/g,"%20");
 var fenomeno_text	= $('#fenomeno').html().replace(/\s/g,"%20");
 var formUnificado	= $(this).serialize();
 
-console.log('********************');
-console.log(formUnificado + '&periodo_text=' + periodo_text + '&fenomeno_text=' + fenomeno_text);
-console.log('********************');
+// console.log('********************');
+// console.log(formUnificado + '&periodo_text=' + periodo_text + '&fenomeno_text=' + fenomeno_text);
+// console.log('********************');
 
 if (validaDup()==0){
 		var formUnificado = $(this).serialize();
@@ -537,7 +528,7 @@ if (validaDup()==0){
 			method:"POST",
 			data:{formMuni:formUnificado, opcion:'insertUnificado'},
 			success:function(data) {
-				console.log(data);
+				// console.log(data);
 				var mva = jQuery.parseJSON(data);
 				var uni = mva['uni'];
 				$("#guardarUnificado").hide();

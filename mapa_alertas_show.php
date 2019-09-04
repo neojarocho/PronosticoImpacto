@@ -420,7 +420,7 @@ a {
 div.esriPopupWrapper .zoomTo {
   display: none;
 }
-.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev {
+.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev, .spinner {
   display: none;
 }
 </style>
@@ -520,6 +520,8 @@ div.esriPopupWrapper .zoomTo {
 		});
 		
 		var popup = new Popup({
+			pagingControls: false,
+			pagingInfo: false,
 			fillSymbol: sfs,
 			lineSymbol: null,
 			markerSymbol: null
@@ -689,7 +691,7 @@ div.esriPopupWrapper .zoomTo {
 			if (mval_09.length > 0)		{	my_custom_style(mval_09)};
 			if (mval_10.length > 0)		{	my_custom_style(mval_10)};
 			if (mval_11.length > 0)		{	my_custom_style(mval_11)};
-		  
+			my_water();
         });
 		
         map.infoWindow.resize(245,125);
@@ -702,6 +704,27 @@ div.esriPopupWrapper .zoomTo {
 
 /**************************************************************************************/
 /**************************************************************************************/
+	function my_water() {
+		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
+		var query2 = new Query();
+		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		query2.where = "FID>0";
+		query2.returnGeometry = true;
+		query2.outFields = ["FID"];
+		queryTask2.execute(query2, showResults2);		
+		});
+	}
+	
+	function showResults2(featureSet) {
+	var resultFeatures = featureSet.features;
+	symbol = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([115,178,255,0.15]), 1 ), new Color([115,178,255	,0.80]) );	  
+	  for (var i=0, il=resultFeatures.length; i<il; i++) {
+		var graphic = resultFeatures[i];
+		graphic.setSymbol(symbol);
+		graphic.setInfoTemplate(infoTemplate);
+		map.graphics.add(graphic);
+	  }
+	}
 
 	function my_custom_style(mval) {
 	$(".esriControlsBR").remove();	

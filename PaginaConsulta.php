@@ -195,61 +195,58 @@ ULTIMOS.style.display = 'block';
 
         <div class="row" style="margin: 5px;">
               <p></p>
-            <div class="col-md-2">
+            <div class="col-xs-2">
 
                 <button type="button" id='BotonLluvias' onclick="Ocultar('LLUVIA');" class="list-group-item active EfectoBtN" style="background-color:#3b7db5; border-color:#55656f; text-align: center;">
-                    <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/Lluvias.png">
-                    <h5>Lluvias intensas y tormentas eléctricas</h5> </button>
-                    
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/lluvias_n.png">
+                                    
 
         
 
             </div>
 
-            <div class="col-md-2">
+            <div class="col-xs-2">
 
                 <button type="button" id='BotonTemporal' onclick="Ocultar('TEMPORAL');" class="list-group-item active text-center EfectoBtN" style="background-color:#04b2ce;text-align: center;">
-                    <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/Temporal.png">
-                    <h5><br/>Temporal</h5></button>
-
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/temporal_n.png">
+                    
             </div>
 
-            <div class="col-md-2">
+            <div class="col-xs-2">
 
                 <button type="button" id='Boton' onclick="Ocultar('SEQUIA');" class="list-group-item active text-center EfectoBtN" style="background-color:#6f4c8a;text-align: center;">
-                    <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/sequia.png">
-                    <h5><br/>Sequía</h5></button>
-
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/sequia_n.png">
+                    
 
             </div>
 
 
 
-            <div class="col-md-2">
+            <div class="col-xs-2">
 
 
                 <button type="button" id='BotonVientos' onclick="Ocultar('VIENTOS');" class="list-group-item active text-center EfectoBtN" style="background-color:#b9751c;text-align: center;">
-                    <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/Vientos.png">
-                    <h5><br/>Vientos Fuertes</h5></button>
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/vientos_n.png">
+                
 
 
             </div>
 
-            <div class="col-md-2">
+            <div class="col-xs-2">
 
                 <button type="button" id='BotonErupcion' onclick="Ocultar('ERUPCION');" class="list-group-item active text-center EfectoBtN" style="background-color:#8c4255;text-align: center;" >
-                    <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/Erupcion.png">
-                    <h5><br/>Erupción Volcánica</h5></button>
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/erupcion_n.png">
+                
 
         
 
             </div>
 
-            <div class="col-md-2">
+            <div class="col-xs-2">
 
                 <button type="button" id='BotonSismo' onclick="Ocultar('SISMO');" class="list-group-item active text-center EfectoBtN" style="background-color:#147f7a;text-align: center;">
-                    <img width="100%" height="100%" src="//192.168.6.204/PronosticoImpactoPublic/Imagenes/Fenomenos/sismo.png">
-                    <h5><br/>Sismo</h5>  </button>
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/sismo_n.png">
+              
             </div>
 
 
@@ -259,7 +256,7 @@ ULTIMOS.style.display = 'block';
 
 
         <div class="row" style="margin: 5px;">
-            <div class="col-md-12">
+            <div class="col-xs-12">
 
  <br>
                 <button type="button" id="BotonUltimos" onclick="Ocultar('ULTIMOS');" class="list-group-item active EfectoBtN" style="background-color:#55656f; text-align: center;">

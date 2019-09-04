@@ -496,7 +496,11 @@ include('database_connection.php');
 		dd.fecha_ingreso,
 		dd.id_usuario_ingreso,
 		(SELECT array_to_string(array(select h.horario from impacto_diario_horario ho INNER JOIN horario h ON h.id_horario = ho.id_horario where ho.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as horarios,
-		(SELECT array_to_string(array(select c.consecuencia from impacto_diario_consecuencias dc INNER JOIN consecuencia c ON c.id_consecuencia = dc.id_consecuencia where dc.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as consecuencias,
+		-- (SELECT array_to_string(array(select c.consecuencia from impacto_diario_consecuencias dc INNER JOIN consecuencia c ON c.id_consecuencia = dc.id_consecuencia where dc.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as consecuencias,
+		(SELECT array_to_string(array((select '<li '||(SELECT c.text_color	FROM public.color c where c.id_color=dd.id_color)||'>'||c.consecuencia||'.</li>' from impacto_diario_consecuencias dc 
+		INNER JOIN consecuencia c ON c.id_consecuencia = dc.id_consecuencia where dc.id_impacto_diario_detalle = dd.id_impacto_diario_detalle 
+		AND dc.id_impacto_diario = dd.id_impacto_diario) ), '')) as consecuencias,
+
 		dd.id_impacto_probabilidad,
 		(SELECT departamento FROM public.departamento WHERE  cod_departamento = LEFT(dd.cod_municipio, 2)) as departamento
 		FROM public.impacto_diario_detalle dd
@@ -576,9 +580,12 @@ include('database_connection.php');
 			while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 				$ro[] = $row;
 			} pg_free_result($result);
-			$ro = $ro[0];
-
-			// echo json_encode($ro, JSON_FORCE_OBJECT);
+			@$ro = @$ro[0];
+			
+			if (count($ro)==0){
+				$ro['imax']="";
+				$ro['desc']="";
+			}
 			echo json_encode($ro, JSON_FORCE_OBJECT);
 		}
 		else {
@@ -593,20 +600,48 @@ include('database_connection.php');
 
 	$arr = $_POST['updateMuni'];
 	
-	// echo $arr['titulo'];
-	// echo $arr['descripcion'];
-	// echo $arr['periodo'];
-	// echo $arr['id_impacto_diario'];
 	$dbconn = my_dbconn4("PronosticoImpacto");
 	$sql="UPDATE public.impacto_diario SET titulo='".$arr['titulo']."', descripcion='".$arr['descripcion']."', id_periodo=".$arr['periodo']." WHERE id_impacto_diario = ".$arr['id_impacto_diario'].";";
 	$result=pg_query($dbconn, $sql);
 	// echo $sql;
 	
 	
-		// echo "<pre>";
-		// print_r($arr);
+	// echo "<pre>";
+	// print_r($arr);
+	// echo "</pre>";
+	// exit();
+	}
+	
+	if($_POST["opcion"] == 'updateIntegrado'){
+		
+		$porciones = explode("&", urldecode ($_POST['updateInformeform']));
+		// echo "<pre>\n";
+		// print_r($porciones);
 		// echo "</pre>";
-		// exit();
+		
+		$ar=array();		
+		for ($i=0; $i<=count($porciones)-1; $i++) {
+			if (xplo($porciones[$i])[0] == 'i_id_uni')		{ $ar['i_id_uni']		= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'i_titulo')		{ $ar['i_titulo']		= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'i_descripcion')	{ $ar['i_descripcion'] 	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'i_u1')			{ $ar['i_u1']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'i_u2')			{ $ar['i_u2']			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'i_u3')			{ $ar['i_u3']			= xplo($porciones[$i])[1];}
+		}
+		
+		// print_r($ar);
+		/*AQUI HAY QUE AGREGAR LOS UPDATES PARA MODIFICAR PRONOSTICO DE IMPACTO*/
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql="UPDATE public.unificado SET titulo_general='".$ar['i_titulo']."', des_general='".$ar['i_descripcion']."' WHERE id_unificado=".$ar['i_id_uni'].";";
+		// echo "\n".$sql;
+		$result=pg_query($dbconn, $sql);
+		
+		$sql1 = "";
+		$sql1 .= "UPDATE his_impacto_diario SET descripcion = '".$ar['i_u1']."' WHERE id_his_impacto_diario = (SELECT ui.id_his_impacto_diario FROM unificado_informe ui INNER JOIN his_impacto_diario hi ON hi.id_his_impacto_diario = ui.id_his_impacto_diario WHERE hi.id_area = 1 AND ui.id_unificado = ".$ar['i_id_uni'].");\n";
+		$sql1 .= "UPDATE his_impacto_diario SET descripcion = '".$ar['i_u2']."' WHERE id_his_impacto_diario = (SELECT ui.id_his_impacto_diario FROM unificado_informe ui INNER JOIN his_impacto_diario hi ON hi.id_his_impacto_diario = ui.id_his_impacto_diario WHERE hi.id_area = 2 AND ui.id_unificado = ".$ar['i_id_uni'].");\n";
+		$sql1 .= "UPDATE his_impacto_diario SET descripcion = '".$ar['i_u3']."' WHERE id_his_impacto_diario = (SELECT ui.id_his_impacto_diario FROM unificado_informe ui INNER JOIN his_impacto_diario hi ON hi.id_his_impacto_diario = ui.id_his_impacto_diario WHERE hi.id_area = 3 AND ui.id_unificado = ".$ar['i_id_uni'].");\n";
+		// echo $sql1;
+		$result=pg_query($dbconn, $sql1);
 	}
 	
 

@@ -41,7 +41,7 @@ include("cnn.php");
 
 //// COMBO PERIODO
 $periodo = '';
-$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY id_periodo;";
+$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY periodo;";
 $resultPeriodo=pg_query($connect, $SqlPeriodo);
 while($row = pg_fetch_array($resultPeriodo, null, PGSQL_ASSOC)) {
 	$TipoPeriodo[] = $row;

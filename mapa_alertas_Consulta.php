@@ -38,9 +38,13 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 
 ///----------------------*************************************-------------------------------------------------
 /// INFORMACIÓN GENERAL
-$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, UPPER(u.des_categoria) as des_categoria,	(SELECT c.codigo
+$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado,	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
-	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
+	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo,
+	
+	CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>ATENCIÓN: '||u.titulo_general||'</b>'
+            ELSE UPPER(u.des_categoria)||': '||u.titulo_general END as des_categoria
+			
     FROM public.unificado u
     WHERE u.id_unificado= '$buscar';";
 $resultUnificado = pg_query($sqlUnificado) or die('Query failed: '.pg_last_error());
@@ -64,10 +68,10 @@ $AreaResumen = pg_num_rows($resultGridAreaResumen);
 //--------------------------------TOMAR ACCIÓN----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlTomarAccion="SELECT f_reporte_unificado($buscar,'Tomar acción');";
+$sqlTomarAccion="SELECT f_consulta_unificado($buscar,'Tomar acción');";
 $resultGridTomarAccion = pg_query($sqlTomarAccion) or die('Query failed: '.pg_last_error());
 $TomarAccion = pg_fetch_all($resultGridTomarAccion);
-$TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
+$TomarAccion = $TomarAccion[0]['f_consulta_unificado'];
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
@@ -77,10 +81,10 @@ $TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
 //--------------------------------ESTAR PREPARADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Preparación');";
+$sqlGridEstarPreparados="SELECT f_consulta_unificado($buscar,'Preparación');";
 $resultGridEstarPreparados = pg_query($sqlGridEstarPreparados) or die('Query failed: '.pg_last_error());
 $EstarPreparados = pg_fetch_all($resultGridEstarPreparados);
-$EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
+$EstarPreparados = $EstarPreparados[0]['f_consulta_unificado'];
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
@@ -88,10 +92,10 @@ $EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
 //------------------------------------------------------------------------------------------------------
 //--------------------------------ESTAR INFORMADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Atención');";
+$sqlGridEstarInformados="SELECT f_consulta_unificado($buscar,'Atención');";
 $resultGridEstarInformados = pg_query($sqlGridEstarInformados) or die('Query failed: '.pg_last_error());
 $EstarInformados = pg_fetch_all($resultGridEstarInformados);
-$EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
+$EstarInformados = $EstarInformados[0]['f_consulta_unificado'];
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
@@ -99,10 +103,10 @@ $EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
 //------------------------------------------------------------------------------------------------------
 //--------------------------------CONDICIONES NORMALES----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Vigilancia');";
+$sqlGridCondicionesNormales="SELECT f_consulta_unificado($buscar,'Vigilancia');";
 $resultGridCondicionesNormales = pg_query($sqlGridCondicionesNormales) or die('Query failed: '.pg_last_error());
 $CondicionesNormales = pg_fetch_all($resultGridCondicionesNormales);
-$CondicionesNormales = $CondicionesNormales[0]['f_reporte_unificado'];
+$CondicionesNormales = $CondicionesNormales[0]['f_consulta_unificado'];
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
@@ -531,21 +535,24 @@ ul.alin {
 .FondoImagen{
     position: relative;
     display: inline-block;
-    text-align: center;
+    text-align: left;
 }
- 
 .texto-encima{
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 20px;
+    left: 20px;
 }
-.centra{
+.centrado{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+	text-align: left !important;
 }
 
+.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev, .spinner {
+  display: none;
+}
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 
@@ -645,6 +652,8 @@ ul.alin {
 		});
 		
 		var popup = new Popup({
+			pagingControls: false,
+			pagingInfo: false,
 			fillSymbol: sfs,
 			lineSymbol: null,
 			markerSymbol: null
@@ -769,13 +778,9 @@ ul.alin {
 
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
-			// map.graphics.enableMouseEvents();
-			// map.graphics.on("mouse-out", closeDialog);
-			// map.disableScrollWheelZoom();
-
+			map.graphics.enableMouseEvents();
+			map.graphics.on("mouse-out", closeDialog);
 			map.disableScrollWheelZoom();
-			map.disablePan();
-			map.disableDoubleClickZoom();
 			
 			/* my function call to draw selected area */
 			// console.log(mval);
@@ -803,7 +808,8 @@ ul.alin {
 			if (mval_08.length > 0)		{	my_custom_style(mval_08)};
 			if (mval_09.length > 0)		{	my_custom_style(mval_09)};
 			if (mval_10.length > 0)		{	my_custom_style(mval_10)};
-			if (mval_11.length > 0)		{	my_custom_style(mval_11)};			
+			if (mval_11.length > 0)		{	my_custom_style(mval_11)};
+			my_water();
 			
         });
 		
@@ -817,7 +823,28 @@ ul.alin {
 
 /**************************************************************************************/
 /**************************************************************************************/
-
+	function my_water() {
+		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
+		var query2 = new Query();
+		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		query2.where = "FID>0";
+		query2.returnGeometry = true;
+		query2.outFields = ["FID"];
+		queryTask2.execute(query2, showResults2);		
+		});
+	}
+	
+	function showResults2(featureSet) {
+	var resultFeatures = featureSet.features;
+	symbol = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([115,178,255,0.15]), 1 ), new Color([115,178,255	,0.80]) );	  
+	  for (var i=0, il=resultFeatures.length; i<il; i++) {
+		var graphic = resultFeatures[i];
+		graphic.setSymbol(symbol);
+		graphic.setInfoTemplate(infoTemplate);
+		map.graphics.add(graphic);
+	  }
+	}
+	
 	function my_custom_style(mval) {
 	$(".esriControlsBR").remove();	
 	$(".actionsPane").remove();	
@@ -1166,7 +1193,7 @@ if (nivel==1){
 
 
 			 <div class="col-md-12" style="text-align: center; font-size: 15px">
-          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?>: <?php echo $Unificados['titulo_general'];?></b></p>
+          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?></b></p>
 			</div>
 		</div>
 
@@ -1216,7 +1243,7 @@ if (nivel==1){
 	<div class="row">
 
 		        <div>
-		            <h4 id="descripcion" style="line-height: 1.2em; font-size: 12px;"><p style="text-align: justify;"><?php echo $Unificados['des_general'];?></p></h4>
+		            <h4 id="descripcion" style="line-height: 1.3em; font-size: 12px;"><p style="text-align: justify;"><?php echo $Unificados['des_general'];?></p></h4>
 		             <br>
 		        </div>
 
@@ -1229,7 +1256,7 @@ if (nivel==1){
 								<!-- Muestra/Oculta Leyenda y Capas--> 
 								
 								<div id="PuntosCardinales">
-									<img src="Imagenes/PuntosCardinales.jpg" width="130">
+									<img src="Imagenes/esri_north.JPG" width="60">
 								</div>
 
 								<div id="symbology">
@@ -1273,16 +1300,20 @@ if (nivel==1){
 				<div id="TomarAccion" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 		  
 							<table class="table table-bordered" style="border: hidden;"> 
+														
 								<div class="FondoImagen">
-								  <img src="Imagenes/l_tomar_accion.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_tomar_accion.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#ffffff;">TOMAR ACCIÓN</div>
 								</div>
+								
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
 								while($row = pg_fetch_array($resultGridTomarAccion))  
 								{  
 								?>  
 								 <tr style="font-size: 10px;">
-										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></h6></td>
+										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h6></td>
 								</tr>  
 								<?php  
 								}  
@@ -1295,17 +1326,20 @@ if (nivel==1){
 
 				<div  id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 
-							<table class="table table-bordered" style="border: hidden;"> 
+							<table class="table table-bordered" style="border: hidden;">
 								<div class="FondoImagen">
-								  <img src="Imagenes/l_preparacion.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_preparacion.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#ffffff;">PREPARACIÓN</div>
 								</div>
+								
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
 								while($row = pg_fetch_array($resultGridEstarPreparados))  
 								{  
 								?>  
 								<tr style="font-size: 10px;">  
-										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></h6></td>
+										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h6></td>
 								</tr>  
 								<?php  
 								}  
@@ -1318,17 +1352,20 @@ if (nivel==1){
 		<!-- ----------------------------------------------------------------------------------------- -->
 
 				<div   id="EstarInformados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
-							<table class="table table-bordered" style="border: hidden;"> 
+							<table class="table table-bordered" style="border: hidden;">
 								<div class="FondoImagen">
-								  <img src="Imagenes/l_atencion.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_atencion.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#797979;">ATENCIÓN</div>
 								</div>
+							
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
 								while($row = pg_fetch_array($resultGridEstarInformados))  
 								{  
 								?>  
 								 <tr style="font-size: 10px;"> 
-										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></h6></td>
+										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h6></td>
 								</tr>  
 								<?php  
 								}  
@@ -1343,15 +1380,18 @@ if (nivel==1){
 				<div   id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							 <table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="Imagenes/l_vigilancia.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_vigilancia.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#ffffff;">VIGILANCIA</div>
 								</div>
+
 								<tr style="background:#EEEEEE" align="center"></tr>  
 								<?php  
 								while($row = pg_fetch_array($resultGridCondicionesNormales))  
 								{  
 								?>  
 								<tr style="font-size: 10px;"> 
-										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></h6></td>
+										<td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h6 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h6></td>
 								</tr>  
 								<?php  
 								}  
@@ -1376,9 +1416,9 @@ if (nivel==1){
 				while($row = pg_fetch_array($resultGridAreaResumen))  
 				{  
 				?>  
-				<tr style="background:#FFFFFF; font-size: 12px;">  
-						<!-- <td style="vertical-align:middle;"><img src="<?php echo $row["imagen"]; ?>" width="120 px"></td>  -->
-						<td><h4 style="line-height: 1.5em; font-size: 12px;"><?php echo $row["condiciones"]; ?></h4></td>
+				<tr style="background:#FFFFFF;">  
+						<td style="vertical-align:middle;"><img src="<?php echo $row["imagen"]; ?>" width="120 px"></td>
+						<td><h6 style="line-height: 1.3em;"><?php echo $row["condiciones"]; ?></h6></td>
 				</tr>  
 				<?php  
 				}  
@@ -1388,6 +1428,8 @@ if (nivel==1){
 	</td>
 </tr>  
 </table>  
+
+
 
 <!-- ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->
 <!-- ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo -->

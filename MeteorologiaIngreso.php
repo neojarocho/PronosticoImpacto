@@ -41,7 +41,7 @@ function getMuniData($va) {
 
 //// COMBO PERIODO
 $periodo = '';
-$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY id_periodo;";
+$SqlPeriodo="SELECT id_periodo, periodo FROM public.periodo_impacto ORDER BY periodo;";
 $resultPeriodo=pg_query($connect, $SqlPeriodo);
 while($row = pg_fetch_array($resultPeriodo, null, PGSQL_ASSOC)) {
 	$TipoPeriodo[] = $row;
@@ -56,7 +56,7 @@ foreach($resultPeriodo as $row)
 
 //// IMPACTO FENOMENO
 $ImpactoFenomeno  = '';
-$SqlImpactoFenomeno ="SELECT id_impacto, impacto FROM public.impacto;";
+$SqlImpactoFenomeno ="SELECT id_impacto, impacto FROM public.impacto order by id_impacto;";
 $resultImpactoFenomeno =pg_query($connect, $SqlImpactoFenomeno );
 while($row = pg_fetch_array($resultImpactoFenomeno , null, PGSQL_ASSOC)) {
 	$TipoImpactoFenomeno [] = $row;
@@ -455,7 +455,7 @@ iframe {
 				</div>
 			</div>
 				
-			<div class="row"><p></p>
+<!-- 			<div class="row"><p></p>
 				<div class="col-md-12">
 					<input type="hidden" name="filter" id="filter" value="0000" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
 					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="50" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
@@ -465,9 +465,9 @@ iframe {
 					<textarea name="categoria" id="categoria" class="form-control" style="font-size: 11pt;font-weight: bold"></textarea>
 				</div>	
 			</div>	
-
+ -->
 			<div class="row"><p></p>
-				<div class="col-md-8">
+				<div class="col-md-8" style="padding-bottom: 15px; padding-top: 15px; background: #f9f9f9;" >
 					<label>Consecuencias a afectar</label>
 			
 					<div id="ConteConsecuencias" class="form-check" placeholder="Ingrese" required data-required-msg="Ingrese" style="width: 100%; height: 100%;">
@@ -477,6 +477,18 @@ iframe {
 				</div>	
 				
 				<div class="col-md-4">
+			<div class="row"><p></p>
+				<div class="col-md-12">
+					<input type="hidden" name="filter" id="filter" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
+					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="<?php echo $id_impacto_diario?>" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
+					<input type="hidden" name="id_categoria" id="id_categoria" class="form-control k-invalid" required="" data-required-msg="Seleccione impacto" aria-invalid="true">
+					<input type="hidden" name="id_color" id="id_color" class="form-control k-invalid" required="" data-required-msg="Seleccion probabilidad" aria-invalid="true">
+					<input type="hidden" name="id_impacto_probabilidad" id="id_impacto_probabilidad" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
+					<textarea name="categoria" id="categoria" class="form-control" style="font-size: 10pt; height: 80px !important"></textarea>
+				</div>	
+			</div>	
+			<br>
+
 					<label>Horario</label> 
 					<div id="contenedorHorario" class="form-check" style="background: #FFFFFF" placeholder="Ingrese horario" required data-required-msg="Ingrese horario">
 						<label>
@@ -535,7 +547,7 @@ iframe {
 
 		<div class="row" class="mi_target" id= "mi_pronostico" style="background: #FFFFFF;">
 			<!-- CONTENIDO AQUI -->
-			<iframe id='prono_ivan' width='100%' height='1700px' scrolling='no' frameBorder='0' src='http://srt.marn.gob.sv/web/geotiff/map.php' ></iframe>
+			<iframe id='prono_ivan' width='100%' height='1700px' scrolling='no' frameBorder='0' src='http://srt.marn.gob.sv/web/geotiff/map.php' onload='resizeIframe(this)'></iframe>
 			<!-- CONTENIDO AQUI -->
 		</div>  
     </div>	
@@ -572,12 +584,15 @@ function validaCon(name) {
 	return vali;
 }
 
+function resizeIframe(obj) {
+  obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+}
 
 // Funcion encargada de mostrar el mapa con los municipios seleccionados
 function mi_mapa(va){
 	var id_impacto_diario = parseInt($('#id_impacto_diario_m').val());
 	if (id_impacto_diario != '') {
-		var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+va+"' ></iframe>";
+		var data = "<iframe id='mapa_ivan' width='100%' height='900px' scrolling='no' frameBorder='0' src='mapa_individual_ver.php?id="+va+"' onload='resizeIframe(this)'></iframe>";
 		$('#mi_target').html(data);
 	}
 }
@@ -1014,7 +1029,7 @@ $('.action').change(function(){
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-					varCons +="<div class='checkbox'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
+					varCons +="<div class='checkbox' style='margin-right: 10px; width: 15px; height: 15px; margin-top: 10px;'><input name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
 				}
 				if (varCons.length==0){
 					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";

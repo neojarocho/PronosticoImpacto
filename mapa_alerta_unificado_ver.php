@@ -65,11 +65,21 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 
 ///----------------------*************************************-------------------------------------------------
 /// INFORMACIÓN GENERAL
-$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, 
+$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.fecha_ingresado, 
+
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>'||UPPER(u.periodo)||'</b>'
+            ELSE UPPER(u.periodo) END as periodo,
+
+
 CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>ATENCIÓN</b>'
-            ELSE UPPER(u.des_categoria) END as des_categoria,	(SELECT c.codigo
+            ELSE UPPER(u.des_categoria) END as des_categoria,
+
+
+            	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
 	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
+
+
     FROM public.unificado u
     WHERE u.id_unificado= '$buscar';";
 $resultUnificado = pg_query($sqlUnificado) or die('Query failed: '.pg_last_error());
@@ -85,11 +95,11 @@ $Unificados = $Unificados[0];
 
 $AreaResumen = '';
 
-$sqlGridAreaResumen="SELECT a.imagen, concat(a.condiciones,' ',idd.descripcion) as condiciones
+$sqlGridAreaResumen="SELECT a.id_area, a.imagen, a.condiciones as condicion, idd.descripcion, concat(a.condiciones,' ',idd.descripcion) as condiciones
 	FROM public.his_impacto_diario idd inner join public.area a on idd.id_area=a.id_area
-	where idd.id_his_impacto_diario in (SELECT i.id_his_impacto_diario FROM public.unificado_informe i where i.id_unificado = '$buscar')";
+	where idd.id_his_impacto_diario in (SELECT i.id_his_impacto_diario FROM public.unificado_informe i where i.id_unificado = '$buscar') ORDER BY a.id_area";
 $resultGridAreaResumen = pg_query($sqlGridAreaResumen) or die('Query failed: '.pg_last_error());
-
+// echo "***************".$sqlGridAreaResumen."***************";
 $AreaResumen = pg_num_rows($resultGridAreaResumen);
 
 
@@ -99,10 +109,10 @@ $AreaResumen = pg_num_rows($resultGridAreaResumen);
 //------------------------------------------------------------------------------------------------------
 
 
-$sqlTomarAccion="SELECT f_reporte_unificado($buscar,'Tomar acción');";
+$sqlTomarAccion="SELECT f_consulta_unificado($buscar,'Tomar acción');";
 $resultGridTomarAccion = pg_query($sqlTomarAccion) or die('Query failed: '.pg_last_error());
 $TomarAccion = pg_fetch_all($resultGridTomarAccion);
-$TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
+$TomarAccion = $TomarAccion[0]['f_consulta_unificado'];
 
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
@@ -112,10 +122,10 @@ $TomarAccion = $TomarAccion[0]['f_reporte_unificado'];
 //--------------------------------ESTAR PREPARADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Preparación');";
+$sqlGridEstarPreparados="SELECT f_consulta_unificado($buscar,'Preparación');";
 $resultGridEstarPreparados = pg_query($sqlGridEstarPreparados) or die('Query failed: '.pg_last_error());
 $EstarPreparados = pg_fetch_all($resultGridEstarPreparados);
-$EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
+$EstarPreparados = $EstarPreparados[0]['f_consulta_unificado'];
 
 
 //------------------------------------------------------------------------------------------------------
@@ -126,10 +136,10 @@ $EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
 //--------------------------------ESTAR INFORMADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Atención');";
+$sqlGridEstarInformados="SELECT f_consulta_unificado($buscar,'Atención');";
 $resultGridEstarInformados = pg_query($sqlGridEstarInformados) or die('Query failed: '.pg_last_error());
 $EstarInformados = pg_fetch_all($resultGridEstarInformados);
-$EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
+$EstarInformados = $EstarInformados[0]['f_consulta_unificado'];
 
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
@@ -139,10 +149,10 @@ $EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
 //--------------------------------CONDICIONES NORMALES----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
 
-$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Vigilancia');";
+$sqlGridCondicionesNormales="SELECT f_consulta_unificado($buscar,'Vigilancia');";
 $resultGridCondicionesNormales = pg_query($sqlGridCondicionesNormales) or die('Query failed: '.pg_last_error());
 $CondicionesNormales = pg_fetch_all($resultGridCondicionesNormales);
-$CondicionesNormales = $CondicionesNormales[0]['f_reporte_unificado'];
+$CondicionesNormales = $CondicionesNormales[0]['f_consulta_unificado'];
 
 //------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
@@ -154,14 +164,18 @@ $CondicionesNormales = $CondicionesNormales[0]['f_reporte_unificado'];
 $dbconn = my_dbconn("PronosticoImpacto");
 $query="SELECT hd.id_his_impacto_diario_detalle, hd.id_his_impacto_diario, hd.cod_municipio, hd.municipio, (SELECT departamento FROM public.municipio m inner join public.departamento d on m.cod_departamento=d.cod_departamento and m.cod_municipio = hd.cod_municipio) as departamento, hd.no_matriz, hd.impacto, hd.probabilidad, 
 hd.color, (SELECT c.codigo	FROM public.color c where c.color=hd.color) as codigo,(SELECT c.transparencia	FROM public.color c where c.color=hd.color) as transparencia,
-(SELECT array_to_string(array(SELECT concat('<p>','<li>',hdk.consecuencias,'.</p>','<p>',hdk.especial_atencion,'<p>','</i>')
+(SELECT array_to_string(array(SELECT concat('<ul class=alin2>',hdk.consecuencias,'</ul>','Especial atención en: '||hdk.especial_atencion||'.  ', 'Durante:  '||hdk.horarios)
 							  from public.his_impacto_diario_detalle hdk 
 							  where  hdk.cod_municipio=hd.cod_municipio and hdk.id_his_impacto_diario in (SELECT id_his_impacto_diario 
 																   FROM public.unificado_informe	
 																   where id_unificado= '$buscar') 
 							  order by no_matriz desc), ''))
 						 as lista_conse,
-hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso
+hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso,
+
+(CASE WHEN (SELECT c.codigo	FROM public.color c where c.color=hd.color) ='#ffef00' THEN '#7f7f7f'
+ELSE '#ffffff' END) as color_t
+
 FROM public.his_impacto_diario_detalle hd 
 where hd.id_his_impacto_diario in (SELECT id_his_impacto_diario FROM public.unificado_informe	where id_unificado= '$buscar')
 and hd.color in ($nivel)
@@ -438,6 +452,9 @@ body {
 	// width: 146px; 
 	height: 128px;
 }	
+#mapa_base {
+	z-index: 40 !important;
+}
 .formTable {
 	BORDER: #fff 0px solid;
 }
@@ -528,10 +545,10 @@ a {
 	height:1px;
 }
 .ficha {
-  margin-left: 5px;
+  margin-left: 10px;
   margin-right: 5px;
-  margin-bottom: 5px;
-  margin-top: 2px;
+
+
 }
 .esriPopup .pointer, .esriPopup .outerPointer {
     background: rgba(87,188,196,.9);
@@ -564,7 +581,12 @@ div.esriPopupWrapper .zoomTo {
   display: none;
 }
 
+ul.alin2 {
+  list-style-position: outside;
+  padding-left: 20px;
+  margin-bottom: 0px;
 
+}
 
 ul.alin {
   list-style-position: outside;
@@ -586,13 +608,63 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
     display: inline-block;
     text-align: center;
 }
+.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev, .spinner {
+  display: none;
+}
 
+.loading-div-background {
+		opacity: 1 !important; 
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        background:rgba(0, 0, 0, 0.2);
+		z-index:99;
+        width:100%;
+        height:100%;
+}
+.loading-div {
+         width: 300px;
+         height: 200px;
+         background-color: rgba(255, 255, 255, 0);
+         text-align:center;
+         position:absolute;
+         left: 50%;
+         top: 50%;
+         margin-left:-150px;
+         margin-top: -100px;
+}
 
+.loading-div h2 {
+	color: black !important;
+	font-size: 25px;
+}
 
-
-
-
-
+<!-- TOGGLE EDIT DIV-->
+.loading-div-background-edit {
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        // background:rgba(0, 0, 0, 1) !important;
+        width:100%;
+        height:100%;
+}
+.loading-div-edit {
+         width: 75% !important;
+         height: auto  !important;
+         background-color: rgba(255, 255, 255, 1) !important;
+         text-align:center;
+         position:absolute;
+         top: 50%;
+         left: 50%;
+		 transform: translate(-50%, -50%);
+         // margin-left:-150px;
+         // margin-top: -100px;
+}
+#editUnificado {
+	background-color: rgba(255, 255, 255, 1);
+}
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 
@@ -692,6 +764,8 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		});
 		
 		var popup = new Popup({
+			pagingControls: false,
+			pagingInfo: false,
 			fillSymbol: sfs,
 			lineSymbol: null,
 			markerSymbol: null
@@ -700,21 +774,13 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
             // center: [-90.35,14.00],
 
 		map = new Map("map", {
-			basemap: "gray-vector",
+			basemap: "gray",
 			sliderStyle: "small", // large/small
 			infoWindow: popup,
 			extent: bbox,
 			center: [ -88.85,13.75 ],
-			zoom: 8
+			zoom: 9
 		});
-		
-		// map = new Map("map", {
-			// basemap: "gray-vector",
-			// infoWindow: popup,
-			// extent: bbox,
-			// center: [ -89.05,13.75 ],
-			// zoom: 8
-		// });
 		
 		var home = new HomeButton({
 		map: map
@@ -726,9 +792,9 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 	_blockGroupInfoTemplate.setTitle("<b></b>");	
 	
 	var _blockGroupInfoContent =
-	"<div class=\"GroupInfoContent\">" +
-	"Municipio: ${munic}<br>" +
-	"Departamento: ${dpto}<br>" +
+	"<div class=\"GroupInfoContent\">" 	+
+	"Municipio: ${munic}<br>" 			+
+	"Departamento: ${dpto}<br>" 		+
 	"</div>";
 	
 	// /* DEFINE TEMPLATE */
@@ -817,9 +883,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
             });
             infos.total = dynamicLayerInfos.length;
             e.target.setDynamicLayerInfos(dynamicLayerInfos, true);
-			
-
-			
+						
          });
 
          // only create the layer list the first time update-end fires
@@ -862,7 +926,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 			if (mval_09.length > 0)		{	my_custom_style(mval_09)};
 			if (mval_10.length > 0)		{	my_custom_style(mval_10)};
 			if (mval_11.length > 0)		{	my_custom_style(mval_11)};			
-			
+			my_water();
         });
 		
         map.infoWindow.resize(245,125);
@@ -875,6 +939,27 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 
 /**************************************************************************************/
 /**************************************************************************************/
+	function my_water() {
+		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
+		var query2 = new Query();
+		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		query2.where = "FID>0";
+		query2.returnGeometry = true;
+		query2.outFields = ["FID"];
+		queryTask2.execute(query2, showResults2);		
+		});
+	}
+	
+	function showResults2(featureSet) {
+	var resultFeatures = featureSet.features;
+	symbol = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([115,178,255,0.15]), 1 ), new Color([115,178,255	,0.80]) );	  
+	  for (var i=0, il=resultFeatures.length; i<il; i++) {
+		var graphic = resultFeatures[i];
+		graphic.setSymbol(symbol);
+		graphic.setInfoTemplate(infoTemplate);
+		map.graphics.add(graphic);
+	  }
+	}
 
 	function my_custom_style(mval) {
 	$(".esriControlsBR").remove();	
@@ -940,41 +1025,25 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 			var g 	= evt.graphic;
 			var at = g.attributes;
 
-var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['codigo']+"'>																					"
-		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio de "+va[at.cod_ofi]['municipio']+"</font>														"
+var con	="<div class='row my_label' style='background-color: "+va[at.cod_ofi]['codigo']+"; color: "+va[at.cod_ofi]['color_t']+"'>										"
+		+"<div class='row'>																																						"
+		+"<div class='col-md-2'>																																				"
+		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'>Código: "+va[at.cod_ofi]['cod_municipio']+"</font>														"
+		+"</div>																																								"
+		+"<div class='col-md-8'>																																				"
+		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio de "+va[at.cod_ofi]['municipio']+" - "+va[at.cod_ofi]['departamento']+" </b></font>			"
+		+"</div>																																								"
+		+"<div class='col-md-2'>																																				"
+		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'> "+va[at.cod_ofi]['categoria']+" ("+va[at.cod_ofi]['no_matriz']+")</font>								"
+		+"</div>																																								"
+		+"</div>																																								"
 		+"</div>																																								"
 		+"<div class='row' style='text-align:center;'>																															"
-		+"<table style='width:100%' border=1>																																	"				
-		+"<!--<tr><th colspan=2></th></tr>-->																																	"				
-		+"<tr>																																									"			
-		+"	<td style='vertical-align: top; margin-top: 5px'>																													"
-		+"																																										"		
-		+"		<div class='ficha'><b>Código</b>: "+va[at.cod_ofi]['cod_municipio']+"</div>												"		
-		+"		<div class='ficha'><b>Municipio</b>: "+va[at.cod_ofi]['municipio']+"	</div>												"				
-		+"		<div class='ficha'><b>Departamento</b>:	"+va[at.cod_ofi]['departamento']+"	</div>																				"
-		+"	</td>																																								"
-		+"	<td style='vertical-align: top; margin-top: 5px;'>															"
-		+"																																										"
-		+"		<div class='ficha'><b>Categoría</b>:	"+va[at.cod_ofi]['no_matriz']+"	 -	"+va[at.cod_ofi]['categoria']+" / "+va[at.cod_ofi]['color']+"	</div>				"				
-		+"		<div class='ficha'><b>Probabilidad</b>:	"+va[at.cod_ofi]['probabilidad']+"	</div>																				"
-		+"		<div class='ficha'><b>Impacto</b>:		"+va[at.cod_ofi]['impacto']+"		</div>																				"
-		+"																																										"
-		+"	</td>																																								"				
-		+"</table>																																								"
 		+"<table style='width:100%' border=1>																																	"		
 		+"<tr>																																									"
-		+"	<td style='vertical-align: center; margin-top: 5px; background-color:#dddddd' align='center'>																		"
+		+"	<td style='vertical-align: top; margin-top: 5px; color: #797979;'>																									"
 		+"																																										"
-		+"																																										"
-		+"		<label class='ficha'>Consecuencias</label>																														"				
-		+"																																										"
-		+"	</td>																																								"				
-		+"																																										"			
-		+"</tr>																																									"
-		+"<tr>																																									"
-		+"	<td style='vertical-align: top; margin-top: 5px;>																							"
-		+"																																										"
-		+"		<div class='ficha'>"+va[at.cod_ofi]['lista_conse']+"	</div>																									"			
+		+"		<div class='ficha'><h5>"+va[at.cod_ofi]['lista_conse']+"</h5></div>																									"			
 		+"																																										"
 		+"																																										"
 		+"	</td>																																								"			
@@ -982,27 +1051,7 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
 		+"</tr>																																									"			
 		+"</table>																																								"
 		+"<br>																																									"
-		+"</div>																																								"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		+"</div>";
 
 
 			require(["dojo/dom"], function(dom){ dom.byId("my_content").innerHTML = con; });
@@ -1056,8 +1105,6 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
             MyLayers.setDynamicLayerInfos(newOrder);
          }
 
-
-
          function getVisibleLayers() {
             // get layer name nodes, build an array corresponding to new layer order
             var layerOrder = [];
@@ -1109,7 +1156,6 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
 		 
       });
 	  
-	  
 		var formatNumber = function(value, key, data) {
 		var searchText = "" + value;
 		var formattedString = searchText.replace(/(\d)(?=(\d\d\d)+(?!\d))/gm, "$1,");
@@ -1119,10 +1165,6 @@ var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['
     var dojoConfig = {
         async: true
     };
-
-
-
-
 </script>
    
    
@@ -1138,9 +1180,6 @@ function toggle_visibility(id) {
 	
 
 $( document ).ready(function() {
-
-
-
 
 <?php
 if ($TomarAccion==null){
@@ -1176,11 +1215,6 @@ toggle_visibility ('CondicionesNormales');
 }
 ?>
 
-
-
-
-
-   
 var nivel = <?php echo @$_GET['N'];?>
 
 console.log(nivel);
@@ -1198,31 +1232,59 @@ if (nivel==3){
 	nivel = "'Anaranjado','Rojo'";
 toggle_visibility ('EstarInformados');
 toggle_visibility ('CondicionesNormales');		
-
 }
-
-
 
 if (nivel==2){
 	nivel = "'Amarillo','Anaranjado','Rojo'";
 toggle_visibility ('CondicionesNormales');	
-
 }
-
-
 
 if (nivel==1){
 	nivel = "'Verde','Amarillo','Anaranjado','Rojo'";
-
-
-	
-
 }
 
 
 
 });
+
+function editIntegrado() {
+
+var cad = {};
+
+	cad["i_id_uni"]			= <?php echo $buscar; ?>;
+	cad["i_titulo"] 		= $("span#i_titulo").text();
+	cad["i_descripcion"]	= $("span#i_descripcion").text();
+	if($("span#ca_1").length>0) { cad["i_u1"] = $("span#ca_1").text(); }
+	if($("span#ca_2").length>0) { cad["i_u2"] = $("span#ca_2").text(); }
+	if($("span#ca_3").length>0) { cad["i_u3"] = $("span#ca_3").text(); }
+	var pcad = $.param(cad);
+	// console.log(cad);
 	
+	$.ajax({
+		async : true,
+		method: "POST",
+		url: "editUnificado.php",
+		data: {cad:pcad, opcion:'editUnificado'},
+		success: function(msg){
+			$("#editUnificado").html(msg);
+			// console.log(msg);
+		}
+	});
+	ShowProgressAnimation();
+}
+
+
+function ShowProgressAnimation() {
+	$(".loading-div-background").show();
+}
+
+function HideProgressAnimation() {
+	$(".loading-div-background").hide();
+}
+
+function recargar(){
+	top.location="http://srt.marn.gob.sv/web/PronosticoImpacto/mapa_alerta_unificado_ver.php?id=<?php echo $buscar; ?>";
+}
 </script>
 <link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
 </head>
@@ -1235,235 +1297,164 @@ if (nivel==1){
 
 </div>
 
-
-
-
-
-
-
 <div class="row">
 	    <div id='banner' class="col-md-12">
 	        <a>
 	            <img src="Imagenes/Banner3.png" width="100%" class="img-responsive"  id="PaginaInicio">
 	        </a>
 	        <br>
-
 		 </div>
 
-
-
-         <div class="row">
-			 <div class="col-md-2" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
+		<div class="row">
+			<div class="col-md-1" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
           		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?></b></p>
 			</div>
 
-			 <div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#474747">
-          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['titulo_general'];?></b></p>
+			<div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#474747">
+          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><span id="i_titulo"><?php echo $Unificados['titulo_general'];?></span></b></p>
+			</div>
+
+			<div class="col-md-1" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
+          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['periodo'];?></b></p>
 			</div>
 		</div>
 
-
-
-
-
-  </div>
-
-
-
+</div>
 <br>
-
-
-
-
-
 
 <div class="row">
-
-		<div class="col-md-8">
-
-<br>
-	<div class="row">
-        <div class="col-md-12">
-            <div class="row" style="text-align: left; color:#428bca; font-weight: 500; margin-top:-10px;">
-                <div class="col-md-8" >
-              
-
-                    <input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados['fecha_ingresado'];?>" style="display:none"/>
-
-
-            <laber><h5><b>
-                  <a id="diaSemana" class="diaSemana"></a>
-                  <a id="dia" class="dia"></a>
-                  <a>de</a>
-                  <a id="mes" class="mes"></a>
-                  <a>del</a>
-                  <a id="anio" class="anio"></a>
-               <a>-</a>
-              
-                  <a id="horas" class="horas"></a>
-                  <a>:</a>
-                  <a id="minutos" class="minutos"></a>
-                  <a>:</a>
-                    
-                    <a id="segundos" class="segundos"></a>
-                    <a id="ampm" class="ampm"></a>
-            </h5></b></laber>
-
-
-
-                </div>
-        
-                <div class="col-md-4" style="text-align: right;">
-                <laber><h5><b>Período: <?php echo $Unificados['periodo'];?></b></h5></laber>
-
-
-                </div>
-            </div>
-
-        </div>
- </div>
-
-
-
-
-
-			<div class="row">
-
-		        <div class="col-md-12">
-		            <laber id="descripcion" ><h5><p style="text-align: justify; line-height: 1.5em;"><?php echo $Unificados['des_general'];?></p></h5></laber>
-		             <br>
-		        </div>
-
-
-
-				<div class="col-md-12">
-					<!-- CONTENIDO MAPA-->
-						<div class="mapa_marco">
-							<div id="map">
-								<!-- Muestra/Oculta Leyenda y Capas--> 
-								<div id="leyenda"><a href="javascript:toggle_visibility('feedback')">Ver Capas</a></div>
-								<div id="symbology">
-									<img src="Imagenes/l_PaletaImpacto.png" width="150">
-								</div>
-								<!-- Muestra Capas--> 
-								<div id="feedback" class="shadow" style="display: none;">
-									<h3 align="center">Alertas MARN</h3>
-									<div id="info">
-											<div id="note">
-												<br>En esta secci&oacute;n se presenta el registro de alertas por Municipio 
-											</div>
-										   <div id="hint">
-											  Selecciona y arrastra una capa para reordenanrla.
-										   </div>
-										   <!--<strong>Capas de Almacenamiento</strong>-->
-										   <img id="loading" src="Imagenes/loading_black.gif">
-										   <br>
-										   <div id="layerList"></div>
-									</div>
-								</div>
-								<!-- Muestra Mapas base--> 
-								<div id="mapa_base" style="position:absolute; z-Index:999; right: 20px; margin-top: 5px;">
-									<div data-dojo-type="dijit/TitlePane" 
-										data-dojo-props="title:'Mapa Base', closable:false, open:false">
-										<div data-dojo-type="dijit/layout/ContentPane" style="width:265px; height:280px;">
-										<div id="basemapGallery"></div>
-										</div>
-									</div>
-								</div>	 
-								<!-- Muestra Leyenda--> 
-								<!--
-								<div id="compass">
-									<img src='theme/compass.png' alt="Smiley face"  width="70px" height="70px">
-								</div>		
-								-->
-
-							</div>
-						</div>
-						<div id="HomeButton"></div>
-						<!-- CONTENIDO MAPA -->
+	<div class="col-md-7">
+	<br>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row" style="text-align: left; color:#428bca; font-weight: 500; margin-top:-10px;">
+					<div class="col-md-12" >
+						<input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados['fecha_ingresado'];?>" style="display:none"/>
+						<laber>
+							<h5><b>
+							  <a id="diaSemana" class="diaSemana"></a>
+							  <a id="dia" class="dia"></a>&nbsp;<a>de</a>&nbsp;<a id="mes" class="mes"></a>&nbsp;<a>del</a>&nbsp;<a id="anio" class="anio"></a>&nbsp;<a>-</a><a id="horas" class="horas"></a>
+							  <a>:</a>&nbsp;<a id="minutos" class="minutos"></a><a>&nbsp;:&nbsp;</a><a id="segundos" class="segundos"></a>&nbsp;<a id="ampm" class="ampm"></a>
+							</h5></b>
+						</laber>
+					</div>
 				</div>
-
-
-
-		<div class="col-md-12">
-<div id="my_content" class="row">
-	<!-- CONTENIDO DATA -->
-
-	<div class='row my_label' style="background-color: <?php echo @$sh[0]['codigo']; ?>">
-	<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio de <?php echo $sh[0]['municipio']; ?></font>
-	</div>
-	<div class='row' style='text-align:center;'>
-	<table style='width:100%' border=1>																		
-	<!--<tr><th colspan=2></th></tr>-->																			
-	<tr>																								
-		<td style='vertical-align: top; margin-top: 5px'>
-			<div class='ficha'><b>Código</b>: <?php echo @$sh[0]['cod_municipio']; ?></div>													
-			<div class='ficha'><b>Municipio</b>: <?php echo @$sh[0]['municipio']; ?>	</div>				
-			<div class='ficha'><b>Departamento</b>:	<?php echo @$sh[0]['departamento']; ?>	</div>
-		</td>	
-
-		<td style="vertical-align: top; margin-top: 5px;>">
-
-			<div class='ficha'><b>Categoría</b>:	<?php echo @$sh[0]['no_matriz']; ?>	 -	<?php echo @$sh[0]['categoria']; ?> / <?php echo @$sh[0]['color']; ?>	</div>					
-			<div class='ficha'><b>Probabilidad</b>:	<?php echo @$sh[0]['probabilidad']; ?>	</div>			
-			<div class='ficha'><b>Impacto</b>:		<?php echo @$sh[0]['impacto']; ?>		</div>				
-
-		</td>																																						
-	</tr>
-</table>	
-<table style='width:100%' border=1>		
-	<tr>
-		<td style='vertical-align: center; margin-top: 5px; background-color:#dddddd' align="center">
-			
-																		
-			<label class='ficha'>Consecuencias</label>						
-			
-		</td>																							
-																										
-	</tr>
-	<tr>
-		<td style='vertical-align: top; margin-top: 5px;'>
-
-			<div class='ficha'><?php echo @$sh[0]['lista_conse']; ?>	</div>																
-									
-			
-		</td>																							
-																										
-	</tr>																								
-	</table>	
-	</div>
-	<!-- CONTENIDO DATA -->
-</div>
-		</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			</div>
 		</div>
+
+		<div class="row">
+
+		    <div class="col-md-12">
+		        <laber><h5><p style="text-align: justify; line-height: 1.5em;"><span id="i_descripcion"><?php echo $Unificados['des_general'];?></span></p></h5></laber>
+		         <br>
+		    </div>
+
+			<div class="col-md-12">
+				<!-- CONTENIDO MAPA-->
+					<div class="mapa_marco">
+						<div id="map">
+							<!-- Muestra/Oculta Leyenda y Capas--> 
+							<div id="leyenda"><a href="javascript:toggle_visibility('feedback')">Ver Capas</a></div>
+							<div id="symbology">
+								<img src="Imagenes/l_PaletaImpacto.png" width="150">
+							</div>
+							<!-- Muestra Capas--> 
+							<div id="feedback" class="shadow" style="display: none;">
+								<h3 align="center">Alertas MARN</h3>
+								<div id="info">
+										<div id="note">
+											<br>En esta secci&oacute;n se presenta el registro de alertas por Municipio 
+										</div>
+									   <div id="hint">
+										  Selecciona y arrastra una capa para reordenanrla.
+									   </div>
+									   <!--<strong>Capas de Almacenamiento</strong>-->
+									   <img id="loading" src="Imagenes/loading_black.gif">
+									   <br>
+									   <div id="layerList"></div>
+								</div>
+							</div>
+							<!-- Muestra Mapas base--> 
+							<div id="mapa_base" style="position:absolute; right: 20px; margin-top: 5px;">
+								<div data-dojo-type="dijit/TitlePane" 
+									data-dojo-props="title:'Mapa Base', closable:false, open:false">
+									<div data-dojo-type="dijit/layout/ContentPane" style="width:265px; height:280px;">
+									<div id="basemapGallery"></div>
+									</div>
+								</div>
+							</div>	 
+							<!-- Muestra Leyenda--> 
+							<!--
+							<div id="compass">
+								<img src='theme/compass.png' alt="Smiley face"  width="70px" height="70px">
+							</div>		
+							-->
+
+						</div>
+					</div>
+					<div id="HomeButton"></div>
+					<!-- CONTENIDO MAPA -->
+			</div>
+
+			<div class="col-md-12">
+				<div id="my_content" class="row">
+					<!-- CONTENIDO DATA -->
+					<div class='row my_label' style="background-color: <?php echo @$sh[0]['codigo']; ?>; color: <?php echo @$sh[0]['color_t']; ?>;">
+						<div class="row">
+							<div class="col-md-2">
+								<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'>Código: <?php echo @$sh[0]['cod_municipio']; ?></font>
+							</div>
+							<div class="col-md-8">
+								<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio de <?php echo $sh[0]['municipio']; ?> - <?php echo @$sh[0]['departamento']; ?></b></font>
+							</div>
+							<div class="col-md-2">
+								<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'> <?php echo @$sh[0]['categoria']; ?> (<?php echo @$sh[0]['no_matriz']; ?>)</font>
+							</div>
+						</div>
+					</div>
+
+					<div class='row' style='text-align:center;'>
+						<table style='width:100%' border=1>		
+							<tr>
+								<td style='vertical-align: top; margin-top: 5px; color: #797979;'>
+									<div class='ficha'><h5 style="line-height: 1.3em;"><?php echo @$sh[0]['lista_conse']; ?></h5></div>																
+								</td>																							
+																																
+							</tr>																								
+						</table>	
+					</div>
+					<!-- CONTENIDO DATA -->
+				</div>
+			</div>
+
+		</div>
+				<div  id="i_areas" class="col-md-12">
+		        <br>
+                    <table class="table table-bordered"> 
+                      <tr style="background:#EEEEEE" align="center" >  
+                      </tr>  
+                      <?php  
+                        while($row = pg_fetch_array($resultGridAreaResumen))  
+                        {  
+                        ?>  
+                        <tr style="background:#FFFFFF;">
+						<td style="vertical-align:middle;"><img src="<?php echo $row["imagen"]; ?>" width="120 px"></td>
+								<td style="padding-bottom: 0px; padding-top: 8px;"><h5 style="line-height: 1.5em;"><p><?php echo $row["condicion"].' '; ?><span id="ca_<?php echo $row['id_area']; ?>"><?php echo $row["descripcion"]; ?></span></p></h5></td>
+                        </tr>  
+                        <?php  
+                        }  
+                        ?>  
+
+                    </table>  
+		</div>
+	</div>
 		
-		<div class="col-md-4" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
-			<div class="row">
+	<div class="col-md-5" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
+		<div class="row">
 
-
-
-
-
-		<!-- ----------------------------------------------------------------------------------------- --> 
-
-
-		<!-- ------------------------------------------TOMAR ACCIÓN------------------------------------- --> 
-		<!-- ----------------------------------------------------------------------------------------- -->
+			<!-- ----------------------------------------------------------------------------------------- --> 
+			<!-- ------------------------------------------TOMAR ACCIÓN----------------------------------- --> 
+			<!-- ----------------------------------------------------------------------------------------- -->
 		        <div  class="col-md-12" id="TomarAccion" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 		  
 		                    <table class="table table-bordered"> 
@@ -1473,45 +1464,42 @@ if (nivel==1){
 		                        while($row = pg_fetch_array($resultGridTomarAccion))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;">
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
 		                        ?>  
 		                    </table>       
-		         </div>
+				</div>
 
 
-		<!-- ----------------------------------------------------------------------------------------- --> 
-		<!-- ------------------------------------------ESTAR PREPARADOS------------------------------------- --> 
-		<!-- ----------------------------------------------------------------------------------------- -->
+			<!-- ----------------------------------------------------------------------------------------- --> 
+			<!-- ------------------------------------------ESTAR PREPARADOS------------------------------- --> 
+			<!-- ----------------------------------------------------------------------------------------- -->
 
 		        <div  class="col-md-12" id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 
 		                    <table class="table table-bordered"> 
 		                        <caption style="background: #f29e05; color: #ffffff; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>PREPARACIÓN</b></caption>
-
-
-
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridEstarPreparados))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;">  
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">  
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
 		                        ?>  
 		                    </table>  
-		         </div>
+				</div>
 
 
-		<!-- ----------------------------------------------------------------------------------------- --> 
-		<!-- ------------------------------------------ESTAR INFORMADOS------------------------------------- --> 
-		<!-- ----------------------------------------------------------------------------------------- -->
+			<!-- ----------------------------------------------------------------------------------------- --> 
+			<!-- ------------------------------------------ESTAR INFORMADOS------------------------------- --> 
+			<!-- ----------------------------------------------------------------------------------------- -->
 
 		        <div  class="col-md-12" id="EstarInformados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 		                    <table class="table table-bordered"> 
@@ -1521,19 +1509,19 @@ if (nivel==1){
 		                        while($row = pg_fetch_array($resultGridEstarInformados))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
 		                        ?>  
 		                    </table>     
-		         </div>
+				</div>
 
 
-		<!-- ----------------------------------------------------------------------------------------- --> 
-		<!-- ------------------------------------------ MONITOREO------------------------------------- --> 
-		<!-- ----------------------------------------------------------------------------------------- -->
+			<!-- ----------------------------------------------------------------------------------------- --> 
+			<!-- ------------------------------------------ MONITOREO------------------------------------- --> 
+			<!-- ----------------------------------------------------------------------------------------- -->
 
 		        <div  class="col-md-12" id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 							 <table class="table table-bordered"> 
@@ -1543,8 +1531,8 @@ if (nivel==1){
 		                        while($row = pg_fetch_array($resultGridCondicionesNormales))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_reporte_unificado"]; ?></h5></td>
+		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1557,96 +1545,67 @@ if (nivel==1){
 
 
 
-		        <div  class="col-md-12">
-		        <br>
-                    <table class="table table-bordered"> 
-                      <tr style="background:#EEEEEE" align="center" >  
-                      </tr>  
-                      <?php  
-                        while($row = pg_fetch_array($resultGridAreaResumen))  
-                        {  
-                        ?>  
-                        <tr style="background:#FFFFFF; font-size: 12px;">  
-								<td style="padding-bottom: 0px; padding-top: 8px;"><p style="line-height: 1.5em; font-size: 12px;"><?php echo $row["condiciones"]; ?></p></td>
-                        </tr>  
-                        <?php  
-                        }  
-                        ?>  
-                    </table>  
-         </div>
-
-
-
 </div>
 
+</div>
+<div class="center">
+							<div style="padding-bottom:10px; padding-top:5px; text-align:center;">
+							<input style="margin-top:5px;" type="button" name="update" id="update" class="btn btn-primary" value="Modificar"  onClick="editIntegrado();" />
+							</div>
+</div>
 
-
-	<!-- CONTENIDO PIE 
-	<div id="footer" class="row" style="text-align:center;"><br>
-			<p style="text-align:center;margin-left:5px;margin-right:5px;width:auto;">
-				<font size="1" face="Verdana, Arial, Helvetica, sans-serif">
-				<br> PIE DE PAGINA <br>
-				</font>
-			</p>
+<div id="loading-div-background-edit" class="loading-div-background" 	style="display: none; overflow:scroll;">
+	<div id="loading-div-edit"	class="ui-corner-all loading-div-edit"  style="background:rgba(255, 255, 255, 1);">
+	<div id="editUnificado" class="" >	
+	<!-- CONTENIDO DE EDITAR -->
+	<!-- CONTENIDO DE EDITAR -->	
 	</div>
-	-->
-	<!-- CONTENIDO PIE -->
-
+	</div>
 </div>
-<script src="fancybox/dist/jquery.fancybox.min.js"></script>
-</body>
-</html>
-</body>
-</html>
 
 
+</body>
+</html>
 
 
 <script>
 
-    function toggle_visibility(id) {
-    var e = document.getElementById(id);
-    if(e.style.display == 'none')
-        e.style.display = 'block';
-    else
-        e.style.display = 'none';
+function toggle_visibility(id) {
+	var e = document.getElementById(id);
+	if(e.style.display == 'none')
+		e.style.display = 'block';
+	else
+		e.style.display = 'none';
 }
 
 
-
-
-    $(function(){
+$(function(){
 
 fecha = new Date(document.getElementById('fecha_ingresado').value);
 
-  var actualizarHora = function(){
-    var 
-        hora = fecha.getHours(),
-        minutos = fecha.getMinutes(),
-        segundos = fecha.getSeconds(),
-        diaSemana = fecha.getDay(),
-        dia = fecha.getDate(),
-        mes = fecha.getMonth(),
-        anio = fecha.getFullYear(),
-        ampm;
+	var actualizarHora = function(){
+		var 
+			hora = fecha.getHours(),
+			minutos = fecha.getMinutes(),
+			segundos = fecha.getSeconds(),
+			diaSemana = fecha.getDay(),
+			dia = fecha.getDate(),
+			mes = fecha.getMonth(),
+			anio = fecha.getFullYear(),
+			ampm;
+		
+		var $pHoras = $("#horas"),
+			$pSegundos = $("#segundos"),
+			$pMinutos = $("#minutos"),
+			$pAMPM = $("#ampm"),
+			$pDiaSemana = $("#diaSemana"),
+			$pDia = $("#dia"),
+			$pMes = $("#mes"),
+			$pAnio = $("#anio");
+		var semana = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+		var meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     
-    var $pHoras = $("#horas"),
-        $pSegundos = $("#segundos"),
-        $pMinutos = $("#minutos"),
-        $pAMPM = $("#ampm"),
-        $pDiaSemana = $("#diaSemana"),
-        $pDia = $("#dia"),
-        $pMes = $("#mes"),
-        $pAnio = $("#anio");
-    var semana = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
-    var meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    
-
-var Fechita = diaSemana + ' ' + dia;
-
-
-
-
+	var Fechita = diaSemana + ' ' + dia;
     $pDiaSemana.text(semana[diaSemana]);
     $pDia.text(dia);
     $pMes.text(meses[mes]);
@@ -1667,15 +1626,9 @@ var Fechita = diaSemana + ' ' + dia;
     
   };
   
-  
   actualizarHora();
   var intervalo = setInterval(actualizarHora,1000);
 });
-
-	
-
-
-
 </script>
 
 

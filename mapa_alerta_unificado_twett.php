@@ -65,9 +65,21 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 
 ///----------------------*************************************-------------------------------------------------
 /// INFORMACIÓN GENERAL
-$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, UPPER(u.des_categoria)des_categoria,	(SELECT c.codigo
+$sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.fecha_ingresado, 
+
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>'||UPPER(u.periodo)||'</b>'
+            ELSE UPPER(u.periodo) END as periodo,
+
+
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>ATENCIÓN</b>'
+            ELSE UPPER(u.des_categoria) END as des_categoria,
+
+
+            	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
 	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
+
+
     FROM public.unificado u
     WHERE u.id_unificado= '$buscar';";
 $resultUnificado = pg_query($sqlUnificado) or die('Query failed: '.pg_last_error());
@@ -152,14 +164,18 @@ $CondicionesNormales = $CondicionesNormales[0]['f_consulta_unificado'];
 $dbconn = my_dbconn("PronosticoImpacto");
 $query="SELECT hd.id_his_impacto_diario_detalle, hd.id_his_impacto_diario, hd.cod_municipio, hd.municipio, (SELECT departamento FROM public.municipio m inner join public.departamento d on m.cod_departamento=d.cod_departamento and m.cod_municipio = hd.cod_municipio) as departamento, hd.no_matriz, hd.impacto, hd.probabilidad, 
 hd.color, (SELECT c.codigo	FROM public.color c where c.color=hd.color) as codigo,(SELECT c.transparencia	FROM public.color c where c.color=hd.color) as transparencia,
-(SELECT array_to_string(array(SELECT concat('<p>','<li>',hdk.consecuencias,'.</p>','<p>',hdk.especial_atencion,'<p>','</i>')
+(SELECT array_to_string(array(SELECT concat('<ul class=alin2>',hdk.consecuencias,'</ul>','Especial atención en: '||hdk.especial_atencion||'.  ', 'Durante:  '||hdk.horarios)
 							  from public.his_impacto_diario_detalle hdk 
 							  where  hdk.cod_municipio=hd.cod_municipio and hdk.id_his_impacto_diario in (SELECT id_his_impacto_diario 
 																   FROM public.unificado_informe	
 																   where id_unificado= '$buscar') 
 							  order by no_matriz desc), ''))
 						 as lista_conse,
-hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso
+hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso,
+
+(CASE WHEN (SELECT c.codigo	FROM public.color c where c.color=hd.color) ='#ffef00' THEN '#7f7f7f'
+ELSE '#ffffff' END) as color_t
+
 FROM public.his_impacto_diario_detalle hd 
 where hd.id_his_impacto_diario in (SELECT id_his_impacto_diario FROM public.unificado_informe	where id_unificado= '$buscar')
 and hd.color in ($nivel)
@@ -526,10 +542,10 @@ a {
 	height:1px;
 }
 .ficha {
-  margin-left: 5px;
+  margin-left: 10px;
   margin-right: 5px;
-  margin-bottom: 5px;
-  margin-top: 2px;
+
+
 }
 .esriPopup .pointer, .esriPopup .outerPointer {
     background: rgba(87,188,196,.9);
@@ -562,15 +578,36 @@ div.esriPopupWrapper .zoomTo {
   display: none;
 }
 
+ul.alin2 {
+  list-style-position: outside;
+  padding-left: 20px;
+  margin-bottom: 0px;
 
+}
 
 ul.alin {
   list-style-position: outside;
   padding-left: 20px;
 }
 
+.stroke {
+color: white;
+font-family: impact;
+letter-spacing: 3;
+text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5px #000, 0.5px -0.5px 0.5px #000;
+-webkit-text-fill-color: white;
+-webkit-text-stroke: 1px black;
+}
 
 
+.FondoImagen{
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
+.esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev, .spinner {
+  display: none;
+}
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 
@@ -670,6 +707,8 @@ ul.alin {
 		});
 		
 		var popup = new Popup({
+			pagingControls: false,
+			pagingInfo: false,
 			fillSymbol: sfs,
 			lineSymbol: null,
 			markerSymbol: null
@@ -678,12 +717,12 @@ ul.alin {
             // center: [-90.35,14.00],
 
 		map = new Map("map", {
-			basemap: "gray-vector",
+			basemap: "gray",
 			sliderStyle: "small", // large/small
 			infoWindow: popup,
 			extent: bbox,
-			center: [ -88.85,13.75 ],
-			zoom: 8
+			center: [ -88.92,13.75 ],
+			zoom: 9
 		});
 		
 		// map = new Map("map", {
@@ -840,7 +879,7 @@ ul.alin {
 			if (mval_09.length > 0)		{	my_custom_style(mval_09)};
 			if (mval_10.length > 0)		{	my_custom_style(mval_10)};
 			if (mval_11.length > 0)		{	my_custom_style(mval_11)};			
-			
+			my_water();
         });
 		
         map.infoWindow.resize(245,125);
@@ -853,6 +892,27 @@ ul.alin {
 
 /**************************************************************************************/
 /**************************************************************************************/
+	function my_water() {
+		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
+		var query2 = new Query();
+		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		query2.where = "FID>0";
+		query2.returnGeometry = true;
+		query2.outFields = ["FID"];
+		queryTask2.execute(query2, showResults2);		
+		});
+	}
+	
+	function showResults2(featureSet) {
+	var resultFeatures = featureSet.features;
+	symbol = new SimpleFillSymbol( SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color([115,178,255,0.15]), 1 ), new Color([115,178,255	,0.80]) );	  
+	  for (var i=0, il=resultFeatures.length; i<il; i++) {
+		var graphic = resultFeatures[i];
+		graphic.setSymbol(symbol);
+		graphic.setInfoTemplate(infoTemplate);
+		map.graphics.add(graphic);
+	  }
+	}
 
 	function my_custom_style(mval) {
 	$(".esriControlsBR").remove();	
@@ -918,41 +978,25 @@ ul.alin {
 			var g 	= evt.graphic;
 			var at = g.attributes;
 
-var con	= "<div class='row my_label' style='background-color: "+va[at.cod_ofi]['codigo']+"'>																					"
-		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio de "+va[at.cod_ofi]['municipio']+"</font>														"
+var con	="<div class='row my_label' style='background-color: "+va[at.cod_ofi]['codigo']+"; color: "+va[at.cod_ofi]['color_t']+"'>										"
+		+"<div class='row'>																																						"
+		+"<div class='col-md-2'>																																				"
+		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'>Código: "+va[at.cod_ofi]['cod_municipio']+"</font>														"
+		+"</div>																																								"
+		+"<div class='col-md-8'>																																				"
+		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'><b>Municipio de "+va[at.cod_ofi]['municipio']+" - "+va[at.cod_ofi]['departamento']+" </b></font>			"
+		+"</div>																																								"
+		+"<div class='col-md-2'>																																				"
+		+"<font face='Verdana, Arial, Helvetica, sans-serif' size='-1'> "+va[at.cod_ofi]['categoria']+" ("+va[at.cod_ofi]['no_matriz']+")</font>								"
+		+"</div>																																								"
+		+"</div>																																								"
 		+"</div>																																								"
 		+"<div class='row' style='text-align:center;'>																															"
-		+"<table style='width:100%' border=1>																																	"				
-		+"<!--<tr><th colspan=2></th></tr>-->																																	"				
-		+"<tr>																																									"			
-		+"	<td style='vertical-align: top; margin-top: 5px'>																													"
-		+"																																										"		
-		+"		<div class='ficha'><b>Código</b>: "+va[at.cod_ofi]['cod_municipio']+"</div>												"		
-		+"		<div class='ficha'><b>Municipio</b>: "+va[at.cod_ofi]['municipio']+"	</div>												"				
-		+"		<div class='ficha'><b>Departamento</b>:	"+va[at.cod_ofi]['departamento']+"	</div>																				"
-		+"	</td>																																								"
-		+"	<td style='vertical-align: top; margin-top: 5px;'>															"
-		+"																																										"
-		+"		<div class='ficha'><b>Categoría</b>:	"+va[at.cod_ofi]['no_matriz']+"	 -	"+va[at.cod_ofi]['categoria']+" / "+va[at.cod_ofi]['color']+"	</div>				"				
-		+"		<div class='ficha'><b>Probabilidad</b>:	"+va[at.cod_ofi]['probabilidad']+"	</div>																				"
-		+"		<div class='ficha'><b>Impacto</b>:		"+va[at.cod_ofi]['impacto']+"		</div>																				"
-		+"																																										"
-		+"	</td>																																								"				
-		+"</table>																																								"
 		+"<table style='width:100%' border=1>																																	"		
 		+"<tr>																																									"
-		+"	<td style='vertical-align: center; margin-top: 5px; background-color:#dddddd' align='center'>																		"
+		+"	<td style='vertical-align: top; margin-top: 5px; color: #797979;'>																									"
 		+"																																										"
-		+"																																										"
-		+"		<label class='ficha'>Consecuencias</label>																														"				
-		+"																																										"
-		+"	</td>																																								"				
-		+"																																										"			
-		+"</tr>																																									"
-		+"<tr>																																									"
-		+"	<td style='vertical-align: top; margin-top: 5px;>																							"
-		+"																																										"
-		+"		<div class='ficha'>"+va[at.cod_ofi]['lista_conse']+"	</div>																									"			
+		+"		<div class='ficha'><h5>"+va[at.cod_ofi]['lista_conse']+"</h5></div>																									"			
 		+"																																										"
 		+"																																										"
 		+"	</td>																																								"			
@@ -1231,12 +1275,16 @@ if (nivel==1){
 
 
          <div class="row">
-			 <div class="col-md-2" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
+			 <div class="col-md-1" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
           		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?></b></p>
 			</div>
 
 			 <div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#474747">
           		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['titulo_general'];?></b></p>
+			</div>
+
+			<div class="col-md-1" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
+          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['periodo'];?></b></p>
 			</div>
 		</div>
 
@@ -1263,7 +1311,7 @@ if (nivel==1){
 	<div class="row">
         <div class="col-md-12">
             <div class="row" style="text-align: left; color:#428bca; font-weight: 500; margin-top:-10px;">
-                <div class="col-md-8" >
+                <div class="col-md-12" >
               
 
                     <input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados['fecha_ingresado'];?>" style="display:none"/>
@@ -1291,11 +1339,7 @@ if (nivel==1){
 
                 </div>
         
-                <div class="col-md-4" style="text-align: right;">
-                <laber><h5><b>Período: <?php echo $Unificados['periodo'];?></b></h5></laber>
 
-
-                </div>
             </div>
 
         </div>
@@ -1368,6 +1412,14 @@ if (nivel==1){
 
 
 
+
+
+
+
+
+
+
+
 			</div>
 		</div>
 		
@@ -1392,8 +1444,8 @@ if (nivel==1){
 		                        while($row = pg_fetch_array($resultGridTomarAccion))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;">
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1410,13 +1462,16 @@ if (nivel==1){
 
 		                    <table class="table table-bordered"> 
 		                        <caption style="background: #f29e05; color: #ffffff; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>PREPARACIÓN</b></caption>
+
+
+
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridEstarPreparados))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;">  
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">  
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1431,14 +1486,14 @@ if (nivel==1){
 
 		        <div  class="col-md-12" id="EstarInformados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 		                    <table class="table table-bordered"> 
-		                        <caption style="background: #ffef00; color: #7f7f7f; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>ATENCIÓN</b></caption>
+		                        <caption style="background: #ffef00; color: #7f7f7f; text-align: left; font-size: 14px; padding-left: 10px;"><b>ATENCIÓN</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridEstarInformados))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1453,14 +1508,14 @@ if (nivel==1){
 
 		        <div  class="col-md-12" id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
 							 <table class="table table-bordered"> 
-		                        <caption style="background: #6ab93c; color: #ffffff; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>VIGILANCIA</b></caption>
+		                        <caption style="background: #6ab93c; color: #ffffff; text-align: left; font-size: 14px; padding-left: 10px;"><b>VIGILANCIA</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridCondicionesNormales))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  

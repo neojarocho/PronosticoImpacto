@@ -24,13 +24,15 @@ elseif 	($nivel == 2){ $str_nivel = "2,3,4"; 	$s1=0; $s2=1; $s3=1; $s4=1;}
 elseif 	($nivel == 1){ $str_nivel = "1,2,3,4"; 	$s1=1; $s2=1; $s3=1; $s4=1;} 
 else 	{$str_nivel = ""; 						$s1=0; $s2=0; $s3=0; $s4=0;}
 
-// echo $str_nivel;
+// echo $nivel.":".$str_nivel;
 ///----------------------*************************************-------------------------------------------------
 /// INFORMACIÓN GENERAL
 $dbconn = my_dbconn4("PronosticoImpacto");
 $sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, u.des_categoria, u.des_categoria,	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
-	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
+	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo,
+		CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<p style=&#quot;color:#7f7f7f !important; margin-bottom: 0px !important;&#quot;>ATENCIÓN: '||u.titulo_general||'</p>'
+            ELSE UPPER(u.des_categoria)||': '||u.titulo_general END as des_categoria
     FROM public.unificado u
     WHERE u.id_unificado= $buscar;";
 $resultUnificado = pg_query($dbconn, $sqlUnificado);
@@ -82,7 +84,7 @@ if (count($TomarAccion)>0){ $sc1=1;} else { $sc1=0; }
 //------------------------------------------------------------------------------------------------------
 //--------------------------------ESTAR PREPARADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Estar preparados');";
+$sqlGridEstarPreparados="SELECT f_reporte_unificado($buscar,'Preparación');";
 $resultGridEstarPreparados = pg_query($dbconn, $sqlGridEstarPreparados);
 $EstarPreparados = pg_fetch_all($resultGridEstarPreparados);
 $EstarPreparados = $EstarPreparados[0]['f_reporte_unificado'];
@@ -95,7 +97,7 @@ if (count($EstarPreparados)>0){ $sc2=1;} else { $sc2=0; }
 //------------------------------------------------------------------------------------------------------
 //--------------------------------ESTAR INFORMADOS----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Estar informados');";
+$sqlGridEstarInformados="SELECT f_reporte_unificado($buscar,'Atención');";
 $resultGridEstarInformados = pg_query($dbconn, $sqlGridEstarInformados);
 $EstarInformados = pg_fetch_all($resultGridEstarInformados);
 $EstarInformados = $EstarInformados[0]["f_reporte_unificado"];
@@ -108,7 +110,7 @@ if (count($EstarInformados)>0){ $sc3=1;} else { $sc3=0; }
 //------------------------------------------------------------------------------------------------------
 //--------------------------------CONDICIONES NORMALES----------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------
-$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Monitoreo');";
+$sqlGridCondicionesNormales="SELECT f_reporte_unificado($buscar,'Vigilancia');";
 $resultGridCondicionesNormales = pg_query($dbconn, $sqlGridCondicionesNormales);
 $CondicionesNormales = pg_fetch_all($resultGridCondicionesNormales);
 $CondicionesNormales = $CondicionesNormales[0]["f_reporte_unificado"];
@@ -205,7 +207,7 @@ body {
 	width:800px !important;
 }
 .mapa_marco {
-	width: 95%; 
+	
 	// height: 485px;
 	display: block;
 	margin-left: auto;
@@ -213,7 +215,7 @@ body {
 	overflow: hidden;
 }
 .mapa_marco img {
-	margin-top: -50px;
+
 }
 
 	table {
@@ -256,8 +258,21 @@ ul.alin {
 .FondoImagen{
     position: relative;
     display: inline-block;
-    text-align: center;
+    text-align: left;
 }
+.texto-encima{
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+.centrado{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	text-align: left !important;
+}
+
 </style>
    
    
@@ -288,9 +303,13 @@ ul.alin {
 			<table border=0 style="width:100%;"> 
 				<tr>
 					<td colspan=2>
-						<div style="color:#ffffff;  background: <?php echo $Unificados["codigo"];?>;">
-							<div style="text-align:center;font-size:15px; margin-top:10px; margin-bottom:10px; font-weight:bold;height:25px;">
-							<?php echo $Unificados["des_categoria"];?>: <?php echo $Unificados["titulo_general"];?>
+						<div style="color:#ffffff; margin-top:15px; margin-bottom:15px; background: <?php echo $Unificados["codigo"];?>;">
+						
+						
+						
+						
+							<div style="text-align:center;">
+							<h4 style="padding-top: 5px;padding-bottom: 5px; margin-bottom: 0px;"><?php echo $Unificados["des_categoria"];?></h4>
 							</div>
 						</div>
 					</td>	
@@ -301,7 +320,7 @@ ul.alin {
 						<input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados["fecha_ingresado"];?>" style="display:none"/>
 						<b><?php echo $fecha_larga;?> </b>	
 					</td>
-					<td>
+					<td style="text-align: right">
 					<b>Período: <?php echo $Unificados["periodo"];?></b>
 					</td>
 				</tr>  
@@ -319,11 +338,13 @@ ul.alin {
 				<tr>
 					<td colspan=2>
 					<!-- CONTENIDO MAPA-->
+					<br>
 						<div class="mapa_marco" align="center">
 							<div id="map">
 								<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/img_impacto/mapa_unificado_<?php echo $buscar; ?>.jpg" width="100%">
 							</div>
 						</div>
+					<br>
 					</td>
 				</tr>
 			</table>   
@@ -342,7 +363,9 @@ ul.alin {
 		  
 							<table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoTomarAccion.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_tomar_accion.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#ffffff;">TOMAR ACCIÓN</div>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -352,7 +375,7 @@ ul.alin {
 								while($row = pg_fetch_array($resultGridTomarAccion))  
 								{  
 								?>  
-										<div class="alin" style="padding-top: 0px; padding-bottom: 0px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
+										<div class="alin" style="padding-top: 0px; padding-bottom: 10px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
 								<?php  
 								}  
 								?>  
@@ -368,8 +391,10 @@ ul.alin {
 		<!--------------------------------------------------------------------------------------------->
 				<div  id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20px;">
 							<table class="table table-bordered" style="border: hidden;"> 
-								<div class="FondoImagen">
-								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoEstarPreparados.png"  style="width:100%"/>
+																<div class="FondoImagen">
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_preparacion.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#ffffff;">PREPARACIÓN</div>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -379,7 +404,7 @@ ul.alin {
 								while($row = pg_fetch_array($resultGridEstarPreparados))  
 								{  
 								?>  
-										<div class="alin" style="padding-top: 0px; padding-bottom: 0px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
+										<div class="alin" style="padding-top: 0px; padding-bottom: 10px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
 								<?php  
 								}  
 								?>  
@@ -396,7 +421,9 @@ ul.alin {
 				<div   id="EstarInformados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							<table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoEstarInformados.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_atencion.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#797979;">ATENCIÓN</div>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -406,7 +433,7 @@ ul.alin {
 								while($row = pg_fetch_array($resultGridEstarInformados))  
 								{  
 								?>  
-										<div class="alin" style="padding-top: 0px; padding-bottom: 0px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
+										<div class="alin" style="padding-top: 0px; padding-bottom: 10px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
 								<?php  
 								}  
 								?>  
@@ -423,7 +450,9 @@ ul.alin {
 				<div   id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							 <table class="table table-bordered" style="border: hidden;"> 
 								<div class="FondoImagen">
-								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoCondicionesNormales.png"  style="width:100%"/>
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_vigilancia.png"  style="width:100%"/>
+							
+								  <div class="centrado" style="color:#ffffff;">VIGILANCIA</div>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -433,7 +462,7 @@ ul.alin {
 								while($row = pg_fetch_array($resultGridCondicionesNormales))  
 								{  
 								?>  
-									<div class="alin" style="padding-top: 0px; padding-bottom: 0px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
+									<div class="alin" style="padding-top: 0px; padding-bottom: 10px;"><div style="line-height: 1.2em;"><?php echo $row["f_reporte_unificado"]; ?></div></div>
 								<?php  
 								}  
 								?>  
@@ -461,7 +490,10 @@ ul.alin {
 				<?php  
 				}  
 				?>  
-			</table>  
+			</table>
+			
+			
+			
 		</div>
 	</td>
 </tr>  

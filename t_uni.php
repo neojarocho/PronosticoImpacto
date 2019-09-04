@@ -46,40 +46,21 @@ $result=pg_query($dbconn, $sql);
 $totalRows = pg_num_rows($result);
 if ($totalRows == 0) {
 	echo "<div class='col-md-12' style='color:red;'>NO HAY COINCIDENCIAS PARA ESTA BÚSQUEDA <br><br></div>";
-	echo "
-<!--
-	<div class='col-md-12'>
-		<table class='table table-bordered'> 
-			<tr style='background:#EEEEEE;'>  
-					<th width='20%'>Area</th>
-					<th width='75%'>Título</th> 
-					<th width='75%'>Fecha</th> 
-					<th width='20%'>Hora</th> 
-					<th width='5%'></th> 
-					<th width='5%'></th>  
-			</tr>  
-		</table>
-	</div>
--->";
-  exit();
+	exit();
 }
 
 ?>
-<script>
-<!-- -->
-</script>
 		<div class="col-md-12">
-
-            <table class="table table-bordered"> 
-                <tr style="background:#EEEEEE;">  
+            <table class="table table-bordered">
+                <tr style="background:#EEEEEE;">
                         <th width="20%">Area</th>
                         <th width="75%">Título</th>
                         <th width="75%">Impacto</th>
-                        <th width="25%">Fecha</th> 
-                        <th width="20%">Hora</th> 
-                        <th width="5%"></th> 
-                        <th width="5%"></th>  
-                </tr>  
+                        <th width="25%">Fecha</th>
+                        <th width="20%">Hora</th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>
+                </tr>
                 <?php  
 				$i = 0;
                 while($row = pg_fetch_array($result))  
@@ -91,18 +72,19 @@ if ($totalRows == 0) {
 						<input type='hidden' id='<?php echo 'uni'.$row["id_area"];?>' name='<?php echo 'uni'.$row["id_area"];?>' value='<?php echo $row["id_impacto_diario"]; ?>'>
 						<?php echo $row["area"]; ?>
 						</div>
-					</td>  
-					<td><?php echo $row["titulo"]; ?></td> 
-					<td align="center"><?php if ($row["tim"]>0) { echo "SI (".$row["tim"].")"; }  else { echo "NO"; } ?></td> 
-					<td><?php echo $row["sfecha"]; ?></td> 
-					<td><?php echo $row["hora"]; ?></td> 
+					</td>
+					<td>
+						<?php echo $row["titulo"]; ?>
+						<input type='hidden' id='<?php echo 'desc'.$row["id_area"];?>' name='<?php echo 'desc'.$row["id_area"];?>' value='<?php echo $row["descripcion"]; ?>'>
+					</td>
+					<td align="center"><?php if ($row["tim"]>0) { echo "SI (".$row["tim"].")"; }  else { echo "NO"; } ?></td>
+					<td><?php echo $row["sfecha"]; ?></td>
+					<td><?php echo $row["hora"]; ?></td>
 					<td align="center"><button type="button" class="btn btn-info glyphicon glyphicon-search btn-sm" 	id="<?php echo $row["id_impacto_diario"]; ?>" onclick="showMyMap(<?php echo $row['id_impacto_diario']; ?>);" ></button></td>
 					<td align="center"><button type="button" class="btn btn-danger glyphicon glyphicon-remove btn-sm" 	id="<?php echo "tr".$i ?>" onclick="trDetach($(this).attr('id'))"></button></td>
-				</tr>  
+				</tr>
 					<?php  
                 }  
                 ?>  
             </table>  
-
-			<br />
 		</div>
