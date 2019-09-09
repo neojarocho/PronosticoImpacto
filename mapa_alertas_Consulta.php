@@ -1266,12 +1266,12 @@ if (nivel==1){
 								<div id="feedback" class="shadow" style="display: none;">
 									<h3 align="center">Alertas MARN</h3>
 									<div id="info">
-											<div id="note">
-												<br>En esta secci&oacute;n se presenta el registro de alertas por Municipio 
-											</div>
-										   <div id="hint">
+										<div id="note">
+											<br>En esta secci&oacute;n se presenta el registro de alertas por Municipio 
+										</div>
+										<div id="hint">
 											  Selecciona y arrastra una capa para reordenanrla.
-										   </div>
+										</div>
 										   <!--<strong>Capas de Almacenamiento</strong>-->
 										   <img id="loading" src="Imagenes/loading_black.gif">
 										   <br>

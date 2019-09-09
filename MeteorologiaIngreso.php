@@ -151,6 +151,13 @@ if(@$id_impacto_diario==''){
 	//$fecha_ini = '05/12/2018';
 };
 
+
+
+
+#un_div { display : none; }
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -312,6 +319,25 @@ iframe {
 		display: none;
 	}
 </style>
+
+<script>
+
+
+	
+	
+	
+function BotNoImpacto() {
+
+
+toggle_visibility('Div_NoImpacto');
+toggle_visibility('datosGenerales');
+
+}
+
+
+
+
+</script>
 <link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
 </head>
 
@@ -354,7 +380,19 @@ iframe {
 
 <!-- ####################################################################################### -->
 <!-- DATOS GENERALES DEL INFORME -->
-<div id="datosGenerales" class="row" style="background: #ededf0">
+
+<div class="row">
+	<div class="col-xs-10">
+	
+	<div class="row" id="img_no_impacto"  style="display: none;">
+	<div class="col-xs-12">
+		<img   src="http://srt.marn.gob.sv/InformePronosticoImpacto/Imagenes/No_Impactos.png" style="width: 100% !important;
+  height: auto !important;">
+  	</div>
+</div>
+  
+  
+	<div id="datosGenerales" class="row" style="background: #ededf0">
       	<div class="col-md-12" style="background:#7D7D7D;">
       		<div class="row" style="text-align: center; color:#FFFFFF;">
 
@@ -402,6 +440,36 @@ iframe {
 </form>
 </div>
 <p></p>
+
+
+	
+	
+	
+	</div>
+	<div class="col-xs-2" id="div_no_impacto">
+	
+	 <button type="button" onClick="BotNoImpacto()" id="Bot_NoImpacto"  class="list-group-item active EfectoBtN" style="background-color:#523547; text-align: center;" >No Impactos</button>
+	<br>
+		<div id="Div_NoImpacto" style="text-align: center; display: none;">
+		<h5><b>No se prevé impactos para el día de hoy en el perido:</b></h5>
+			<select name="periodo_no" id="periodo_no" class="form-control" placeholder="Ingrese periodo" required data-required-msg="Ingrese el periodo">
+			<option value="" style="font-style: italic; color: #B2BABB;">Seleción</option>
+			<?php echo $periodo; ?>
+			</select>
+	
+		<br>
+		
+			
+				<button type="button" class="btn btn-primary" id="GuardarNoImpacto" value="Ingresar">Ingresar</button>
+						
+		</div>
+	</div>
+	
+	
+	
+	
+</div>
+
 
 
 
@@ -568,6 +636,9 @@ iframe {
 
 // ConteConsecuencias
 // contenedorHorario
+
+
+
 function validaCon(name) {
 
 	if($("#err" + name).length != 0) {
@@ -704,11 +775,12 @@ function updateMuni(query) {
 // BORRAR MUNICIPIOS DE MENU DE MUNICIPIOS //
 function delContent(va){
 	ShowProgressAnimation();
+	var id_imp=$('#id_impacto_diario_m').val();
 	// data = {id:va, opcion:'deleteContent'};
 	$.ajax({
 		url:'MeteorologiaProcesos.php',
 		method:"POST",
-		data: {id:va, opcion:'deleteContent'},
+		data: {id:va, id_imp:id_imp, opcion:'deleteContent'},
 		success:function(data){
 			// alert (categoria);	
 			// console.log(JSON.stringify(categoria));
@@ -747,6 +819,7 @@ function myFunction(va) {
 */
 
 $(document).ready(function(){
+
 
 window.onbeforeunload = function() {
     return "¿Esta seguro que quiere salir de esta pagina?";
@@ -838,6 +911,30 @@ $("#GuardarGeneral").on("click", function(){
 		.removeClass("valid")
 		.addClass("invalid");
 	}
+return false;
+});
+
+
+
+$("#GuardarNoImpacto").on("click", function(){
+	//console.log('aquiii');
+	
+		// alert(document.forms["formGeneral"].submit();
+		$.ajax({
+			url:'MeteorologiaProcesos.php',
+			method:"POST",
+			data:{registrar_no_impacto: 'registrar_no_impacto', id_area:<?php echo $id_area_Ini; ?>, id_fenomeno:<?php echo $id_fenomeno_Ini; ?>, correlativo:<?php echo $correlativo; ?>, periodo_no:$("#periodo_no").val(), id_estado_impacto:$("#id_estado_impacto").val(), ImpactoFenomeno:$("#ImpactoFenomeno").val(),fecha_ini:$("#fecha_ini").val(),fecha_fin:$("#fecha_fin").val()},
+			success:function(data){
+				//console.log(data);
+			toggle_visibility('img_no_impacto');
+			toggle_visibility('GuardarNoImpacto');
+			//
+			$('#div_no_impacto').find('input, textarea, button, select').attr('disabled','disabled');
+			
+			}
+		
+		});
+	
 return false;
 });
                 

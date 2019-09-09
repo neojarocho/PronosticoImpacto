@@ -190,75 +190,9 @@ ULTIMOS.style.display = 'block';
 <div style="background: #e4e6e6; padding-top: 15px;padding-bottom: 15px;">
 
 
-
-
-
-        <div class="row" style="margin: 5px;">
-              <p></p>
-            <div class="col-xs-2">
-
-                <button type="button" id='BotonLluvias' onclick="Ocultar('LLUVIA');" class="list-group-item active EfectoBtN" style="background-color:#3b7db5; border-color:#55656f; text-align: center;">
-                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/lluvias_n.png">
-                                    
-
-        
-
-            </div>
-
-            <div class="col-xs-2">
-
-                <button type="button" id='BotonTemporal' onclick="Ocultar('TEMPORAL');" class="list-group-item active text-center EfectoBtN" style="background-color:#04b2ce;text-align: center;">
-                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/temporal_n.png">
-                    
-            </div>
-
-            <div class="col-xs-2">
-
-                <button type="button" id='Boton' onclick="Ocultar('SEQUIA');" class="list-group-item active text-center EfectoBtN" style="background-color:#6f4c8a;text-align: center;">
-                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/sequia_n.png">
-                    
-
-            </div>
-
-
-
-            <div class="col-xs-2">
-
-
-                <button type="button" id='BotonVientos' onclick="Ocultar('VIENTOS');" class="list-group-item active text-center EfectoBtN" style="background-color:#b9751c;text-align: center;">
-                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/vientos_n.png">
-                
-
-
-            </div>
-
-            <div class="col-xs-2">
-
-                <button type="button" id='BotonErupcion' onclick="Ocultar('ERUPCION');" class="list-group-item active text-center EfectoBtN" style="background-color:#8c4255;text-align: center;" >
-                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/erupcion_n.png">
-                
-
-        
-
-            </div>
-
-            <div class="col-xs-2">
-
-                <button type="button" id='BotonSismo' onclick="Ocultar('SISMO');" class="list-group-item active text-center EfectoBtN" style="background-color:#147f7a;text-align: center;">
-                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/sismo_n.png">
-              
-            </div>
-
-
-
-   <br>
-        </div>
-
-
         <div class="row" style="margin: 5px;">
             <div class="col-xs-12">
 
- <br>
                 <button type="button" id="BotonUltimos" onclick="Ocultar('ULTIMOS');" class="list-group-item active EfectoBtN" style="background-color:#55656f; text-align: center;">
                    
                     <h5>Últimos Pronósticos Integrados</h5> </button>
@@ -268,6 +202,77 @@ ULTIMOS.style.display = 'block';
 
  
         </div>
+
+
+        <div class="row" style="margin: 5px;">
+              <p></p>
+            <div class="col-xs-2">
+
+                <button type="button" id='BotonLluvias' onclick="Ocultar('LLUVIA');" class="list-group-item active EfectoBtN" 
+				style="background-color:#3b7db5; border-color:#55656f; text-align: center; padding-bottom: 0px;padding-right: 0px;padding-left: 0px;padding-top: 0px;">
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/lluvias_u.jpg">
+                                    
+
+        
+
+            </div>
+
+            <div class="col-xs-2">
+
+                <button type="button" id='BotonTemporal' onclick="Ocultar('TEMPORAL');" class="list-group-item active text-center EfectoBtN" 
+				style="background-color:#04b2ce;text-align: center; padding-bottom: 0px;padding-right: 0px;padding-left: 0px;padding-top: 0px;">
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/temporal_u.jpg">
+                    
+            </div>
+
+            <div class="col-xs-2">
+
+                <button type="button" id='Boton' onclick="Ocultar('SEQUIA');" class="list-group-item active text-center EfectoBtN" 
+				style="background-color:#6f4c8a;text-align: center; padding-bottom: 0px;padding-right: 0px;padding-left: 0px;padding-top: 0px;">
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/sequia_u.jpg">
+                    
+
+            </div>
+
+
+
+            <div class="col-xs-2">
+
+
+                <button type="button" id='BotonVientos' onclick="Ocultar('VIENTOS');" class="list-group-item active text-center EfectoBtN" 
+				style="background-color:#59592e;text-align: center;  padding-bottom: 0px;padding-right: 0px;padding-left: 0px;padding-top: 0px;">
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/vientos_u.jpg">
+                
+
+
+            </div>
+
+            <div class="col-xs-2">
+
+                <button type="button" id='BotonErupcion' onclick="Ocultar('ERUPCION');" class="list-group-item active text-center EfectoBtN" 
+				style="background-color:#8c4255;text-align: center;  padding-bottom: 0px;padding-right: 0px;padding-left: 0px;padding-top: 0px;" >
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/erupcion_u.jpg">
+                
+
+        
+
+            </div>
+
+            <div class="col-xs-2">
+
+                <button type="button" id='BotonSismo' onclick="Ocultar('SISMO');" class="list-group-item active text-center EfectoBtN" 
+				style="background-color:#147f7a;text-align: center;  padding-bottom: 0px;padding-right: 0px;padding-left: 0px;padding-top: 0px;">
+                    <img width="100%" height="100%" src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Fenomenos/sismo_u.jpg">
+              
+            </div>
+
+
+
+   <br>
+        </div>
+
+
+
 
         
               
@@ -465,8 +470,8 @@ ULTIMOS.style.display = 'block';
     <div class="col-md-12" id="VIENTOS">
         <div id="employee_table">  
             <table class="table table-bordered"> 
-                <caption style="background: #b9751c; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - VIENTOS FUERTES</caption>
-                <tr style="background:#f8debd;">
+                <caption style="background: #59592e; color: white; text-align: center; font-size: 15px;">PRONOSTICOS INTEGRADOS - VIENTOS FUERTES</caption>
+                <tr style="background:#9b9b81;">
                         <th style="text-align: center;"   width="3%">View</th>
                         <th style="text-align: center;"   width="3%">Print</th> 
                         <th style="text-align: center;"   width="3%">Submit</th>

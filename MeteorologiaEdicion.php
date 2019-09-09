@@ -694,11 +694,12 @@ function updateMuni(query) {
 // BORRAR MUNICIPIOS DE MENU DE MUNICIPIOS //
 function delContent(va){
 	ShowProgressAnimation();
+	var id_imp=$('#id_impacto_diario_m').val();
 	// data = {id:va, opcion:'deleteContent'};
 	$.ajax({
 		url:'MeteorologiaProcesos.php',
 		method:"POST",
-		data: {id:va, opcion:'deleteContent'},
+		data: {id:va, id_imp:id_imp, opcion:'deleteContent'},
 		success:function(data){
 			//alert (categoria);	
 			// console.log(JSON.stringify(categoria));

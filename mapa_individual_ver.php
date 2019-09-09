@@ -44,10 +44,7 @@ while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 } pg_free_result($result);
 //pg_close($dbconn);
 
-if (count(@$sh)==0){
-echo "<div style='text-align:center;'>NO HAY MUNICIPIOS INGRESADOS TODAVIA</div>";
-exit();
-}
+
 
 
 //------------------------------------------------------------------------------------------------------

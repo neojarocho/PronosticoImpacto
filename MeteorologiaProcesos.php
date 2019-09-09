@@ -28,7 +28,32 @@ include('database_connection.php');
 	$id_estado_impacto= 1;
 
 	//// INGRESO DE DATOS GENERALES
-	$sqlIngresoDatosGenerales="INSERT INTO public.impacto_diario( id_area, id_fenomeno, fecha, correlativo, titulo, descripcion, id_periodo, id_estado_impacto, id_usuario) VALUES ($id_area, $id_fenomeno, NOW(), $correlativo, '$titulo', '$descripcion', $id_periodo, $id_estado_impacto, $id_usuario)";
+	$sqlIngresoDatosGenerales="INSERT INTO public.impacto_diario( id_area, id_fenomeno, fecha, correlativo, titulo, descripcion, id_periodo, id_estado_impacto, id_usuario, no_impactos) VALUES ($id_area, $id_fenomeno, NOW(), $correlativo, '$titulo', '$descripcion', $id_periodo, $id_estado_impacto, $id_usuario, 0)";
+	$resultIngresoDatosGenerales = pg_query($sqlIngresoDatosGenerales) or die('Query failed: '.pg_last_error()); 
+	
+	$sql="SELECT currval('impacto_diario_seq')";
+	$result = pg_query($sql) or die('Query failed: '.pg_last_error()); 
+	$con = pg_fetch_all($result);
+	$con = $con[0];
+	
+	echo json_encode($con, JSON_FORCE_OBJECT);
+	
+}
+
+
+if(isset($_POST['registrar_no_impacto'])){
+include('database_connection.php');
+//echo('SHIIISI SI');
+	// IMPACTO DIARIO
+	// $id_impacto_diario=100;
+	$id_area = $_POST["id_area"];
+	$id_fenomeno= $_POST["id_fenomeno"];
+	$correlativo= $_POST["correlativo"];
+	$id_periodo_no= $_POST["periodo_no"];
+	$id_estado_impacto= 1;
+
+	//// INGRESO DE DATOS GENERALES
+	$sqlIngresoDatosGenerales="INSERT INTO public.impacto_diario( id_area, id_fenomeno, fecha, correlativo, titulo, descripcion, id_periodo, id_estado_impacto, id_usuario, no_impactos) VALUES ($id_area, $id_fenomeno, NOW(), $correlativo, 'No se prevén impactos', 'No se prevén impactos', $id_periodo_no, $id_estado_impacto, $id_usuario, 0)";
 	$resultIngresoDatosGenerales = pg_query($sqlIngresoDatosGenerales) or die('Query failed: '.pg_last_error()); 
 	
 	$sql="SELECT currval('impacto_diario_seq')";
@@ -254,6 +279,15 @@ include('database_connection.php');
 		
 		}
 		// exit();
+		
+		# liss
+		// UPDATE DE No DE MUNICIPIOS CON IMPACTOS
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql="UPDATE public.impacto_diario i SET  no_impactos = (SELECT count (*) FROM public.impacto_diario_detalle WHERE id_impacto_diario= ".$id_impacto_diario.") WHERE i.id_impacto_diario=".$id_impacto_diario.";";
+		$result=pg_query($dbconn, $sql);
+		
+		
+		# liss
 
 		if(isset($result)){  echo 'done'; }
 
@@ -362,11 +396,16 @@ include('database_connection.php');
 			$sql_2 = "INSERT INTO public.impacto_diario_horario(id_impacto_diario_detalle, id_horario,id_impacto_diario) VALUES (".$id_impacto_diario_detalle.", ".$datosh[$i].",".$id_impacto_diario."); \n";
 			$sql_ho .=$sql_2;
 		}	// echo $sql_ho;
-
 		$sql_sum = $sql_co.$sql_ho;
+		$result=pg_query($dbconn, $sql_sum);
 		// echo $sql_sum;
 		
-		$result=pg_query($dbconn, $sql_sum);
+		# liss
+		$sql="UPDATE public.impacto_diario i SET  no_impactos = (SELECT count (*) FROM public.impacto_diario_detalle WHERE id_impacto_diario= ".$id_impacto_diario.") WHERE i.id_impacto_diario=".$id_impacto_diario.";";
+		$result=pg_query($dbconn, $sql);
+		//echo $sql;
+		# liss
+		
 
 		echo '<input type="button" name="cancel" id="cancel" class="btn btn-info" value="CERRAR" onclick="toggle_visibility(\'loading-div-popup-form\')" />';	
 		
@@ -377,6 +416,7 @@ include('database_connection.php');
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 	if($_POST["opcion"] == 'deleteContent'){
 			$id = $_POST["id"];
+			$id_impacto_diario= $_POST["id_imp"];
 			echo "borrarContenido:".$id."\n";
 			// header('Content-Type: application/json');
 
@@ -392,6 +432,14 @@ include('database_connection.php');
 			$sql="DELETE FROM public.impacto_diario_detalle WHERE id_impacto_diario_detalle = ".$_POST["id"].";";
 			// echo $sql;
 			$result=pg_query($dbconn, $sql);
+			
+			
+		# liss
+			// UPDATE DE No DE MUNICIPIOS CON IMPACTOS
+			$dbconn = my_dbconn4("PronosticoImpacto");
+			$sql="UPDATE public.impacto_diario i SET  no_impactos = (SELECT count (*) FROM public.impacto_diario_detalle WHERE id_impacto_diario= ".$id_impacto_diario.") WHERE i.id_impacto_diario=".$id_impacto_diario.";";
+			$result=pg_query($dbconn, $sql);
+		# liss
 	}
 	
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
