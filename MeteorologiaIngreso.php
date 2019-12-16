@@ -318,6 +318,9 @@ iframe {
 	.k-tooltip-validation .k-warning {
 		display: none;
 	}
+	
+	
+	
 </style>
 
 <script>
@@ -386,7 +389,7 @@ toggle_visibility('datosGenerales');
 	
 	<div class="row" id="img_no_impacto"  style="display: none;">
 	<div class="col-xs-12">
-		<img   src="http://srt.marn.gob.sv/InformePronosticoImpacto/Imagenes/No_Impactos.png" style="width: 100% !important;
+		<img   src="http://srt.marn.gob.sv/InformePronosticoImpacto/Imagenes/No_se_esperan_impactos.jpg" style="width: 100% !important;
   height: auto !important;">
   	</div>
 </div>
@@ -535,10 +538,10 @@ toggle_visibility('datosGenerales');
 			</div>	
  -->
 			<div class="row"><p></p>
-				<div class="col-md-8" style="padding-bottom: 15px; padding-top: 15px; background: #f9f9f9;" >
+				<div class="col-md-8">
 					<label>Consecuencias a afectar</label>
 			
-					<div id="ConteConsecuencias" class="form-check" placeholder="Ingrese" required data-required-msg="Ingrese" style="width: 100%; height: 100%;">
+					<div id="ConteConsecuencias" class="form-check alin" placeholder="Ingrese" required data-required-msg="Ingrese" style="zoom: 1.1; width: 100%; height: 100%; background: #e3e3e3; padding-top: 10px; padding-left: 10px;  padding-bottom: 10px !important;   padding-right: 10px;">
 			
 					</div>
 			
@@ -680,7 +683,7 @@ function mapaRefresh(){
 function ediContent(va) {
 	//$("#id_idiario_det").val(va);
 	var area = $('#id_area').val();
-	var midata = {id:va};
+	var midata = {id:va, area:area};
     $.ajax({
 		async : true,
 		method: "GET",
@@ -1126,7 +1129,7 @@ $('.action').change(function(){
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-					varCons +="<div class='checkbox' style='margin-right: 10px; width: 15px; height: 15px; margin-top: 10px;'><input name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
+					varCons +="<div class='accept'><input name='datos[]' type='checkbox' style='margin:10px 10px 0 5px;' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
 				}
 				if (varCons.length==0){
 					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
@@ -1145,10 +1148,11 @@ $('.action').change(function(){
 							$('#categoria').val(cat['categoria']);
 							$('#id_categoria').val(cat['id_categoria']);
 							$('#id_impacto_probabilidad').val(cat['id_impacto_probabilidad']);
-							if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");	/*Verde*/ 		}
-							if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");	/*Amarillo*/	}
-							if (cat['id_color'] == 3){	$('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");	/*Anaranjado*/	}
-							if (cat['id_color'] == 4){	$('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); 	/*Rojo*/		}
+							if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "#6ab93c");	/*Verde*/ 		}
+							if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "#ffef00");	/*Amarillo*/	}
+							if (cat['id_color'] == 3){	$('#categoria').css("background-color" , "#f29e05");	/*Anaranjado*/	}
+							if (cat['id_color'] == 4){	$('#categoria').css("background-color" , "#F20505"); 	/*Rojo*/		}
+							if (cat['id_color'] == 4){	$('#categoria').css("color" , "#ffffff"); 	/*Texto blanco*/		}
 						}
 					});
 				}
@@ -1171,10 +1175,11 @@ $('.action').change(function(){
 					$('#categoria').val(cat['categoria']);
 					$('#id_categoria').val(cat['id_categoria']);
 					$('#id_impacto_probabilidad').val(cat['id_impacto_probabilidad']);
-					if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");	/*Verde*/ 		}
-					if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");	/*Amarillo*/	}
-					if (cat['id_color'] == 3){ $('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");	/*Anaranjado*/	}
-					if (cat['id_color'] == 4){ $('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); 	/*Rojo*/		}
+					if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "#6ab93c");	/*Verde*/ 		}
+					if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "#ffef00");	/*Amarillo*/	}
+					if (cat['id_color'] == 3){ $('#categoria').css("background-color" , "#f29e05");	/*Anaranjado*/	}
+					if (cat['id_color'] == 4){ $('#categoria').css("background-color" , "#F20505"); 	/*Rojo*/		}
+					if (cat['id_color'] == 4){	$('#categoria').css("color" , "#ffffff"); 	/*Texto blanco*/		}
 				}
 			});
 		}				  

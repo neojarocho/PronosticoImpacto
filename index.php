@@ -66,7 +66,9 @@ function getBotonConsultar() {
 $("#contenedorprincipal").load("PaginaConsulta.php");
 }
 
-
+function getBotonConsultarPublicados() {
+$("#contenedorprincipal").load("PaginaConsultaPublicados.php");
+}
 function getBotonEspecial_Atencion(id_area) {
 $("#contenedorprincipal").load("especial_atencion.php",{id_area:id_area});
 
@@ -125,22 +127,23 @@ $(function () {
     <!-- Content here -->
 
 	<!--BARRAAAAAAA MENUUUU-->
-	<nav class="navbar navbar-default"  style="background-color: #1b2020; color: black">
+	<nav class="navbar navbar-default"  style="background-color: #2e3740; color: black">
 		
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
-			<ul class="nav navbar-nav">
-				<li>
-					<a id="PaginaInicioTexto">Inicio</a>
-				</li>
-			</ul>
+		
+				<ul class="nav navbar-nav" style="">
+					<button id="PaginaInicioTexto" class="btn btn-outline-secondary" type="button" style="background-color:#2e3740; color:#ffffff; margin-top: 10px;   margin-left: 20px;">INICIO</button>
+				</ul>
 		</div>
+		
+		
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Meteorología<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">METEOROLOGÍA<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a id="M_lluvias" onClick="getBotonImpacto(1,1)">Lluvias intensas y tormentas eléctricas</a></li>
 							<li><a id="M_temporal" onClick="getBotonImpacto(1,2)">Temporal</a></li>
@@ -158,7 +161,7 @@ $(function () {
 
 				<ul class="nav navbar-nav">
 					<li class="dropdown">
-						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hidrología<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">HIDROLOGÍA<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a id="H_lluvias" onClick="getBotonImpacto(2,1)">Lluvias intensas y tormentas eléctricas</a></li>
 							<li><a id="H_temporal" onClick="getBotonImpacto(2,2)">Temporal</a></li>
@@ -171,7 +174,7 @@ $(function () {
 
 				<ul class="nav navbar-nav">
 					<li>
-						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Geología<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">GEOLOGÍA<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a id="G_lluvias" onClick="getBotonImpacto(3,1)" >Lluvias intensas y tormentas eléctricas</a></li>
 							<li><a id="G_temporal" onClick="getBotonImpacto(3,2)" >Temporal</a></li>
@@ -185,7 +188,7 @@ $(function () {
 
 				<ul class="nav navbar-nav">
 					<li>
-						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Integrar<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">INTEGRAR<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a id="U_lluvias" onClick="getBotonUnificado(4,1)">Lluvias intensas y tormentas eléctricas</a></li>
 							<li><a id="U_temporal" onClick="getBotonUnificado(4,2)">Temporal</a></li>
@@ -197,17 +200,14 @@ $(function () {
 					</li>
 				</ul>
 
+
 				<ul class="nav navbar-nav" style="">
-					<button id="Consultar" class="btn btn-outline-secondary glyphicon glyphicon-link" type="button" onClick="getBotonConsultar()" style="margin-top: 10px;   margin-left: 20px;"> <b>INTEGRADOS</b></button>
-						
-					
+					<button id="Consultar" class="btn btn-outline-secondary" type="button" onClick="getBotonConsultar()" style="background-color:#2e3740; color:#5b94c5; margin-top: 10px;   margin-left: 20px;">INTEGRADOS</button>
 				</ul>
-				<!--<form class="navbar-form navbar-right">
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="¿Que camara buscas?">
-					</div>
-					<button type="submit" class="btn btn-default">Buscar</a>
-				</form>-->
+				<ul class="nav navbar-nav" style="">
+					<button id="Consultar" class="btn btn-outline-secondary" type="button" onClick="getBotonConsultarPublicados()" style="background-color:#2e3740; color:#5b94c5; margin-top: 10px;   margin-left: 20px;">PUBLICADOS</button>
+				</ul>
+
 
 			<ul class="nav navbar-nav navbar-right">
 			<span class="navbar-text">

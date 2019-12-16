@@ -409,7 +409,7 @@ function validaDup() {
 	
 	if (b == 1) { msg = 'EL AREA ESTA DUPLICADA'; $('#guardarUnificado').attr('disabled',true); } else { $('#guardarUnificado').attr('disabled',false); }
 	$('#msgArea').html(msg);
-	fillDesc();
+	// fillDesc();
 	return b;
 }
 

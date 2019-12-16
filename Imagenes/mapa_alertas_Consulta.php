@@ -734,7 +734,7 @@ ul.alin {
 		 
 		//Agregar aqui Otras capas		
 		/* ----------------------------------------------------------------------------- */
-		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
+		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
 		"opacity": 0.75
 		});
@@ -745,7 +745,7 @@ ul.alin {
 		 
 
 		/* ----------------------------------------------------------------------------- */
-		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
+		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
 				"id": "almacenamiento",
 				"opacity": 0.75
 		});
@@ -826,7 +826,7 @@ ul.alin {
 	function my_water() {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 		var query2 = new Query();
-		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		var queryTask2 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
 		query2.where = "FID>0";
 		query2.returnGeometry = true;
 		query2.outFields = ["FID"];
@@ -853,7 +853,7 @@ ul.alin {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 
 		var query1 = new Query();
-		var queryTask1 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
+		var queryTask1 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
 			id: "mapaMuni",	
 			usePost:"true"
 		});

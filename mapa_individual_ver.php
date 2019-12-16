@@ -759,7 +759,7 @@ toggle_visibility ('CondicionesNormales');
 		 
 		//Agregar aqui Otras capas		
 		/* ----------------------------------------------------------------------------- */
-		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
+		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
 		"opacity": 0.75
 		});
@@ -770,7 +770,7 @@ toggle_visibility ('CondicionesNormales');
 		 
 
 		/* ----------------------------------------------------------------------------- */
-		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
+		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
 				"id": "almacenamiento",
 				"opacity": 0.75
 		});
@@ -852,7 +852,7 @@ toggle_visibility ('CondicionesNormales');
 	function my_water() {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 		var query2 = new Query();
-		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		var queryTask2 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
 		query2.where = "FID>0";
 		query2.returnGeometry = true;
 		query2.outFields = ["FID"];
@@ -879,7 +879,7 @@ toggle_visibility ('CondicionesNormales');
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 
 		var query1 = new Query();
-		var queryTask1 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
+		var queryTask1 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
 			id: "mapaMuni",	
 			usePost:"true"
 		});
@@ -946,21 +946,25 @@ toggle_visibility ('CondicionesNormales');
 +"<tr>"
 +"<td style='vertical-align: top; margin-top: 5px; color: #797979;'>"
 +"<div class='row'>"
-+"<div class='col-md-4'>"
++"<div class='col-md-3'>"
 +"<div class='ficha'><h5><b>Categoría</b>:	"+va[at.cod_ofi]['id_impacto_probabilidad']+" -	"+va[at.cod_ofi]['categoria']+" </h5></div>"
 +"</div>"
-+"<div class='col-md-4'>"
++"<div class='col-md-3'>"
 +"<div class='ficha'><h5><b>Probabilidad</b>:	"+va[at.cod_ofi]['probabilidad']+"	</h5></div>"		
 +"</div>"
-+"<div class='col-md-4'>"
++"<div class='col-md-3'>"
 +"<div class='ficha'><h5><b>Impacto</b>:		"+va[at.cod_ofi]['impacto']+"		</h5></div>"
++"</div>"
++"<div class='col-md-3'>"
++"<div class='ficha'><h5><b>Horario</b>:		"+va[at.cod_ofi]['horarios']+"		</h5></div>"
 +"</div>"
 +"</div>"
 +"</td>"
 +"</tr>"	
 +"<tr>"
 +"<td style='vertical-align: top; margin-top: 5px; color: #797979;'>"
-+"<div class='ficha'><h5 style='line-height: 1.3em;'>"+va[at.cod_ofi]['consecuencias']+"</h5></div>"																
++"<div class='ficha'><h5 style='line-height: 1.3em;'>"+va[at.cod_ofi]['consecuencias']+"</h5></div>"
++"<div class='ficha'><h5 style='line-height: 1.3em;'><b>Especial Atención: </b>"+va[at.cod_ofi]['especial_atencion']+"</h5></div>"							
 +"</td>"																							
 +"</tr>"																								
 +"</table>"	
@@ -1337,21 +1341,30 @@ toggle_visibility ('CondicionesNormales');
 <tr>
 <td style='vertical-align: top;  color: #484848;'>
 <div class="row">
-<div class="col-md-4">
+<div class="col-md-3">
 <div class='ficha'><h5><b>Categoría</b>:	<?php echo @$sh[0]['id_impacto_probabilidad'];?>	 -	<?php echo @$sh[0]['categoria']; ?>	</h5></div>
 </div>
-<div class="col-md-4">
+<div class="col-md-3">
 <div class='ficha'><h5><b>Probabilidad</b>:	<?php echo @$sh[0]['probabilidad'];?>	</h5></div>		
 </div>
-<div class="col-md-4">
+<div class="col-md-3">
 <div class='ficha'><h5><b>Impacto</b>:		<?php echo @$sh[0]['impacto'];?>		</h5></div>
+</div>
+<div class="col-md-3">
+<div class='ficha'><h5><b>Horario</b>:		<?php echo @$sh[0]['horarios'];?>		</h5></div>
 </div>
 </div>
 </td>
 </tr>	
 <tr>
 <td style='vertical-align: top;  color: #484848;'>
-<div class='ficha'><h5 style="line-height: 1.3em;"><?php echo @$sh[0]['consecuencias']; ?></h5></div>																
+<div class='ficha'><h5 style="line-height: 1.3em;"><?php echo @$sh[0]['consecuencias']; ?></h5></div>	
+
+<div class='ficha'><h5 style="line-height: 1.3em;"><b>Especial Atención: </b><?php echo @$sh[0]['especial_atencion']; ?></h5></div>	
+
+
+
+															
 </td>																							
 </tr>																								
 </table>	

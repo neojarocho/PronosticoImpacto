@@ -780,7 +780,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		 
 		//Agregar aqui Otras capas		
 		/* ----------------------------------------------------------------------------- */
-		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
+		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
 		"opacity": 0.75
 		});
@@ -791,7 +791,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		 
 
 		/* ----------------------------------------------------------------------------- */
-		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
+		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
 				"id": "almacenamiento",
 				"opacity": 0.75
 		});
@@ -880,7 +880,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 
 		var query1 = new Query();
-		var queryTask1 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
+		var queryTask1 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
 			id: "mapaMuni",	
 			usePost:"true"
 		});

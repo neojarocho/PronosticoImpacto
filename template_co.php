@@ -30,9 +30,7 @@ else 	{$str_nivel = ""; 						$s1=0; $s2=0; $s3=0; $s4=0;}
 $dbconn = my_dbconn4("PronosticoImpacto");
 $sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.periodo, u.fecha_ingresado, u.des_categoria, u.des_categoria,	(SELECT c.codigo
 	FROM public.impacto_probabilidad ip inner join public.color c on ip.id_color=c.id_color
-	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo,
-		CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<div style=&#quot;color:#7f7f7f !important; margin-bottom: 0px !important;&#quot;>ATENCIÓN: '||u.titulo_general||'</div>'
-            ELSE UPPER(u.des_categoria)||': '||u.titulo_general END as des_categoria
+	where ip.id_impacto_probabilidad=u.id_impacto_probabilidad) as codigo
     FROM public.unificado u
     WHERE u.id_unificado= $buscar;";
 $resultUnificado = pg_query($dbconn, $sqlUnificado);
@@ -185,7 +183,81 @@ pg_close($dbconn);
 <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 <style>
-<!-- para correo no vale css aqui -->
+#map {
+	background: #fff;
+	height: 100% !important;
+	width: 100%	!important;
+	margin: 0;
+	padding: 0 !important;
+	// padding-left: 10px !important;
+	// padding-right: 10px !important;
+}
+body {
+	font: 100%/1.4 Verdana, Arial, Helvetica, sans-serif;
+	// background: #42413C;
+	margin: 0;
+	padding: 0;
+	color: #000;
+}
+
+.container {
+	padding:0px;
+	width:800px !important;
+}
+.mapa_marco {
+	width: 95%; 
+	// height: 485px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+}
+.mapa_marco img {
+	margin-top: -50px;
+}
+
+	table {
+    font-size: small;
+}
+.formTable {
+	BORDER: #fff 0px solid;
+}
+
+.center {
+    margin: auto;
+    width: 100% !important;
+    padding: 0px;
+}
+a {
+    
+    text-decoration: none;
+}
+.row {
+	margin-right: 0px;
+	margin-left: 0px;
+}
+.color {
+	color:black;
+	width:160px;
+	height:25px;
+	font-size: 12px;
+    text-align: center;
+	display: table-cell; 
+	vertical-align: middle;
+}
+.sep {
+	width:140px;
+	height:1px;
+}
+ul.alin {
+  list-style-position: outside;
+  padding-left: 20px;
+}
+.FondoImagen{
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
 </style>
    
    
@@ -193,18 +265,20 @@ pg_close($dbconn);
 <!-- para correo no vale jquery -->
 </script>
 </head>
-<body>
+<body class="tundra">
 <div class="container" style="background: #fff;">
 
-<table border=0 style="font: Verdana, Arial, Helvetica, sans-serif; width:100%;">           
+<table border=0 style="width:800px;">           
 <tr>
 	<td>
-		<div>
+		<div class="row">
 				<div id="banner" >
 					<a>
 						<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/Banner3.png" width="100%" id="PaginaInicio">
 					</a>
 				 </div>
+
+
 		</div>
 	</td>
 </tr>
@@ -214,13 +288,9 @@ pg_close($dbconn);
 			<table border=0 style="width:100%;"> 
 				<tr>
 					<td colspan=2>
-						<div style="color:#ffffff; margin-top:15px; margin-bottom:15px; background: <?php echo $Unificados["codigo"];?>;">
-						
-						
-						
-						
-							<div style="text-align:center;">
-							<div style="padding-top: 5px;padding-bottom: 5px; margin-bottom: 0px;"><?php echo $Unificados["des_categoria"];?></div>
+						<div style="color:#ffffff;  background: <?php echo $Unificados["codigo"];?>;">
+							<div style="text-align:center;font-size:15px; margin-top:10px; margin-bottom:10px; font-weight:bold;">
+							<?php echo $Unificados["des_categoria"];?>: <?php echo $Unificados["titulo_general"];?>
 							</div>
 						</div>
 					</td>	
@@ -231,7 +301,7 @@ pg_close($dbconn);
 						<input type="hidden" id="fecha_ingresado" name="fecha_ingresado" value="<?php echo $Unificados["fecha_ingresado"];?>" style="display:none"/>
 						<b><?php echo $fecha_larga;?> </b>	
 					</td>
-					<td style="text-align: right">
+					<td>
 					<b>Período: <?php echo $Unificados["periodo"];?></b>
 					</td>
 				</tr>  
@@ -251,7 +321,7 @@ pg_close($dbconn);
 					<!-- CONTENIDO MAPA-->
 						<div class="mapa_marco" align="center">
 							<div id="map">
-								<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/img_impacto/mapa_unificado_<?php echo $buscar; ?>.jpg" width="100%" style="display:block;">
+								<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/img_impacto/mapa_unificado_<?php echo $buscar; ?>.jpg" width="100%">
 							</div>
 						</div>
 					</td>
@@ -271,9 +341,8 @@ pg_close($dbconn);
 				<div id="TomarAccion" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20px;">
 		  
 							<table class="table table-bordered" style="border: hidden;"> 
-								<div class="">
-								  <!--<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_tomar_accion.png"  style="width:100%"/>-->
-								  <div style="color:#FFFFFF; height:25.43px; background-image: url(&quot;http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_tomar_accion.png&quot;); text-align: left !important; padding-top: 3px; padding-left: 5px;">TOMAR ACCIÓN</div>
+								<div class="FondoImagen">
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoTomarAccion.png"  style="width:100%"/>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -299,9 +368,8 @@ pg_close($dbconn);
 		<!--------------------------------------------------------------------------------------------->
 				<div  id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20px;">
 							<table class="table table-bordered" style="border: hidden;"> 
-								<div class="">
-								  <!--<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_preparacion.png"  style="width:100%"/>-->
-								  <div style="color:#FFFFFF; height:25.43px; background-image: url(&quot;http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_preparacion.png&quot;); text-align: left !important; padding-top: 3px; padding-left: 5px;">PREPARACIÓN</div>
+								<div class="FondoImagen">
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoEstarPreparados.png"  style="width:100%"/>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -327,9 +395,8 @@ pg_close($dbconn);
 		<!--------------------------------------------------------------------------------------------->
 				<div   id="EstarInformados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							<table class="table table-bordered" style="border: hidden;"> 
-								<div class="">
-								  <!-- <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_atencion.png"  style="width:100%"/> -->
-								  <div style="color:#797979; height:25.43px; background-image: url(&quot;http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_atencion.png&quot;); text-align: left !important; padding-top: 3px; padding-left: 5px;">ATENCIÓN</div>
+								<div class="FondoImagen">
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoEstarInformados.png"  style="width:100%"/>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -355,9 +422,8 @@ pg_close($dbconn);
 		<!--------------------------------------------------------------------------------------------->
 				<div   id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 							 <table class="table table-bordered" style="border: hidden;"> 
-								<div class="">
-								  <!--<img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_vigilancia.png"  style="width:100%"/>-->
-								  <div style="color:#FFFFFF; height:25.43px; background-image: url(&quot;http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/l_vigilancia.png&quot;); text-align: left !important; padding-top: 3px; padding-left: 5px;">VIGILANCIA</div>
+								<div class="FondoImagen">
+								  <img src="http://srt.marn.gob.sv/web/PronosticoImpacto/Imagenes/FondoCondicionesNormales.png"  style="width:100%"/>
 								</div>
 								
 								<tr style="background:#EEEEEE" align="center"></tr>  
@@ -395,16 +461,15 @@ pg_close($dbconn);
 				<?php  
 				}  
 				?>  
-			</table>
-			
-			
-			
+			</table>  
 		</div>
 	</td>
 </tr>  
 </table>  
 
 </div>
+</body>
+</html>
 </body>
 </html>
 

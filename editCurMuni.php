@@ -76,18 +76,35 @@ while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 // echo $cuentah;     
 
 ## Especial Atencion
+$sql="SELECT ea_cod FROM public.impacto_diario_detalle WHERE 	id_impacto_diario_detalle = ".$ro['id_impacto_diario_detalle'].";";
+$result = pg_query($dbconn, $sql);
+$ea_cod = pg_fetch_all($result);
+$ea_cod = $ea_cod[0];
+@$ea_str = implode(", ", $ea_cod);
+@$ea_arr = explode(", ", $ea_str);
+// echo "<pre>";
+// print_r($ea_arr);
+// echo "</pre>";
+
+
 $EspecialAtencion = "";
 $sql ="SELECT id_especial_atencion, especial_atencion FROM public.especial_atencion WHERE cod_municipio = '".$ro['cod_municipio']."' AND id_area = ".$_GET["area"]."; ";
 $result=pg_query($dbconn, $sql);                      
 while ($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-		$EspecialAtencion .= "<div class='checkbox' style='text-align:left;'><input id=".$row['id_especial_atencion']." name='datos_ea[]' type='checkbox' onClick='handleClick($(this).attr(&#39;id&#39;))' value=".$row['especial_atencion']." >".$row['especial_atencion']."</div>";
+		if (in_array($row['id_especial_atencion'], $ea_arr)) { 
+		$EspecialAtencion .= "<div class='checkbox' style='text-align:left;'><input id='e".$row['id_especial_atencion']."' name='datos_ea[]' type='checkbox' value=".$row['id_especial_atencion']." checked='checked'>".$row['especial_atencion']."</div>";
+		}
+		else {
+		$EspecialAtencion .= "<div class='checkbox' style='text-align:left;'><input id='e".$row['id_especial_atencion']."' name='datos_ea[]' type='checkbox' value=".$row['id_especial_atencion']." >".$row['especial_atencion']."</div>";
+		}
+		
 		$array_ea[$row['id_especial_atencion']] = $row['especial_atencion'];
 } pg_free_result($result);  
-// echo $EspecialAtencion;
 if (count(@$array_ea)==0){
 	$array_ea="";
 	$EspecialAtencion .= "<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
 }
+// echo $EspecialAtencion;
 
 
 // $co = $co[0];
@@ -101,6 +118,82 @@ if (count(@$array_ea)==0){
 ?>
 
 <script>
+$("#atencion").val("");
+// var cad    = $('#atencion').val();
+// console.log('***'+cad+'***');
+var cad    = new Array();
+cad = $('#atencion').val().split(',');
+if (cad.length >0 ){ cad = $('#atencion').val().split(','); }
+var arrCaf = <?php echo json_encode($array_ea); ?>;
+var arrObj = Object.keys(arrCaf).map(function (key) { return arrCaf[key]; });	
+	
+// Si no hay ninguna especial atencion seleccionada borra el input
+function borraAtencion(name) {
+	if($("#err" + name).length != 0) { $("#err" + name).remove(); }
+	
+	if(jQuery("#"+name+" input[type=checkbox]:checked").length >=1) {
+	console.log("SI");
+	} 
+	else {
+	console.log("NO");
+	$("#atencion").val("");
+	}
+	if ($('#atencion').val().substring(0,1)==","){ rep = $('#atencion').val().slice(1); $('#atencion').val(rep); }
+}
+
+function handleClick(e) {
+console.log(e);
+console.log($("input#e"+e).is(":checked"));
+
+var activities = [[e, arrCaf[e]]];
+console.log(activities);
+
+
+var va  = "";
+	if($("input#e"+e).is(":checked") == true){
+		va = arrCaf[e];
+		cad.push(va);
+	}
+	else {
+		cad.pop(va);
+	}
+	
+	// console.log(cad.join(', '));
+	$('#atencion').val(cad.join(','));
+	if ($('#atencion').val().substring(0,2)==","){
+		rep = $('#atencion').val().slice(2);
+		$('#atencion').val(rep);
+		console.log($('#atencion').val());
+	}
+	
+
+	
+}
+
+function objectKeyByValue (obj, val) {
+  n = Object.entries(obj).find(i => i[1] === val);
+  return n[0];
+}
+
+function myFunction(item, index) {
+	if(jQuery.inArray(item, arrObj)!== -1) { 
+		idd = parseInt(objectKeyByValue (arrCaf, item));
+		$('#'+idd).prop('checked',true);
+		console.log(idd+'-'+item);
+	}
+	return 
+}
+
+function popCad() {
+	cd = $('#atencion').val();
+	arrCad = cd.split(", ");
+	// diff = $(arrCaf).not(arrCad).get();
+	arrCad.forEach(myFunction);
+}
+
+popCad();
+
+	
 $( document ).ready(function() {
 	
 function checkValue(value,arr){
@@ -125,6 +218,9 @@ var impacto = $("#ed_impacto").val();
 
 // ConteConsecuencias
 // contenedorHorario
+
+// Esta funcion valida si todo el grupo de consecuencias tiene al menos un valor
+// De lo contrrion no dejara ingresar
 function validaCon(name) {
 
 	if($("#err" + name).length != 0) {
@@ -199,6 +295,11 @@ if(ed_probabilidad != ''){
 }
 });
 });
+
+
+
+
+
 
 $('#ed_impacto').change(function() {
 		var id_area = $("#id_area").val();
@@ -292,15 +393,18 @@ event.preventDefault();
 // contenedorHorario
 if(validaCon('ed_ConteConsecuencias')==false)  { return;}
 if(validaCon('ed_contenedorHorario')==false)  { return;}
+borraAtencion('especialAtencion');
+
 
 		var updateMunicipios = $(this).serialize();
-		// console.log(updateMunicipios);
+		console.log(updateMunicipios);
 		
 		$.ajax({
 			url:"MeteorologiaProcesos.php",
 			method:"POST",
 			data:{formMuniUpdate:updateMunicipios, opcion:'updateContent'},
 			success:function(data) {
+				console.log(data);
 				var id_imp = $('#id_impacto_diario_m').val();
 				document.getElementById("curMuni").innerHTML = data;
 				getnoMuni(<?php echo $ro['id_impacto_diario']; ?>);
@@ -321,55 +425,6 @@ else
 	// console.log('HABILITADO');
 }
 
-var cad    = new Array();
-// var cad    = $('#atencion').val();
-cad = $('#atencion').val().split(',');
-// console.log('***'+cad+'***');
-if (cad.length >0 ){ cad = $('#atencion').val().split(','); }
-var arrCaf = <?php echo json_encode($array_ea); ?>;
-var arrObj = Object.keys(arrCaf).map(function (key) { return arrCaf[key]; });
-
-function handleClick(e) {
-var va  = "";
-	if($("#"+e).is(":checked") == true){
-		va = arrCaf[e];
-		cad.push(va);
-	}
-	else { 
-		cad.pop(va);
-	}
-	// console.log(cad.join(', '));
-	$('#atencion').val(cad.join(', '));
-	if ($('#atencion').val().substring(0,2)==", "){
-		rep = $('#atencion').val().slice(2);
-		$('#atencion').val(rep);
-	}
-
-}
-
-
-function objectKeyByValue (obj, val) {
-  n = Object.entries(obj).find(i => i[1] === val);
-  return n[0];
-}
-
-function myFunction(item, index) {
-	if(jQuery.inArray(item, arrObj)!== -1) { 
-		idd = parseInt(objectKeyByValue (arrCaf, item));
-		$('#'+idd).prop('checked',true);
-		// console.log(idd+'-'+item);
-	}
-	return 
-}
-
-function popCad() {
-	cd = $('#atencion').val();
-	arrCad = cd.split(", ");
-	// diff = $(arrCaf).not(arrCad).get();
-	arrCad.forEach(myFunction);
-}
-
-popCad();
 </script>
 
 		<form id="updateMunicipios_<?php echo $ro['id_impacto_diario_detalle']; ?>" name="updateMunicipios_<?php echo $ro['id_impacto_diario_detalle']; ?>" action="MeteorologiaProcesos.php" method="post" >

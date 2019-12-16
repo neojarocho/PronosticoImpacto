@@ -67,11 +67,11 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 /// INFORMACIÓN GENERAL
 $sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.fecha_ingresado, 
 
-CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>'||UPPER(u.periodo)||'</b>'
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#2e3740 !important;&#quot;>'||UPPER(u.periodo)||'</b>'
             ELSE UPPER(u.periodo) END as periodo,
 
 
-CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>ATENCIÓN</b>'
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#2e3740 !important;&#quot;>ATENCIÓN</b>'
             ELSE UPPER(u.des_categoria) END as des_categoria,
 
 
@@ -173,7 +173,7 @@ hd.color, (SELECT c.codigo	FROM public.color c where c.color=hd.color) as codigo
 						 as lista_conse,
 hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso,
 
-(CASE WHEN (SELECT c.codigo	FROM public.color c where c.color=hd.color) ='#ffef00' THEN '#7f7f7f'
+(CASE WHEN (SELECT c.codigo	FROM public.color c where c.color=hd.color) ='#ffef00' THEN '#2e3740'
 ELSE '#ffffff' END) as color_t
 
 FROM public.his_impacto_diario_detalle hd 
@@ -608,6 +608,12 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 .esriPopup .titleButton.maximize, .titleButton.next, .titleButton.prev, .spinner {
   display: none;
 }
+
+
+a {
+    color: #2e3740;
+}
+
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 
@@ -801,7 +807,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		 
 		//Agregar aqui Otras capas		
 		/* ----------------------------------------------------------------------------- */
-		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
+		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
 		"opacity": 0.75
 		});
@@ -812,7 +818,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		 
 
 		/* ----------------------------------------------------------------------------- */
-		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
+		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
 				"id": "almacenamiento",
 				"opacity": 0.75
 		});
@@ -895,7 +901,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 	function my_water() {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 		var query2 = new Query();
-		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		var queryTask2 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
 		query2.where = "FID>0";
 		query2.returnGeometry = true;
 		query2.outFields = ["FID"];
@@ -922,7 +928,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 
 		var query1 = new Query();
-		var queryTask1 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
+		var queryTask1 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
 			id: "mapaMuni",	
 			usePost:"true"
 		});
@@ -1264,9 +1270,11 @@ if (nivel==1){
 
 
 <div class="row">
+
+<div class="row">
 	    <div id='banner' class="col-md-12">
 	        <a>
-	            <img src="Imagenes/Banner3.png" width="100%" class="img-responsive"  id="PaginaInicio">
+	            <img src="Imagenes/Banner_Publico_T.png" width="100%" class="img-responsive"  id="PaginaInicio">
 	        </a>
 	        <br>
 
@@ -1275,16 +1283,19 @@ if (nivel==1){
 
 
          <div class="row">
-			 <div class="col-md-1" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
-          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?></b></p>
-			</div>
+		 
+			 <div class="col-md-12" style="background: <?php echo $Unificados['codigo'];?>;">
+				 <div class="col-md-1" style="padding-left: 0px;padding-right: 0px; text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
+					<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?></b></p>
+				</div>
 
-			 <div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#474747">
-          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['titulo_general'];?></b></p>
-			</div>
+				 <div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#2e3740">
+					<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['titulo_general'];?></b></p>
+				</div>
 
-			<div class="col-md-1" style=" text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
-          		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['periodo'];?></b></p>
+				<div class="col-md-1" style="padding-left: 0px;padding-right: 0px; text-align: center; font-size: 15px; color:#ffffff; background: <?php echo $Unificados['codigo'];?>;">
+					<p style="margin-top: 5px; margin-bottom: 5px; "><b><?php echo $Unificados['periodo'];?></b></p>
+				</div>
 			</div>
 		</div>
 
@@ -1303,9 +1314,9 @@ if (nivel==1){
 
 
 
-<div class="row">
+<div class="row" style="background-color:#2e3740; margin-right: 15px;">
 
-		<div class="col-md-6">
+		<div class="col-md-6" id="divMapa" style="background-color:#ffffff;">
 
 <br>
 	<div class="row">
@@ -1352,13 +1363,14 @@ if (nivel==1){
 			<div class="row">
 
 		        <div class="col-md-12">
-		            <laber id="descripcion" ><h5><p style="text-align: justify; line-height: 1.5em;"><?php echo $Unificados['des_general'];?></p></h5></laber>
+				<h5 style="line-height: 1.5em; padding-left: 10px;padding-right: 15px;"><?php echo $Unificados['des_general'];?></h5>
+		            
 		             <br>
 		        </div>
 
 
 
-				<div class="col-md-12">
+				<div class="col-md-12" style="padding-bottom: 25px;">
 					<!-- CONTENIDO MAPA-->
 						<div class="mapa_marco">
 							<div id="map">
@@ -1423,7 +1435,7 @@ if (nivel==1){
 			</div>
 		</div>
 		
-		<div class="col-md-6" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
+		<div class="col-md-6" id="divImpactos" style="padding-left: 0px; padding-right: 0px;" >
 			<div class="row">
 
 
@@ -1435,17 +1447,18 @@ if (nivel==1){
 
 		<!-- ------------------------------------------TOMAR ACCIÓN------------------------------------- --> 
 		<!-- ----------------------------------------------------------------------------------------- -->
-		        <div  class="col-md-12" id="TomarAccion" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
+		        <div  class="col-md-12" id="TomarAccion" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 		  
-		                    <table class="table table-bordered"> 
+		                    <table class="table"> 
 		                        <caption style="background: #F20505; text-align: left; color: #ffffff ;font-size: 14px !important; padding-left: 10px;"><b>TOMAR ACCIÓN</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridTomarAccion))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                         <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;">
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;">
+										<h5 style="line-height: 1.3em; padding-right: 30px;padding-left: 15px;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1458,9 +1471,9 @@ if (nivel==1){
 		<!-- ------------------------------------------ESTAR PREPARADOS------------------------------------- --> 
 		<!-- ----------------------------------------------------------------------------------------- -->
 
-		        <div  class="col-md-12" id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
+		        <div  class="col-md-12" id="EstarPreparados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
 
-		                    <table class="table table-bordered"> 
+		                    <table class="table"> 
 		                        <caption style="background: #f29e05; color: #ffffff; text-align: left; font-size: 14px !important; padding-left: 10px;"><b>PREPARACIÓN</b></caption>
 
 
@@ -1470,8 +1483,8 @@ if (nivel==1){
 		                        while($row = pg_fetch_array($resultGridEstarPreparados))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">  
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                        <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;">  
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 30px;padding-left: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1484,16 +1497,16 @@ if (nivel==1){
 		<!-- ------------------------------------------ESTAR INFORMADOS------------------------------------- --> 
 		<!-- ----------------------------------------------------------------------------------------- -->
 
-		        <div  class="col-md-12" id="EstarInformados" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
-		                    <table class="table table-bordered"> 
+		        <div  class="col-md-12" id="EstarInformados" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
+		                    <table class="table"> 
 		                        <caption style="background: #ffef00; color: #7f7f7f; text-align: left; font-size: 14px; padding-left: 10px;"><b>ATENCIÓN</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridEstarInformados))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                         <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 30px;padding-left: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  
@@ -1506,16 +1519,16 @@ if (nivel==1){
 		<!-- ------------------------------------------ MONITOREO------------------------------------- --> 
 		<!-- ----------------------------------------------------------------------------------------- -->
 
-		        <div  class="col-md-12" id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; padding-right: 15px; margin-bottom: -20;">
-							 <table class="table table-bordered"> 
+		        <div  class="col-md-12" id="CondicionesNormales" style="padding-left: 0px; padding-right: 0px; margin-bottom: -20;">
+							 <table class="table"> 
 		                        <caption style="background: #6ab93c; color: #ffffff; text-align: left; font-size: 14px; padding-left: 10px;"><b>VIGILANCIA</b></caption>
 		                        <tr style="background:#EEEEEE" align="center"></tr>  
 		                        <?php  
 		                        while($row = pg_fetch_array($resultGridCondicionesNormales))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
-		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
+		                        <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 30px;padding-left: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
 		                        }  

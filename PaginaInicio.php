@@ -18,6 +18,11 @@ $("#contenedorprincipal").load("Unificacion.php",{id_area:id_area,id_fenomeno:id
 console.log(id_area,id_fenomeno);
 }
 
+function getBotonValidar(id_area) {
+$("#contenedorprincipal").load("ValidacionConsulta.php",{id_area:id_area});
+console.log(id_area);
+}
+
 function getBotonConsultar() {
 $("#contenedorprincipal").load("PaginaConsulta.php");
 }
@@ -62,7 +67,7 @@ $("#contenedorprincipal").load("PaginaConsulta.php");
 
 	<div class="row">
             <div class="col-md-3">
-                <button type="button" class="list-group-item active EfectoBtN" style="background-color:#124567; text-align: center;" >
+                <button type="button" class="list-group-item active EfectoBtN" style="background-color:#124567; text-align: center;" onClick="getBotonValidar(1)">
                     <h1 class="glyphicon glyphicon-flag"></h1><br />
                     <h2>Meteorología</h2></button>
 					<p></p>
@@ -73,8 +78,6 @@ $("#contenedorprincipal").load("PaginaConsulta.php");
 					<button type="button" id="BotonMeteorologia_3" onClick="getBotonImpacto(1,3)" class="list-group-item active EfectoBtN" style="background-color:#1d6ea4;text-align: center;" >Sequía</button>
 					<p></p>
 					<button type="button" id="BotonMeteorologia_4" onClick="getBotonImpacto(1,4)" class="list-group-item active EfectoBtN" style="background-color:#217cb9;text-align: center;" >Vientos Fuertes</button>
-					<p></p>
-					<button type="button" id="BotonMeteorologia_5" onClick="getBotonImpacto(1,5)" class="list-group-item active EfectoBtN" style="background-color:#217cb9;text-align: center;" >Sismo</button>
 					<p></p>					
 					<button type="button" id="BotonMeteorologia_6" onClick="getBotonImpacto(1,6)" class="list-group-item active EfectoBtN" style="background-color:#258ace;text-align: center;" >Erupción Volcanica</button>
 					<p></p>             

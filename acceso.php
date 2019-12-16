@@ -8,9 +8,9 @@ if (@$_SESSION['error_login']=="")
 	@$_SESSION['error_login'] = "";
 }
 
-// echo $_POST['login']."<br>";
-// echo $_POST['usuario']."<br>";
-// echo $_POST['password']."<br>";
+echo $_POST['login']."<br>";
+echo $_POST['usuario']."<br>";
+echo $_POST['password']."<br>";
 
 // exit();
 

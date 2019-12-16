@@ -67,11 +67,11 @@ $nivel = "'"."Verde','Amarillo','Anaranjado','Rojo"."'";
 /// INFORMACIÓN GENERAL
 $sqlUnificado="SELECT u.id_unificado,u.fenomeno, u.titulo_general, u.des_general, u.fecha_ingresado, 
 
-CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>'||UPPER(u.periodo)||'</b>'
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#2e3740 !important;&#quot;>'||UPPER(u.periodo)||'</b>'
             ELSE UPPER(u.periodo) END as periodo,
 
 
-CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#7f7f7f !important;&#quot;>ATENCIÓN</b>'
+CASE WHEN UPPER(u.des_categoria)='ATENCIÓN' THEN '<b style=&#quot;color:#2e3740 !important;&#quot;>ATENCIÓN</b>'
             ELSE UPPER(u.des_categoria) END as des_categoria,
 
 
@@ -173,7 +173,7 @@ hd.color, (SELECT c.codigo	FROM public.color c where c.color=hd.color) as codigo
 						 as lista_conse,
 hd.categoria, hd.fecha_ingreso, hd.id_usuario_ingreso,
 
-(CASE WHEN (SELECT c.codigo	FROM public.color c where c.color=hd.color) ='#ffef00' THEN '#7f7f7f'
+(CASE WHEN (SELECT c.codigo	FROM public.color c where c.color=hd.color) ='#ffef00' THEN '#2e3740'
 ELSE '#ffffff' END) as color_t
 
 FROM public.his_impacto_diario_detalle hd 
@@ -665,6 +665,10 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 #editUnificado {
 	background-color: rgba(255, 255, 255, 1);
 }
+
+a {
+    color: #2e3740;
+}
 </style>
 <script src="https://js.arcgis.com/3.20/"></script>
 
@@ -850,7 +854,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		 
 		//Agregar aqui Otras capas		
 		/* ----------------------------------------------------------------------------- */
-		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
+		var alm = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/?layers=show:2", {
 		"id": "alm",
 		"opacity": 0.75
 		});
@@ -861,7 +865,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		 
 
 		/* ----------------------------------------------------------------------------- */
-		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
+		MyLayers = new ArcGISDynamicMapServiceLayer("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer", {
 				"id": "almacenamiento",
 				"opacity": 0.75
 		});
@@ -942,7 +946,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 	function my_water() {
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 		var query2 = new Query();
-		var queryTask2 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
+		var queryTask2 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/0",{ id: "my_water" });
 		query2.where = "FID>0";
 		query2.returnGeometry = true;
 		query2.outFields = ["FID"];
@@ -969,7 +973,7 @@ text-shadow: -0.5px -0.5px 0.5px #000, 0.5px 0.5px 0.5px #000, -0.5px 0.5px 0.5p
 		require(["esri/tasks/query", "esri/tasks/QueryTask"], function(Query, QueryTask){
 
 		var query1 = new Query();
-		var queryTask1 = new QueryTask("https://geoportal.marn.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
+		var queryTask1 = new QueryTask("https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base/MapServer/2",{
 			id: "mapaMuni",	
 			usePost:"true"
 		});
@@ -1310,7 +1314,7 @@ function recargar(){
           		<p style="margin-top: 5px; margin-bottom: 5px;"><b><?php echo $Unificados['des_categoria'];?></b></p>
 			</div>
 
-			<div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#474747">
+			<div class="col-md-10" style="text-align: center; font-size: 15px; color:#ffffff; background:#2e3740">
           		<p style="margin-top: 5px; margin-bottom: 5px;"><b><span id="i_titulo"><?php echo $Unificados['titulo_general'];?></span></b></p>
 			</div>
 
@@ -1323,7 +1327,7 @@ function recargar(){
 <br>
 
 <div class="row">
-	<div class="col-md-7">
+	<div class="col-md-6">
 	<br>
 		<div class="row">
 			<div class="col-md-12">
@@ -1428,7 +1432,7 @@ function recargar(){
 			</div>
 
 		</div>
-				<div  id="i_areas" class="col-md-12">
+			<!--	<div  id="i_areas" class="col-md-12">
 		        <br>
                     <table class="table table-bordered"> 
                       <tr style="background:#EEEEEE" align="center" >  
@@ -1446,10 +1450,10 @@ function recargar(){
                         ?>  
 
                     </table>  
-		</div>
+		</div>-->
 	</div>
 		
-	<div class="col-md-5" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
+	<div class="col-md-6" style="padding-left: 0px; padding-right: 0px; padding-top: -15px;" >
 		<div class="row">
 
 			<!-- ----------------------------------------------------------------------------------------- --> 
@@ -1464,7 +1468,7 @@ function recargar(){
 		                        while($row = pg_fetch_array($resultGridTomarAccion))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">
+		                         <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;">
 		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
@@ -1487,7 +1491,7 @@ function recargar(){
 		                        while($row = pg_fetch_array($resultGridEstarPreparados))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;">  
+		                        <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;">  
 		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
@@ -1509,7 +1513,7 @@ function recargar(){
 		                        while($row = pg_fetch_array($resultGridEstarInformados))  
 		                        {  
 		                        ?>  
-		                         <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                         <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
 		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  
@@ -1531,7 +1535,7 @@ function recargar(){
 		                        while($row = pg_fetch_array($resultGridCondicionesNormales))  
 		                        {  
 		                        ?>  
-		                        <tr style="background:#5b5b5b ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
+		                        <tr style="background:#2e3740 ; color:#FFFFFF;  font-size: 10px; text-align: justify;"> 
 		                                <td class="alin" style="padding-top: 0px; padding-bottom: 0px; padding-right: 15px;"><h5 style="line-height: 1.3em;"><?php echo $row["f_consulta_unificado"]; ?></h5></td>
 		                        </tr>  
 		                        <?php  

@@ -17,7 +17,7 @@ include("cnn.php");
 // function getMuniData(va) {
 	$dbconn = my_dbconn4("PronosticoImpacto");
 	$sql="
-	SELECT i.id_impacto_diario, i.id_area, i.id_fenomeno, 
+	SELECT i.id_impacto_diario, i.id_area, id_fenomeno as id_fenomeno_m, (SELECT f.fenomeno FROM public.fenomeno f where f.id_fenomeno=i.id_fenomeno) as fenomeno_m, 
 	i.fecha, i.correlativo, i.titulo, i.descripcion, i.id_periodo, p.periodo, 
 	i.id_estado_impacto, es.estado_impacto, i.id_usuario
 	FROM public.impacto_diario i
@@ -67,6 +67,29 @@ $resultImpactoFenomeno = $TipoImpactoFenomeno ;
 foreach($resultImpactoFenomeno  as $row) {
 	$ImpactoFenomeno  .= '<option value="'.$row['id_impacto'].'">'.$row['impacto'].'</option>';
 }
+
+
+
+//// COMBO fenomeno
+$fenomeno_m = '';
+$SqlFenomeno="	SELECT f.id_fenomeno as id_fenomeno_m, f.fenomeno as fenomeno_m 
+	FROM public.fenomeno f inner join public.area_fenomeno af ON f.id_fenomeno=af.id_fenomeno
+	where f.activo = '1' and af.id_area=$id_area_Ini and f.id_fenomeno in ('1','2') order by f.fenomeno;";
+$resultFenomeno=pg_query($connect, $SqlFenomeno);
+while($row = pg_fetch_array($resultFenomeno, null, PGSQL_ASSOC)) {
+	$TipoFenomeno[] = $row;
+} pg_free_result($resultFenomeno);
+
+$resultFenomeno=$TipoFenomeno;
+
+foreach($resultFenomeno as $row)
+{
+	$fenomeno_m .= '<option value="'.$row['id_fenomeno_m'].'">'.$row['fenomeno_m'].'</option>';
+}
+
+
+
+
 
 //// COMBO FENOMENO
 $sqlFenomeno="SELECT id_fenomeno, fenomeno FROM public.fenomeno order by fenomeno;";
@@ -151,6 +174,18 @@ if(@$id_impacto_diario==''){
 	//$fecha_ini = '05/12/2018';
 };
 
+
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+
+
 ?>
 
 <!DOCTYPE html>
@@ -221,7 +256,7 @@ if(@$id_impacto_diario==''){
         height:100%;
 }
 .loading-div-form {
-         width: 550px;
+         width: 700px;
          height: auto;
          background-color: rgba(255, 255, 255, 1);
          text-align:center;
@@ -311,6 +346,9 @@ iframe {
 	.k-tooltip-validation .k-warning {
 		display: none;
 	}
+	
+	
+	
 </style>
 <link rel="stylesheet" type="text/css" href="fancybox/dist/jquery.fancybox.css">
 </head>
@@ -328,7 +366,7 @@ iframe {
 			  <tr>	<th></th></tr>
 			  <tr>
 			  <td><h4 style="text-align:left;"		><?php echo $area_Ini; ?></td>
-			  <td><h4 style="text-align:center;"	><?php echo  $fenomeno_Ini; ?></td>
+			  <td><h4 style="text-align:center;"	id="fenomeno_mm"><?php echo  $fenomeno_Ini; ?></td>
 			  <td><h4 style="text-align:right;"		><?php echo  $id_impacto_diario; ?></h4></td>
 			  </tr>
 			</table>	
@@ -372,10 +410,25 @@ iframe {
 <form id="formGeneral" name="formGeneral" action="MeteorologiaProcesos.php" method="post" enctype="multipart/form-data">
 
 		<div class="col-md-12">
-			<label>Titulo</label>  
+		<div class="col-md-9">
+		<label>Titulo</label>  
 			<input type="text" name="titulo" id="titulo" class="form-control" placeholder="Ingrese un titulo" required data-required-msg="" value="<?php echo $ro['titulo']; ?>"/>
 		</div>
- 
+		<div class="col-md-3" id="divFenomeno">
+		
+			<label>Fenomeno</label> 
+			<select name="id_fenomeno_m" id="id_fenomeno_m" class="form-control" placeholder="Ingrese Fenomeno" required data-required-msg="Ingrese el Fenomeno">
+			<option value="<?php echo $ro['id_fenomeno_m']?>" style="font-style: italic; color: #B2BABB;"><?php echo $ro['fenomeno_m']?></option>
+			<?php echo $fenomeno_m; ?>
+			</select>
+		
+		
+		
+		</div>
+		
+
+		</div>
+ <div class="col-md-12">
 		<div class="col-md-9">
 			<label>Descripción</label>  
 			<textarea name="descripcion" id="descripcion" class="form-control" placeholder="Ingrese descripción" required data-required-msg="" ><?php echo $ro['descripcion']; ?></textarea>  
@@ -388,7 +441,7 @@ iframe {
 			<?php echo $periodo; ?>
 			</select>
 		</div>
-
+	</div>
 	<div class="col-md-12" >
 		<div class="col-md-9" id="MensajeGuardado">
 
@@ -455,7 +508,21 @@ iframe {
 				</div>
 			</div>
 				
+	
+
 			<div class="row"><p></p>
+				<div class="col-md-8">
+					<label>Consecuencias a afectar</label>  
+
+			
+					<div id="ConteConsecuencias" class="form-check alin" placeholder="Ingrese" required data-required-msg="Ingrese" style="zoom: 1.1; width: 100%; height: 100%; background: #e3e3e3; padding-top: 10px; padding-left: 10px;  padding-bottom: 10px !important;   padding-right: 10px;">
+			
+					</div>
+			
+				</div>	
+				
+				<div class="col-md-4">
+							<div class="row"><p></p>
 				<div class="col-md-12">
 					<input type="hidden" name="filter" id="filter" class="form-control k-invalid" data-required-msg="filter" aria-invalid="true" >
 					<input type="hidden" name="id_impacto_diario_m" id="id_impacto_diario_m" value="<?php echo $id_impacto_diario?>" class="form-control k-invalid" required="" data-required-msg="id_impacto_diario_m" aria-invalid="true">
@@ -465,18 +532,9 @@ iframe {
 					<textarea name="categoria" id="categoria" class="form-control" style="font-size: 11pt;font-weight: bold"></textarea>
 				</div>	
 			</div>	
+			<br>
 
-			<div class="row"><p></p>
-				<div class="col-md-8">
-					<label>Consecuencias a afectar</label>
 			
-					<div id="ConteConsecuencias" class="form-check" placeholder="Ingrese" required data-required-msg="Ingrese" style="width: 100%; height: 100%;">
-			
-					</div>
-			
-				</div>	
-				
-				<div class="col-md-4">
 					<label>Horario</label> 
 					<div id="contenedorHorario" class="form-check" style="background: #FFFFFF" placeholder="Ingrese horario" required data-required-msg="Ingrese horario">
 						<label>
@@ -805,15 +863,19 @@ $("#UpdateGeneral").on("click", function(){
 	mdata['titulo'] 	 		= $("#titulo").val();
 	mdata['descripcion'] 		= $("#descripcion").val();
 	mdata['periodo']			= $("#periodo").val();
+	mdata['id_fenomeno_m']		= $("#id_fenomeno_m").val();
 	mdata['id_impacto_diario']	= $("#id_impacto_diario").val();
-	// console.log(mdata);
+	 //console.log(mdata);
     $.ajax({
 		async : true,
 		method: "POST",
 		url:'MeteorologiaProcesos.php',
 		data:{updateMuni: mdata, opcion:'updateForm'},
+		
 		success: function(msg){
-			console.log(msg);
+			//console.log(msg);
+			document.getElementById("fenomeno_mm").innerHTML = '';
+			alert("Los datos generales fuerom modificados correctamente.");
        }
      });			
 
@@ -1020,7 +1082,7 @@ $('.action').change(function(){
 				var size = Object.keys(obj).length;
 				var varCons='';
 				for (var i = 0; i < size ; i++) {
-					varCons +="<div class='accept'><input checked='checked' name='datos[]' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
+					varCons +="<div class='accept'><input name='datos[]' style='margin:10px 10px 0 5px;' type='checkbox' value="+obj[i]['id_consecuencia']+" >"+obj[i]['consecuencia']+"</div>";
 				}
 				if (varCons.length==0){
 					varCons +="<div class='checkbox' style='align:center;color:red;'>NO HAY ELEMENTOS ASIGNADOS</div>";
@@ -1039,10 +1101,11 @@ $('.action').change(function(){
 							$('#categoria').val(cat['categoria']);
 							$('#id_categoria').val(cat['id_categoria']);
 							$('#id_impacto_probabilidad').val(cat['id_impacto_probabilidad']);
-							if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");	/*Verde*/ 		}
-							if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");	/*Amarillo*/	}
-							if (cat['id_color'] == 3){	$('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");	/*Anaranjado*/	}
-							if (cat['id_color'] == 4){	$('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); 	/*Rojo*/		}
+							if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "#6ab93c");	/*Verde*/ 		}
+							if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "#ffef00");	/*Amarillo*/	}
+							if (cat['id_color'] == 3){	$('#categoria').css("background-color" , "#f29e05");	/*Anaranjado*/	}
+							if (cat['id_color'] == 4){	$('#categoria').css("background-color" , "#F20505"); 	/*Rojo*/		}
+							if (cat['id_color'] == 4){	$('#categoria').css("color" , "#ffffff"); 	/*Texto blanco*/		}
 						}
 					});
 				}
@@ -1065,10 +1128,11 @@ $('.action').change(function(){
 					$('#categoria').val(cat['categoria']);
 					$('#id_categoria').val(cat['id_categoria']);
 					$('#id_impacto_probabilidad').val(cat['id_impacto_probabilidad']);
-					if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "rgba(63, 195, 128, 1)");	/*Verde*/ 		}
-					if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "rgba(254, 241, 96, 1)");	/*Amarillo*/	}
-					if (cat['id_color'] == 3){ $('#categoria').css("background-color" , "rgba(252, 185, 65, 1)");	/*Anaranjado*/	}
-					if (cat['id_color'] == 4){ $('#categoria').css("background-color" , "rgba(240, 52, 52, 1)"); 	/*Rojo*/		}
+					if (cat['id_color'] == 1){ $('#categoria').css("background-color" , "#6ab93c");	/*Verde*/ 		}
+					if (cat['id_color'] == 2){ $('#categoria').css("background-color" , "#ffef00");	/*Amarillo*/	}
+					if (cat['id_color'] == 3){ $('#categoria').css("background-color" , "#f29e05");	/*Anaranjado*/	}
+					if (cat['id_color'] == 4){ $('#categoria').css("background-color" , "#F20505"); 	/*Rojo*/		}
+					if (cat['id_color'] == 4){	$('#categoria').css("color" , "#ffffff"); 	/*Texto blanco*/		}
 				}
 			});
 		}				  

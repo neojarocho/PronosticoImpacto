@@ -3,7 +3,7 @@
 
 header('Access-Control-Allow-Origin: *'); 
 header('Content-Type: text/html; charset=utf-8');
-
+include_once("funciones.php");
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -146,7 +146,7 @@ include('database_connection.php');
 
 		$sqlConsecuencias="SELECT ci.id_consecuencia_impacto,ci.id_consecuencia,ci.id_area, ci.id_fenomeno, ci.id_impacto, (SELECT c.consecuencia FROM public.consecuencia c WHERE c.id_consecuencia=ci.id_consecuencia) AS consecuencia, ci.estado
 		FROM public.consecuencia_impacto ci
-		WHERE ci.id_area=$id_area AND ci.id_fenomeno= $id_fenomeno AND ci.id_impacto= $id_impacto;";
+		WHERE ci.id_area=$id_area AND ci.id_fenomeno= $id_fenomeno AND ci.id_impacto= $id_impacto AND ci.estado=1;";
 		$resultConsecuencias = pg_query($sqlConsecuencias) or die('Query failed: '.pg_last_error()); 
 		$con = pg_fetch_all($resultConsecuencias);
 
@@ -307,34 +307,47 @@ include('database_connection.php');
 		$tipo_zona_dpto='';
 		$municipio[] ='';
 
-		// function xplo($val) {
-			// $v = explode("=", $val);
-			// return $v;
-		// }
-
 		// $id_usuario = 1;
 		$fecha_ingreso = date('Y-m-d');
 
-		$atencion = 0; $descripcion =0;
+		$atencion = 0; $descripcion =0; $ea_cod=0;
 		for ($i=0; $i<=count($porciones)-1; $i++) {
-			if (xplo($porciones[$i])[0] == 'ed_impacto'){		$id_impacto					= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'ed_probabilidad'){	$id_probabilidad			= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'id_categoria'){		$id_categoria				= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'id_color'){			$id_color					= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'ed_categoria'){		$categoria					= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'datos_co[]'){		$datos[]					= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'datos_ho[]'){		$datosh[]					= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'id_idiario'){		$id_impacto_diario_detalle	= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'atencion'){			$atencion					= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'descripcion'){		$descripcion				= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'id_impacto_diario_m')	 {	$id_impacto_diario			= xplo($porciones[$i])[1];}
-			if (xplo($porciones[$i])[0] == 'id_impacto_probabilidad'){	$id_impacto_probabilidad	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'ed_impacto'){		    $id_impacto					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'ed_probabilidad'){	    $id_probabilidad			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_categoria'){		    $id_categoria				= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_color'){			    $id_color					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'ed_categoria'){		    $categoria					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'datos_co[]'){		    $datos[]					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'datos_ho[]'){		    $datosh[]					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'datos_ea[]'){		    $datose[]					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_idiario'){		    $id_impacto_diario_detalle	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'atencion'){			    $atencion					= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'descripcion'){		    $descripcion				= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_impacto_diario_m') {	$id_impacto_diario			= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'id_iprobabilidad')    {	$id_impacto_probabilidad	= xplo($porciones[$i])[1];}
 		}
 		
 		if ($datosh[0]==5) { $datosh = Array (1,2,3,4);};	
 
-		# -- table: impacto_probabilidad -- #
 		$dbconn = my_dbconn4("PronosticoImpacto");
+		
+		# -- combierte especial atencion de codigo a texto -- #
+		if(isset($datose)) {
+			$datos_ea = implode(",", $datose);
+			$sql="SELECT id_especial_atencion, especial_atencion FROM public.especial_atencion WHERE id_especial_atencion IN (".$datos_ea.")";
+			$result = pg_query($dbconn, $sql);
+			$att = pg_fetch_all($result);
+			$natt = array_column($att , 'especial_atencion');
+			$catt = array_column($att , 'id_especial_atencion');
+			$atencion = implode(", ", $natt);
+			$ea_cod = implode(", ", $catt);
+		}
+			// echo "<pre>";
+			// print_r($ea_cod);
+			// echo "</pre>";
+
+		
+		# -- table: impacto_probabilidad -- #
 		$sql="SELECT id_color FROM public.impacto_probabilidad WHERE id_impacto = ".$id_impacto." AND id_probabilidad = ".$id_probabilidad.";";
 		$result=pg_query($dbconn, $sql);
 		while($row = pg_fetch_array($result, null, PGSQL_ASSOC)) {
@@ -365,11 +378,23 @@ include('database_connection.php');
 		
 		
 		if (strlen($atencion)==0)	{	$v_aten = "especial_atencion=NULL"; } 	else { $v_aten = "especial_atencion="."'".$atencion."'";}
+		if (strlen($ea_cod)==0)		{	$v_coda = "ea_cod=NULL"; } 				else { $v_coda = "ea_cod="."'".$ea_cod."'";}
 		if (strlen($descripcion)==0){ 	$v_desc = "descripcion=NULL"; 		}	else { $v_desc = "descripcion="."'".$descripcion."'"; 	}
 
 		// include("cnn.php");
 		$dbconn = my_dbconn4("PronosticoImpacto");
-		$sql="UPDATE public.impacto_diario_detalle SET id_impacto=$id_impacto, id_probabilidad=$id_probabilidad, id_color=$id_color, id_categoria=$id_categoria, des_categoria='".$categoria."', ".$v_aten.", ".$v_desc." WHERE id_impacto_diario_detalle = $id_impacto_diario_detalle;";
+		$sql="UPDATE public.impacto_diario_detalle SET 
+			id_impacto=$id_impacto, 
+			id_probabilidad=$id_probabilidad, 
+			id_color=$id_color, 
+			id_categoria=$id_categoria, 
+			des_categoria='".$categoria."',
+			".$v_aten.", 
+			".$v_coda.", 
+			".$v_desc.",
+			fecha_ingreso= NOW(),
+			id_impacto_probabilidad=$id_impacto_probabilidad
+			WHERE id_impacto_diario_detalle = $id_impacto_diario_detalle;";
 		$result=pg_query($dbconn, $sql);
 		// echo $sql;
 		
@@ -649,15 +674,13 @@ include('database_connection.php');
 	$arr = $_POST['updateMuni'];
 	
 	$dbconn = my_dbconn4("PronosticoImpacto");
-	$sql="UPDATE public.impacto_diario SET titulo='".$arr['titulo']."', descripcion='".$arr['descripcion']."', id_periodo=".$arr['periodo']." WHERE id_impacto_diario = ".$arr['id_impacto_diario'].";";
+	$sql="UPDATE public.impacto_diario SET titulo='".$arr['titulo']."', descripcion='".$arr['descripcion']."',id_fenomeno='".$arr['id_fenomeno_m']."', id_periodo=".$arr['periodo']." WHERE id_impacto_diario = ".$arr['id_impacto_diario'].";";
 	$result=pg_query($dbconn, $sql);
-	// echo $sql;
-	
-	
-	// echo "<pre>";
-	// print_r($arr);
-	// echo "</pre>";
-	// exit();
+	echo $sql;
+	 //echo "<pre>";
+	 //print_r($arr);
+	 //echo "</pre>";
+	 //exit();
 	}
 	
 	if($_POST["opcion"] == 'updateIntegrado'){
@@ -692,6 +715,65 @@ include('database_connection.php');
 		$result=pg_query($dbconn, $sql1);
 	}
 	
+	if($_POST["opcion"] == 'saUsuario'){
+	
+		$porciones = explode("&", urldecode ($_POST['cad']));
+		$ar = [];
+		for ($i=0; $i<=count($porciones)-1; $i++)		{
+			if (xplo($porciones[$i])[0] == 'nombre')	{	$ar['nombre']	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'apellido')	{	$ar['apellido']	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'correo')	{	$ar['correo']	= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'password')	{	$ar['password']	= convert(xplo($porciones[$i])[1],$key);}
+			if (xplo($porciones[$i])[0] == 'area')		{	$ar['area']		= xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'cargo')		{	$ar['cargo']	= xplo($porciones[$i])[1];}
+			$ar['id_rol'] = 2;
+			// echo $i;
+		}
+
+		// UPDATE DE No DE MUNICIPIOS CON IMPACTOS
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql="
+		INSERT INTO public.usuario(
+				nombre, apellido, usuario, password, id_area, cargo, id_rol)
+		VALUES ('".$ar['nombre']."', '".$ar['apellido']."', '".$ar['correo']."', '".$ar['password']."', ".$ar['area'].", '".$ar['cargo']."', ".$ar['id_rol'].");
+		";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		pg_close($dbconn);
+	}
+	
+		if($_POST["opcion"] == 'upUsuario'){
+	
+		$porciones = explode("&", urldecode ($_POST['cad']));
+		$ar = [];
+		for ($i=0; $i<=count($porciones)-1; $i++)		{
+			if (xplo($porciones[$i])[0] == 'id_usuario'){	$ar['id_usuario'] = xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'nombre')	{	$ar['nombre']	  = xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'apellido')	{	$ar['apellido']	  = xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'correo')	{	$ar['correo']	  = xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'password')	{	$ar['password']  = convert(xplo($porciones[$i])[1],$key);}
+			if (xplo($porciones[$i])[0] == 'area')		{	$ar['area']		  = xplo($porciones[$i])[1];}
+			if (xplo($porciones[$i])[0] == 'cargo')		{	$ar['cargo']	  = xplo($porciones[$i])[1];}
+			$ar['id_rol'] = 2;
+			// echo $i;
+		}
+		if (strlen($ar['password'])==0){ convert($ar['correo'],$key); }
+		
+		// print_r($ar);
+		// exit();
+		// UPDATE DE No DE MUNICIPIOS CON IMPACTOS
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql="
+		UPDATE public.usuario
+		SET nombre='".$ar['nombre']."', apellido='".$ar['apellido']."', usuario='".$ar['correo']."', 
+			password='".$ar['password']."', id_area=".$ar['area'].", cargo='".$ar['cargo']."', id_rol=".$ar['id_rol']."
+			WHERE id_usuario=".$ar['id_usuario'].";
+		";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		pg_close($dbconn);
+	}
+	
 
 
 
@@ -705,6 +787,67 @@ $Duplicar = pg_fetch_all($dbconn,$resultGridDuplicar);
 //$EstarInformados = $EstarInformados[0]['f_reporte_unificado'];
 
 }
+
+
+
+//-------------------------------------------------------------------------------------------------
+if($_POST["opcion"] == 'getHis'){
+$dbconn = my_dbconn4("PronosticoImpacto");
+
+$id_duplicar=$_POST['id'];
+
+
+
+		# ------------------------------------------------------------------------ #
+		# 1) ---***-*-*-*-*-- INGRESO A HISTORICO 
+		$dbconn = my_dbconn4("PronosticoImpacto");
+		$sql = "INSERT INTO public.his_impacto_diario(id_his_impacto_diario, id_area, id_fenomeno, fecha_creado, categoria, titulo, descripcion, id_periodo, id_estado, id_usuario_creo, fecha_aprobado, id_usuario_aprobo, fecha_historico) 
+		SELECT id_impacto_diario, id_area, id_fenomeno, fecha, correlativo, titulo, descripcion, id_periodo, id_estado_impacto, id_usuario, fecha_aprobado, id_usuario_aprobo, now()
+		FROM public.impacto_diario
+		WHERE id_impacto_diario in (".$id_duplicar.");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+		
+		# 2) ---***-*-*-*-*-- INGRESO A HISTORICO DETALLE
+		$sql = "
+		INSERT INTO public.his_impacto_diario_detalle(id_his_impacto_diario_detalle, id_his_impacto_diario, cod_municipio, municipio, impacto, probabilidad, color, categoria, especial_atencion, descripcion, fecha_ingreso, id_usuario_ingreso, horarios, consecuencias, no_matriz, departamento)
+		SELECT 
+		dd.id_impacto_diario_detalle,    
+		dd.id_impacto_diario,    
+		dd.cod_municipio,
+		dd.municipio,
+		(SELECT i.impacto FROM public.impacto i WHERE dd.id_impacto=i.id_impacto) as impacto,
+		(SELECT p.probabilidad FROM public.probabilidad p WHERE dd.id_probabilidad=p.id_probabilidad) as probabilidad,
+		(SELECT c.color FROM public.color c WHERE dd.id_color=c.id_color) as color,
+		(SELECT ca.des_categoria FROM public.categoria ca WHERE dd.id_categoria=ca.id_categoria) as categoria,
+		dd.especial_atencion,
+		dd.descripcion,
+		dd.fecha_ingreso,
+		dd.id_usuario_ingreso,
+		(SELECT array_to_string(array(select h.horario from impacto_diario_horario ho INNER JOIN horario h ON h.id_horario = ho.id_horario where ho.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as horarios,
+		-- (SELECT array_to_string(array(select c.consecuencia from impacto_diario_consecuencias dc INNER JOIN consecuencia c ON c.id_consecuencia = dc.id_consecuencia where dc.id_impacto_diario_detalle = dd.id_impacto_diario_detalle), ', ')) as consecuencias,
+		(SELECT array_to_string(array((select '<li '||(SELECT c.text_color	FROM public.color c where c.id_color=dd.id_color)||'>'||c.consecuencia||'.</li>' from impacto_diario_consecuencias dc 
+		INNER JOIN consecuencia c ON c.id_consecuencia = dc.id_consecuencia where dc.id_impacto_diario_detalle = dd.id_impacto_diario_detalle 
+		AND dc.id_impacto_diario = dd.id_impacto_diario) ), '')) as consecuencias,
+
+		dd.id_impacto_probabilidad,
+		(SELECT departamento FROM public.departamento WHERE  cod_departamento = LEFT(dd.cod_municipio, 2)) as departamento
+		FROM public.impacto_diario_detalle dd
+		WHERE dd.id_impacto_diario in (".$id_duplicar.");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+
+
+		# 5) ----**-*-*-*- BORRAR REGISTOS DE IMPACTO DIARIO (Por el momento Inhabilitar)
+		$sql = "UPDATE public.impacto_diario SET  id_estado_impacto=6 WHERE id_impacto_diario in (".$id_duplicar.");";
+		// echo $sql;
+		$result=pg_query($dbconn, $sql);
+
+
+
+
+}
+//---------------------------------------------------------------------------------------------------
 
 
 
